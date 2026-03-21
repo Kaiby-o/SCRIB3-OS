@@ -19,6 +19,11 @@ html, body {
   touch-action: none;
 }
 
+@keyframes mapFadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
 /* No sans-serif anywhere */
 * {
   font-family: 'OwnersWide', sans-serif;

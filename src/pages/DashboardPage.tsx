@@ -8,6 +8,7 @@ import ClockDisplay          from '../components/ClockDisplay';
 import PlasmaTube            from '../components/PlasmaTube';
 import ProfileCard           from '../components/ProfileCard';
 import AuxScreen             from '../components/AuxScreen';
+import SystemMap             from '../components/systems-map';
 import { useCanvasNavigation } from '../hooks/useCanvasNavigation';
 
 import cartridgeDark  from '../assets/images/CRT-DARK-ALIGN.png';
@@ -55,6 +56,8 @@ export default function DashboardPage() {
   const [hwMode, setHwMode] = useState<Mode>(locState.hwMode ?? 'dark');
   const [profileVisible, setProfileVisible] = useState(false);
   const [auxVisible,     setAuxVisible]     = useState(false);
+  const [showMap,        setShowMap]        = useState(false);
+  const [mapTransition,  setMapTransition]  = useState(false);
   const { containerStyle }                  = useCanvasNavigation();
   const navRef = useRef<HTMLDivElement>(null);
 
@@ -72,6 +75,16 @@ export default function DashboardPage() {
   }, []);
 
   const navStyle = isClean ? navItemClean(hwMode) : NAV_ITEM;
+
+  const handleMapOpen = () => {
+    setMapTransition(true);
+    setTimeout(() => setShowMap(true), 500);
+  };
+
+  const handleMapClose = () => {
+    setShowMap(false);
+    setTimeout(() => setMapTransition(false), 50);
+  };
 
   return (
     <div style={{
@@ -111,11 +124,53 @@ export default function DashboardPage() {
         <SettingsCog bgMode={bgMode} />
       </div>
 
+      {/* ── Systems Map (full-screen overlay) ── */}
+      {showMap && (
+        <div style={{
+          position:   'fixed',
+          inset:      0,
+          zIndex:     900,
+          background: bgMode === 'dark' ? '#1A1A1A' : '#F0EDED',
+          animation:  'mapFadeIn 400ms ease-out forwards',
+        }}>
+          <button
+            onClick={handleMapClose}
+            style={{
+              position:     'fixed',
+              top:          '24px',
+              left:         '24px',
+              zIndex:       1000,
+              background:   'none',
+              border:       `1px solid ${bgMode === 'dark' ? 'rgba(255,255,255,0.2)' : 'rgba(0,0,0,0.2)'}`,
+              borderRadius: '4px',
+              color:        bgMode === 'dark' ? '#E8E0E0' : '#3A3035',
+              fontFamily:   "'OwnersWide', 'JetBrains Mono', monospace",
+              fontSize:     '10px',
+              letterSpacing:'0.15em',
+              padding:      '8px 16px',
+              cursor:       'pointer',
+              opacity:      0.7,
+              transition:   'opacity 200ms',
+            }}
+            onMouseEnter={e => (e.currentTarget.style.opacity = '1')}
+            onMouseLeave={e => (e.currentTarget.style.opacity = '0.7')}
+          >
+            ← DEVICE
+          </button>
+          <SystemMap />
+        </div>
+      )}
+
       {/* ── Zoom / pan inner wrapper ── */}
       <div style={{
         position:   'absolute',
         inset:      0,
         ...containerStyle,
+        transition: 'transform 500ms cubic-bezier(0.25, 0.0, 0.1, 1.0), opacity 400ms ease-out',
+        transform:  mapTransition
+          ? `${containerStyle.transform || ''} translateY(120vh)`
+          : containerStyle.transform || '',
+        opacity:    mapTransition ? 0 : 1,
       }}>
 
       {/* ── Device container ── */}
@@ -162,12 +217,13 @@ export default function DashboardPage() {
               zIndex:        10,
               pointerEvents: 'auto',
             }}>
-              {['TASKS', 'FILES', 'TIMELINE', 'COMMS'].map(label => (
+              {['TASKS', 'FILES', 'TIMELINE', 'COMMS', 'MAP'].map(label => (
                 <span
                   key={label}
                   style={{ ...navStyle, transition: 'opacity 200ms' }}
                   onMouseEnter={e => (e.currentTarget.style.opacity = '1')}
                   onMouseLeave={e => (e.currentTarget.style.opacity = '0.4')}
+                  onClick={label === 'MAP' ? handleMapOpen : undefined}
                 >{label}</span>
               ))}
             </div>
@@ -246,12 +302,13 @@ export default function DashboardPage() {
               zIndex:        10,
               pointerEvents: 'auto',
             }}>
-              {['TASKS', 'FILES', 'TIMELINE', 'COMMS'].map(label => (
+              {['TASKS', 'FILES', 'TIMELINE', 'COMMS', 'MAP'].map(label => (
                 <span
                   key={label}
                   style={{ ...navStyle, transition: 'opacity 200ms' }}
                   onMouseEnter={e => (e.currentTarget.style.opacity = '1')}
                   onMouseLeave={e => (e.currentTarget.style.opacity = '0.4')}
+                  onClick={label === 'MAP' ? handleMapOpen : undefined}
                 >{label}</span>
               ))}
             </div>
