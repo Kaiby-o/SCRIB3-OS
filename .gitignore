@@ -22,3 +22,6 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Raw LimeZu tileset extraction (large, not needed in repo)
+src/assets/office/tilesets/limezu_raw/

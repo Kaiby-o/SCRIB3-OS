@@ -99,6 +99,18 @@ export default function DashboardPage() {
     setTimeout(() => setOfficeTransition(false), 50);
   };
 
+  // ESC key to close office or map overlays
+  useEffect(() => {
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        if (showOffice) handleOfficeClose();
+        else if (showMap) handleMapClose();
+      }
+    };
+    window.addEventListener('keydown', onKeyDown);
+    return () => window.removeEventListener('keydown', onKeyDown);
+  }, [showOffice, showMap]);
+
   return (
     <div style={{
       width:      '100vw',
