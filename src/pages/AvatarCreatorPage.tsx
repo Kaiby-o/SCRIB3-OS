@@ -59,6 +59,14 @@ export default function AvatarCreatorPage() {
         .from('profiles')
         .update({ avatar_config: config })
         .eq('id', userId);
+
+      // Update local profile so avatar_config is available immediately
+      if (profile) {
+        useAuthStore.setState({
+          profile: { ...profile, avatar_config: config },
+        });
+      }
+
       navigate('/');
     } catch (err) {
       console.error('Failed to save avatar:', err);

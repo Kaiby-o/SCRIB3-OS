@@ -90,6 +90,12 @@ export default function DashboardPage() {
   };
 
   const handleOfficeOpen = () => {
+    // If no avatar config saved, send to character creator first
+    const { profile } = useAuthStore.getState();
+    if (!profile?.avatar_config || Object.keys(profile.avatar_config).length === 0) {
+      navigate('/avatar-creator');
+      return;
+    }
     setOfficeTransition(true);
     setTimeout(() => setShowOffice(true), 500);
   };
