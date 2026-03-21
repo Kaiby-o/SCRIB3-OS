@@ -93,50 +93,76 @@ async function getCachedImage(file: string): Promise<HTMLImageElement> {
 }
 
 /* ─── Compositor ─── */
+/**
+ * Composite all selected layers into a single-frame preview (32x32)
+ * and tile it into a 96x128 walk sheet format for Phaser compatibility.
+ * Since the full animation sheets don't follow RPG Maker layout,
+ * we use the front-idle frame (0,0) for all 12 cells.
+ */
 async function compositeWalkSheet(
   manifest: Manifest,
   sel: Selections,
 ): Promise<HTMLCanvasElement> {
+  // First, composite a single 32x32 frame from all layers
+  const frame = document.createElement('canvas');
+  frame.width = FRAME_W;
+  frame.height = FRAME_H;
+  const fCtx = frame.getContext('2d')!;
+  fCtx.imageSmoothingEnabled = false;
+
+  const layerFiles = getLayerFileList(manifest, sel);
+
+  for (const file of layerFiles) {
+    try {
+      const img = await getCachedImage(file);
+      // Extract the front-idle frame at (0, 0)
+      fCtx.drawImage(img, 0, 0, FRAME_W, FRAME_H, 0, 0, FRAME_W, FRAME_H);
+    } catch {
+      // Skip failed layers
+    }
+  }
+
+  // Now tile into a 96x128 sheet (3 cols × 4 rows) so Phaser can use it
   const canvas = document.createElement('canvas');
   canvas.width = SHEET_W;
   canvas.height = SHEET_H;
   const ctx = canvas.getContext('2d')!;
   ctx.imageSmoothingEnabled = false;
 
-  // Collect layer files in official render order: body, eyes, outfit, hairstyle, accessories
-  const layerFiles: string[] = [];
-
-  const bodyFile = findFile(manifest, sel.body);
-  if (bodyFile) layerFiles.push(bodyFile);
-
-  const eyeFile = findFile(manifest, sel.eyes);
-  if (eyeFile) layerFiles.push(eyeFile);
-
-  const outfitId = getOutfitId(manifest, sel.outfitStyle, sel.outfitColor);
-  const outfitFile = findFile(manifest, outfitId);
-  if (outfitFile) layerFiles.push(outfitFile);
-
-  const hairId = getHairId(manifest, sel.hairStyle, sel.hairColor);
-  const hairFile = findFile(manifest, hairId);
-  if (hairFile) layerFiles.push(hairFile);
-
-  for (const acc of sel.accessories) {
-    const accId = getAccId(manifest, acc.style, acc.color);
-    const accFile = findFile(manifest, accId);
-    if (accFile) layerFiles.push(accFile);
-  }
-
-  // Load and draw each layer (extract top-left 96x128 region)
-  for (const file of layerFiles) {
-    try {
-      const img = await getCachedImage(file);
-      ctx.drawImage(img, 0, 0, SHEET_W, SHEET_H, 0, 0, SHEET_W, SHEET_H);
-    } catch {
-      // Skip failed layers
+  for (let row = 0; row < WALK_ROWS; row++) {
+    for (let col = 0; col < WALK_COLS; col++) {
+      ctx.drawImage(frame, col * FRAME_W, row * FRAME_H);
     }
   }
 
   return canvas;
+}
+
+/** Get all layer files in official compositing order */
+function getLayerFileList(manifest: Manifest, sel: Selections): string[] {
+  const files: string[] = [];
+
+  const bodyFile = findFile(manifest, sel.body);
+  if (bodyFile) files.push(bodyFile);
+
+  const eyeFile = findFile(manifest, sel.eyes);
+  if (eyeFile) files.push(eyeFile);
+
+  const outfitId = getOutfitId(manifest, sel.outfitStyle, sel.outfitColor);
+  const outfitFile = findFile(manifest, outfitId);
+  if (outfitFile) files.push(outfitFile);
+
+  const hairId = getHairId(manifest, sel.hairStyle, sel.hairColor);
+  const hairFile = findFile(manifest, hairId);
+  if (hairFile) files.push(hairFile);
+
+  for (const acc of sel.accessories) {
+    const accId = getAccId(manifest, acc.style, acc.color);
+    const accFile = findFile(manifest, accId);
+    if (accFile) files.push(accFile);
+  }
+
+  return files;
 }
 
 /* ─── Layer Preview: draws a single frame from a layer spritesheet ─── */
@@ -200,29 +226,8 @@ function CompositedPreview({
   const imagesRef = useRef<HTMLImageElement[]>([]);
   const loadedRef = useRef(false);
 
-  // Build the layer file list
   const getLayerFiles = useCallback(() => {
-    const files: string[] = [];
-    const bodyFile = findFile(manifest, selections.body);
-    if (bodyFile) files.push(bodyFile);
-
-    const eyeFile = findFile(manifest, selections.eyes);
-    if (eyeFile) files.push(eyeFile);
-
-    const outfitId = getOutfitId(manifest, selections.outfitStyle, selections.outfitColor);
-    const outfitFile = findFile(manifest, outfitId);
-    if (outfitFile) files.push(outfitFile);
-
-    const hairId = getHairId(manifest, selections.hairStyle, selections.hairColor);
-    const hairFile = findFile(manifest, hairId);
-    if (hairFile) files.push(hairFile);
-
-    for (const acc of selections.accessories) {
-      const accId = getAccId(manifest, acc.style, acc.color);
-      const accFile = findFile(manifest, accId);
-      if (accFile) files.push(accFile);
-    }
-    return files;
+    return getLayerFileList(manifest, selections);
   }, [manifest, selections]);
 
   useEffect(() => {
@@ -383,7 +388,7 @@ export default function AvatarCreatorPage() {
   }, [profile]);
 
   const handleSave = async () => {
-    if (!manifest || !profile) return;
+    if (!manifest) return;
     setSaving(true);
     try {
       const sheet = await compositeWalkSheet(manifest, sel);
@@ -398,30 +403,28 @@ export default function AvatarCreatorPage() {
         compositedSheet,
       };
 
-      await supabase
-        .from('profiles')
-        .update({ avatar_config: config })
-        .eq('id', profile.id);
-
-      useAuthStore.setState({
-        profile: { ...profile, avatar_config: config as unknown as import('../components/virtual-office/game/systems/AvatarConfig').AvatarConfig },
-      });
-
-      // Register the texture with Phaser via window bridge
-      const win = window as unknown as Record<string, unknown>;
-      if (win.__PHASER_BRIDGE__) {
-        const bridge = win.__PHASER_BRIDGE__ as { emit: (e: string, d: unknown) => void };
-        const texCanvas = document.createElement('canvas');
-        texCanvas.width = SHEET_W;
-        texCanvas.height = SHEET_H;
-        const tCtx = texCanvas.getContext('2d')!;
-        tCtx.drawImage(sheet, 0, 0);
-        bridge.emit('register:avatar', { key: 'custom-avatar', canvas: texCanvas });
+      // Save to Supabase if logged in
+      if (profile?.id) {
+        const { error } = await supabase
+          .from('profiles')
+          .update({ avatar_config: config })
+          .eq('id', profile.id);
+        if (error) console.warn('Supabase save warning:', error.message);
       }
 
-      navigate('/?view=office');
+      // Update local state regardless of DB save
+      if (profile) {
+        useAuthStore.setState({
+          profile: { ...profile, avatar_config: config as unknown as import('../components/virtual-office/game/systems/AvatarConfig').AvatarConfig },
+        });
+      }
+
+      // Navigate to office
+      window.location.href = '/?view=office';
     } catch (err) {
       console.error('Failed to save avatar:', err);
+      // Still try to navigate even if save fails
+      window.location.href = '/?view=office';
     }
     setSaving(false);
   };
@@ -485,19 +488,12 @@ export default function AvatarCreatorPage() {
             <CompositedPreview manifest={manifest} selections={sel} scale={6} direction={0} animate />
           </div>
 
-          {/* Direction previews */}
+          {/* Additional front previews at different scales */}
           <div style={directionRowStyle}>
-            {[
-              { dir: 0, label: 'FRONT' },
-              { dir: 1, label: 'LEFT' },
-              { dir: 2, label: 'RIGHT' },
-              { dir: 3, label: 'BACK' },
-            ].map(({ dir, label }) => (
-              <div key={label} style={dirPreviewStyle}>
-                <CompositedPreview manifest={manifest} selections={sel} scale={2.5} direction={dir} animate />
-                <span style={dirLabelStyle}>{label}</span>
-              </div>
-            ))}
+            <div style={dirPreviewStyle}>
+              <CompositedPreview manifest={manifest} selections={sel} scale={3} direction={0} animate />
+              <span style={dirLabelStyle}>PREVIEW</span>
+            </div>
           </div>
 
           <div style={buttonRowStyle}>
