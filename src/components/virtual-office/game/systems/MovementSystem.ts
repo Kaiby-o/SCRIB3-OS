@@ -1,7 +1,6 @@
 import Phaser from 'phaser';
 import { bridge } from '../../PhaserBridge';
 
-const TILE_SIZE = 32;
 const MOVE_SPEED = 160;
 
 export class MovementSystem {
@@ -12,6 +11,8 @@ export class MovementSystem {
   private lastBroadcastY = 0;
   private lastBroadcastTime = 0;
   private direction = 'down';
+  private isMoving = false;
+  private spriteKey = '';
 
   constructor(private scene: Phaser.Scene) {
     if (scene.input.keyboard) {
@@ -27,6 +28,10 @@ export class MovementSystem {
 
     bridge.on('chat:focus', () => { this.enabled = false; });
     bridge.on('chat:blur', () => { this.enabled = true; });
+  }
+
+  setSpriteKey(key: string): void {
+    this.spriteKey = key;
   }
 
   update(player: Phaser.Physics.Arcade.Sprite): void {
@@ -58,10 +63,29 @@ export class MovementSystem {
 
     body.setVelocity(vx, vy);
 
-    // Update animation frame
-    if (vx !== 0 || vy !== 0) {
-      const frameMap: Record<string, number> = { down: 0, left: 1, right: 2, up: 3 };
-      player.setFrame(frameMap[this.direction] ?? 0);
+    const moving = vx !== 0 || vy !== 0;
+
+    // Handle animations if we have a Pipoya sprite key
+    if (this.spriteKey) {
+      if (moving) {
+        const animKey = `${this.spriteKey}-walk-${this.direction}`;
+        if (player.anims.currentAnim?.key !== animKey) {
+          player.anims.play(animKey, true);
+        }
+        this.isMoving = true;
+      } else if (this.isMoving) {
+        // Stop animation, show idle frame
+        player.anims.stop();
+        const idleFrameMap: Record<string, number> = { down: 1, left: 4, right: 7, up: 10 };
+        player.setFrame(idleFrameMap[this.direction] ?? 1);
+        this.isMoving = false;
+      }
+    } else {
+      // Fallback: simple frame-based direction (legacy avatar system)
+      if (moving) {
+        const frameMap: Record<string, number> = { down: 0, left: 1, right: 2, up: 3 };
+        player.setFrame(frameMap[this.direction] ?? 0);
+      }
     }
 
     // Broadcast position at 10Hz

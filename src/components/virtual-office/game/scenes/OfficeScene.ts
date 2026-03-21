@@ -3,7 +3,7 @@ import { bridge } from '../../PhaserBridge';
 import { MovementSystem } from '../systems/MovementSystem';
 import { InteractionSystem, type InteractableData } from '../systems/InteractionSystem';
 import { RemoteAvatar } from '../entities/RemoteAvatar';
-import { generateAvatarCanvas, getAvatarColor } from '../systems/AvatarGenerator';
+import { PIPOYA_SPRITES } from './BootScene';
 import type { AvatarConfig } from '../systems/AvatarConfig';
 import type { RemoteUser } from '../../../../store/office.store';
 
@@ -143,6 +143,16 @@ const INTERACTABLES: InteractableData[] = [
   { id: 'meeting-01', type: 'meeting', x: 5.5 * 32 + 16, y: 15 * 32 + 16, width: 128, height: 32 },
 ];
 
+/** Pick a deterministic Pipoya sprite index from a userId */
+function pipoyaIndexFromId(userId: string): number {
+  let hash = 0;
+  for (let i = 0; i < userId.length; i++) {
+    hash = ((hash << 5) - hash) + userId.charCodeAt(i);
+    hash |= 0;
+  }
+  return Math.abs(hash) % PIPOYA_SPRITES.length;
+}
+
 export class OfficeScene extends Phaser.Scene {
   private player!: Phaser.Physics.Arcade.Sprite;
   private movementSystem!: MovementSystem;
@@ -152,6 +162,7 @@ export class OfficeScene extends Phaser.Scene {
   private userId = '';
   private username = '';
   private avatarConfig?: AvatarConfig;
+  private playerSpriteKey = '';
 
   constructor() {
     super({ key: 'OfficeScene' });
@@ -201,27 +212,22 @@ export class OfficeScene extends Phaser.Scene {
         collisionLayer.setVisible(false);
         collisionLayer.setCollisionByExclusion([-1, 0]);
 
-        // Generate avatar
-        const avatarCanvas = generateAvatarCanvas(this.userId, this.username, this.avatarConfig);
-        if (!this.textures.exists('player-avatar')) {
-          this.textures.addSpriteSheet('player-avatar', avatarCanvas, {
-            frameWidth: 32,
-            frameHeight: 32,
-          });
-        }
+        // Pick a Pipoya sprite for this player
+        const spriteIndex = pipoyaIndexFromId(this.userId);
+        this.playerSpriteKey = `pipoya-${spriteIndex}`;
 
         // Spawn player in the open plan area
         const spawnX = 15 * TILE_SIZE;
         const spawnY = 10 * TILE_SIZE;
-        this.player = this.physics.add.sprite(spawnX, spawnY, 'player-avatar', 0);
+        this.player = this.physics.add.sprite(spawnX, spawnY, this.playerSpriteKey, 1);
         this.player.setDepth(4);
-        this.player.setSize(20, 20);
-        this.player.setOffset(6, 10);
+        this.player.setSize(16, 16);
+        this.player.setOffset(8, 14);
         this.player.setCollideWorldBounds(true);
 
         // Name label above player
-        const color = getAvatarColor(this.userId);
-        this.nameLabel = this.add.text(spawnX, spawnY - 24, this.username, {
+        const color = getColorFromId(this.userId);
+        this.nameLabel = this.add.text(spawnX, spawnY - 20, this.username, {
           fontSize: '10px',
           fontFamily: "'JetBrains Mono', monospace",
           color: '#FFFFFF',
@@ -256,6 +262,7 @@ export class OfficeScene extends Phaser.Scene {
 
     // Systems
     this.movementSystem = new MovementSystem(this);
+    this.movementSystem.setSpriteKey(this.playerSpriteKey);
     this.interactionSystem = new InteractionSystem(this);
 
     // Register interactables
@@ -288,7 +295,7 @@ export class OfficeScene extends Phaser.Scene {
 
     // Update name label position
     if (this.nameLabel) {
-      this.nameLabel.setPosition(this.player.x, this.player.y - 24);
+      this.nameLabel.setPosition(this.player.x, this.player.y - 20);
     }
 
     // Interaction system
@@ -324,21 +331,17 @@ export class OfficeScene extends Phaser.Scene {
 
       let avatar = this.remoteAvatars.get(uid);
       if (!avatar) {
-        // Generate their avatar texture
-        const canvas = generateAvatarCanvas(uid, data.username);
-        const texKey = `avatar-${uid}`;
-        if (!this.textures.exists(texKey)) {
-          this.textures.addSpriteSheet(texKey, canvas, {
-            frameWidth: 32,
-            frameHeight: 32,
-          });
-        }
+        // Pick a Pipoya sprite for the remote user
+        const spriteIndex = pipoyaIndexFromId(uid);
+        const texKey = `pipoya-${spriteIndex}`;
+        const color = getColorFromId(uid);
+
         avatar = new RemoteAvatar(
           this,
           data.x, data.y,
           texKey,
           data.username,
-          data.color || getAvatarColor(uid),
+          data.color || color,
         );
         this.remoteAvatars.set(uid, avatar);
       }
@@ -363,4 +366,19 @@ export class OfficeScene extends Phaser.Scene {
       letterSpacing: 2,
     }).setDepth(1);
   }
+}
+
+/** Simple color picker from a user ID for name labels */
+function getColorFromId(userId: string): string {
+  const colors = [
+    '#E74C3C', '#3498DB', '#2ECC71', '#9B59B6',
+    '#F39C12', '#1ABC9C', '#E67E22', '#34495E',
+    '#D35400', '#8E44AD', '#16A085', '#C0392B',
+  ];
+  let hash = 0;
+  for (let i = 0; i < userId.length; i++) {
+    hash = ((hash << 5) - hash) + userId.charCodeAt(i);
+    hash |= 0;
+  }
+  return colors[Math.abs(hash) % colors.length];
 }
