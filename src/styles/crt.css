@@ -1,0 +1,176 @@
+/* =============================================
+   CRT EFFECT STACK — SCRIB3-OS
+   ============================================= */
+
+/* Scanline overlay */
+.crt-scanlines {
+  position: relative;
+}
+.crt-scanlines::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(
+    to bottom,
+    transparent 0px,
+    transparent 2px,
+    rgba(0, 0, 0, 0.18) 2px,
+    rgba(0, 0, 0, 0.18) 4px
+  );
+  pointer-events: none;
+  z-index: 10;
+}
+
+/* Phosphor text — green mode (default) */
+.phosphor-text {
+  color: var(--phosphor-green);
+  text-shadow:
+    0 0 2px var(--phosphor-green),
+    0 0 6px rgba(57, 255, 20, 0.8),
+    0 0 12px rgba(57, 255, 20, 0.5),
+    0 0 24px rgba(57, 255, 20, 0.3);
+}
+
+/* Phosphor text — amber mode */
+.phosphor-text-amber {
+  color: var(--phosphor-amber);
+  text-shadow:
+    0 0 2px var(--phosphor-amber),
+    0 0 6px rgba(255, 179, 0, 0.8),
+    0 0 12px rgba(255, 179, 0, 0.5),
+    0 0 24px rgba(255, 179, 0, 0.3);
+}
+
+/* Amber mode override — set on documentElement */
+.amber-mode .phosphor-text {
+  color: var(--phosphor-amber);
+  text-shadow:
+    0 0 2px var(--phosphor-amber),
+    0 0 6px rgba(255, 179, 0, 0.8),
+    0 0 12px rgba(255, 179, 0, 0.5),
+    0 0 24px rgba(255, 179, 0, 0.3);
+}
+
+/* CRT power-on sweep keyframe */
+@keyframes crt-power-on {
+  0% {
+    filter: brightness(0) contrast(1);
+    transform: scaleY(0.02) scaleX(0.95);
+  }
+  8% {
+    filter: brightness(3) contrast(1.5);
+    transform: scaleY(0.02) scaleX(1);
+  }
+  15% {
+    filter: brightness(1.5) contrast(1.2);
+    transform: scaleY(1) scaleX(1);
+  }
+  20% { filter: brightness(0.8) contrast(1); }
+  25% { filter: brightness(1.2) contrast(1.1); }
+  30% { filter: brightness(1) contrast(1); }
+  100% { filter: brightness(1) contrast(1); }
+}
+
+.crt-powering-on {
+  animation: crt-power-on 0.6s cubic-bezier(0.25, 0, 0, 1) forwards;
+}
+
+/* Subtle idle flicker */
+@keyframes crt-flicker {
+  0%   { opacity: 1; }
+  92%  { opacity: 1; }
+  93%  { opacity: 0.94; }
+  94%  { opacity: 1; }
+  97%  { opacity: 1; }
+  98%  { opacity: 0.97; }
+  100% { opacity: 1; }
+}
+
+.crt-flicker {
+  animation: crt-flicker 4s steps(1, end) infinite;
+}
+
+/* State-change flicker burst */
+@keyframes crt-flicker-burst {
+  0%   { opacity: 1; }
+  10%  { opacity: 0.6; }
+  20%  { opacity: 1; }
+  30%  { opacity: 0.8; }
+  40%  { opacity: 1; }
+  50%  { opacity: 0.7; }
+  60%  { opacity: 1; }
+  70%  { opacity: 0.9; }
+  100% { opacity: 1; }
+}
+
+.crt-flicker-burst {
+  animation: crt-flicker-burst 0.3s steps(1) forwards;
+}
+
+/* Blinking cursor */
+@keyframes cursor-blink {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0; }
+}
+
+.cursor-blink {
+  animation: cursor-blink 0.8s step-end infinite;
+}
+
+/* Noise animation */
+@keyframes noise {
+  0%   { transform: translate(0, 0); }
+  10%  { transform: translate(-2%, -3%); }
+  20%  { transform: translate(3%, 2%); }
+  30%  { transform: translate(-1%, 4%); }
+  40%  { transform: translate(2%, -1%); }
+  50%  { transform: translate(-3%, 3%); }
+  60%  { transform: translate(1%, -2%); }
+  70%  { transform: translate(-2%, 1%); }
+  80%  { transform: translate(3%, -3%); }
+  90%  { transform: translate(-1%, 2%); }
+  100% { transform: translate(0, 0); }
+}
+
+/* Indicator LED keyframes */
+@keyframes indicator-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+@keyframes indicator-blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}
+
+/* Vignette */
+.crt-vignette {
+  position: relative;
+}
+.crt-vignette::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(
+    ellipse at center,
+    transparent 55%,
+    rgba(0, 0, 0, 0.6) 100%
+  );
+  pointer-events: none;
+  z-index: 9;
+  border-radius: inherit;
+}
+
+/* Reduced motion fallback */
+@media (prefers-reduced-motion: reduce) {
+  .crt-powering-on,
+  .crt-flicker,
+  .crt-flicker-burst,
+  .cursor-blink {
+    animation: none;
+  }
+  .crt-powering-on {
+    filter: brightness(1) contrast(1);
+    transform: none;
+  }
+}

@@ -1,0 +1,34 @@
+.toggle {
+  position: relative;
+  width: 32px;
+  height: 16px;
+  background: var(--chassis-recess);
+  border: 1px solid var(--hw-chrome-dark);
+  border-radius: 2px;
+  box-shadow:
+    inset 0 2px 4px rgba(0, 0, 0, 0.3),
+    inset 0 1px 0 rgba(0, 0, 0, 0.1);
+  cursor: pointer;
+}
+
+.toggle::after {
+  content: '';
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 10px;
+  height: 10px;
+  background: linear-gradient(to bottom, var(--chassis-raised), var(--chrome));
+  border-radius: 1px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+  transition: transform 0.15s cubic-bezier(0.25, 0, 0, 1);
+}
+
+.on::after {
+  transform: translateX(16px);
+}
+
+.on {
+  background: rgba(57, 255, 20, 0.1);
+  border-color: var(--crt-green);
+}

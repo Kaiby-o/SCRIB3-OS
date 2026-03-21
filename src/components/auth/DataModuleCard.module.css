@@ -1,0 +1,259 @@
+.card {
+  width: 560px;
+  height: 240px;
+  background: var(--chassis-primary);
+  border-radius: 12px;
+  border: 2px solid var(--chrome);
+  box-shadow:
+    inset 0 1px 0 var(--chassis-raised),
+    inset 0 -1px 0 var(--chrome),
+    0 12px 40px rgba(0, 0, 0, 0.4);
+  position: relative;
+  display: grid;
+  grid-template-columns: 18px 1fr 18px;
+  overflow: hidden;
+}
+
+/* Left gold contact strip */
+.contacts {
+  background: repeating-linear-gradient(
+    to bottom,
+    #C8A020 0px,
+    #C8A020 6px,
+    #8A6A08 6px,
+    #8A6A08 8px,
+    #C8A020 8px,
+    #C8A020 14px,
+    transparent 14px,
+    transparent 16px
+  );
+  border-radius: 10px 0 0 10px;
+  box-shadow: 1px 0 2px rgba(0, 0, 0, 0.3);
+}
+
+/* Right blush grip tab */
+.gripTab {
+  background: var(--blush);
+  border-radius: 0 10px 10px 0;
+  position: relative;
+  overflow: hidden;
+  box-shadow: -1px 0 2px rgba(0, 0, 0, 0.2);
+}
+.gripTab::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(
+    to bottom,
+    rgba(0, 0, 0, 0.08) 0px,
+    rgba(0, 0, 0, 0.08) 2px,
+    transparent 2px,
+    transparent 5px
+  );
+}
+
+/* Center content */
+.body {
+  display: flex;
+  flex-direction: column;
+  padding: 8px 16px;
+  gap: 6px;
+}
+
+/* Top connector strip */
+.connectorStrip {
+  height: 6px;
+  margin: 0 -16px;
+  background: repeating-linear-gradient(
+    to right,
+    #9C9490 0px,
+    #9C9490 3px,
+    #C8A020 3px,
+    #C8A020 6px
+  );
+  flex-shrink: 0;
+}
+
+/* Barcode strip */
+.barcodeStrip {
+  height: 14px;
+  background-image: repeating-linear-gradient(
+    to right,
+    #1A1A1A 0px, #1A1A1A 2px,
+    transparent 2px, transparent 4px,
+    #1A1A1A 4px, #1A1A1A 5px,
+    transparent 5px, transparent 8px,
+    #1A1A1A 8px, #1A1A1A 10px,
+    transparent 10px, transparent 13px,
+    #1A1A1A 13px, #1A1A1A 14px,
+    transparent 14px, transparent 18px,
+    #1A1A1A 18px, #1A1A1A 21px,
+    transparent 21px, transparent 24px
+  );
+  flex-shrink: 0;
+  opacity: 0.6;
+}
+
+/* Header */
+.header {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  flex-shrink: 0;
+}
+
+.title {
+  font-family: 'OwnersWide', sans-serif;
+  font-size: 24px;
+  letter-spacing: 0.05em;
+  
+  color: var(--hw-dark-mid);
+  line-height: 1;
+}
+
+.subtitle {
+  font-family: 'OwnersWide', sans-serif;
+  font-size: 9px;
+  letter-spacing: 0.3em;
+  
+  color: var(--hw-chrome-dark);
+}
+
+/* Fields area */
+.fields {
+  display: flex;
+  gap: 12px;
+  flex: 1;
+  align-items: flex-start;
+}
+
+.fieldGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  flex: 1;
+}
+
+.fieldLabel {
+  font-family: 'OwnersWide', sans-serif;
+  font-size: 9px;
+  letter-spacing: 0.15em;
+  
+  color: var(--hw-chrome-dark);
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.fieldDot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--blush);
+  flex-shrink: 0;
+}
+
+.fieldInput {
+  width: 100%;
+  background: #1A1A1A;
+  border: 1px solid #2A2A2A;
+  border-radius: 2px;
+  padding: 5px 8px;
+  font-family: 'OwnersWide', sans-serif;
+  font-size: 12px;
+  color: var(--phosphor-green);
+  caret-color: var(--phosphor-green);
+  outline: none;
+  letter-spacing: 0.06em;
+  box-shadow:
+    inset 0 2px 4px rgba(0, 0, 0, 0.3),
+    inset 0 1px 0 rgba(0, 0, 0, 0.1);
+  
+  text-shadow:
+    0 0 2px var(--phosphor-green),
+    0 0 6px rgba(57, 255, 20, 0.8),
+    0 0 12px rgba(57, 255, 20, 0.5),
+    0 0 24px rgba(57, 255, 20, 0.3);
+}
+
+.fieldInput:focus {
+  box-shadow:
+    inset 0 2px 4px rgba(0, 0, 0, 0.3),
+    inset 0 1px 0 rgba(0, 0, 0, 0.1),
+    0 0 0 1px var(--phosphor-green);
+}
+
+.fieldSelect {
+  width: 100%;
+  background: #1A1A1A;
+  border: 1px solid #2A2A2A;
+  border-radius: 2px;
+  padding: 5px 8px;
+  font-family: 'OwnersWide', sans-serif;
+  font-size: 11px;
+  color: var(--phosphor-green);
+  outline: none;
+  letter-spacing: 0.06em;
+  cursor: pointer;
+  box-shadow:
+    inset 0 2px 4px rgba(0, 0, 0, 0.3),
+    inset 0 1px 0 rgba(0, 0, 0, 0.1);
+  appearance: none;
+  text-shadow:
+    0 0 2px var(--phosphor-green),
+    0 0 6px rgba(57, 255, 20, 0.8),
+    0 0 12px rgba(57, 255, 20, 0.5),
+    0 0 24px rgba(57, 255, 20, 0.3);
+}
+
+.fieldSelect option {
+  background: #1A1A1A;
+  color: var(--phosphor-green);
+  text-shadow: none;
+}
+
+.errorText {
+  font-family: 'OwnersWide', sans-serif;
+  font-size: 14px;
+  letter-spacing: 0.08em;
+  
+  color: var(--status-err);
+  text-shadow:
+    0 0 2px var(--status-err),
+    0 0 8px rgba(255, 59, 59, 0.6);
+  text-align: center;
+  min-height: 18px;
+  flex-shrink: 0;
+}
+
+/* Corner screws */
+.screw {
+  position: absolute;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: radial-gradient(
+    circle at 35% 35%,
+    var(--hw-chrome-light) 0%,
+    var(--chrome) 40%,
+    var(--hw-chrome-dark) 100%
+  );
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+  z-index: 5;
+}
+.screw::before,
+.screw::after {
+  content: '';
+  position: absolute;
+  background: rgba(0, 0, 0, 0.4);
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+.screw::before { width: 55%; height: 1px; }
+.screw::after  { width: 1px; height: 55%; }
+
+.screwTL { top: 8px; left: 26px; }
+.screwTR { top: 8px; right: 26px; }
+.screwBL { bottom: 8px; left: 26px; }
+.screwBR { bottom: 8px; right: 26px; }
