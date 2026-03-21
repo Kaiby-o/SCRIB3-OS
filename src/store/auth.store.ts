@@ -2,12 +2,15 @@ import { create } from 'zustand';
 import type { User } from '@supabase/supabase-js';
 import { supabase } from '../lib/supabase';
 
+import type { AvatarConfig } from '../components/virtual-office/game/systems/AvatarConfig';
+
 export interface Profile {
   id: string;
   username: string;
   role: 'TEAM' | 'CLIENT' | 'CONTRACTOR';
   xp: number;
   level: number;
+  avatar_config?: AvatarConfig | null;
 }
 
 interface AuthStore {
@@ -42,6 +45,7 @@ async function loadProfile(userId: string): Promise<Profile | null> {
     role: (data.role ?? data.access_level ?? 'TEAM') as Profile['role'],
     xp: data.xp ?? 0,
     level: data.level ?? 1,
+    avatar_config: data.avatar_config ?? null,
   };
 }
 

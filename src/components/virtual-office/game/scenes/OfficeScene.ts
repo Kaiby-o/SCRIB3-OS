@@ -4,6 +4,7 @@ import { MovementSystem } from '../systems/MovementSystem';
 import { InteractionSystem, type InteractableData } from '../systems/InteractionSystem';
 import { RemoteAvatar } from '../entities/RemoteAvatar';
 import { generateAvatarCanvas, getAvatarColor } from '../systems/AvatarGenerator';
+import type { AvatarConfig } from '../systems/AvatarConfig';
 import type { RemoteUser } from '../../../../store/office.store';
 
 // 30x20 office map layout
@@ -150,6 +151,7 @@ export class OfficeScene extends Phaser.Scene {
   private nameLabel!: Phaser.GameObjects.Text;
   private userId = '';
   private username = '';
+  private avatarConfig?: AvatarConfig;
 
   constructor() {
     super({ key: 'OfficeScene' });
@@ -158,9 +160,10 @@ export class OfficeScene extends Phaser.Scene {
   create(): void {
     // Get user info from bridge
     const userInfo = (window as unknown as Record<string, unknown>).__OFFICE_USER__ as
-      { userId: string; username: string } | undefined;
+      { userId: string; username: string; avatarConfig?: AvatarConfig } | undefined;
     this.userId = userInfo?.userId ?? 'local';
     this.username = userInfo?.username ?? 'Player';
+    this.avatarConfig = userInfo?.avatarConfig;
 
     // Create tilemap from data
     const map = this.make.tilemap({
@@ -199,7 +202,7 @@ export class OfficeScene extends Phaser.Scene {
         collisionLayer.setCollisionByExclusion([-1, 0]);
 
         // Generate avatar
-        const avatarCanvas = generateAvatarCanvas(this.userId, this.username);
+        const avatarCanvas = generateAvatarCanvas(this.userId, this.username, this.avatarConfig);
         if (!this.textures.exists('player-avatar')) {
           this.textures.addSpriteSheet('player-avatar', avatarCanvas, {
             frameWidth: 32,

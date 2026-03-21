@@ -28,6 +28,7 @@ export default function VirtualOffice({ bgMode }: VirtualOfficeProps) {
     (window as unknown as Record<string, unknown>).__OFFICE_USER__ = {
       userId: profile?.id ?? 'local',
       username: profile?.username ?? 'Player',
+      avatarConfig: profile?.avatar_config ?? undefined,
     };
 
     const config = createGameConfig(containerRef.current);
