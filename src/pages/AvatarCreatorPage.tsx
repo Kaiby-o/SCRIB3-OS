@@ -103,11 +103,14 @@ async function compositeWalkSheet(
   const ctx = canvas.getContext('2d')!;
   ctx.imageSmoothingEnabled = false;
 
-  // Collect layer files in render order: body, outfit, hairstyle, eyes, accessories
+  // Collect layer files in official render order: body, eyes, outfit, hairstyle, accessories
   const layerFiles: string[] = [];
 
   const bodyFile = findFile(manifest, sel.body);
   if (bodyFile) layerFiles.push(bodyFile);
+
+  const eyeFile = findFile(manifest, sel.eyes);
+  if (eyeFile) layerFiles.push(eyeFile);
 
   const outfitId = getOutfitId(manifest, sel.outfitStyle, sel.outfitColor);
   const outfitFile = findFile(manifest, outfitId);
@@ -116,9 +119,6 @@ async function compositeWalkSheet(
   const hairId = getHairId(manifest, sel.hairStyle, sel.hairColor);
   const hairFile = findFile(manifest, hairId);
   if (hairFile) layerFiles.push(hairFile);
-
-  const eyeFile = findFile(manifest, sel.eyes);
-  if (eyeFile) layerFiles.push(eyeFile);
 
   for (const acc of sel.accessories) {
     const accId = getAccId(manifest, acc.style, acc.color);
@@ -206,6 +206,9 @@ function CompositedPreview({
     const bodyFile = findFile(manifest, selections.body);
     if (bodyFile) files.push(bodyFile);
 
+    const eyeFile = findFile(manifest, selections.eyes);
+    if (eyeFile) files.push(eyeFile);
+
     const outfitId = getOutfitId(manifest, selections.outfitStyle, selections.outfitColor);
     const outfitFile = findFile(manifest, outfitId);
     if (outfitFile) files.push(outfitFile);
@@ -213,9 +216,6 @@ function CompositedPreview({
     const hairId = getHairId(manifest, selections.hairStyle, selections.hairColor);
     const hairFile = findFile(manifest, hairId);
     if (hairFile) files.push(hairFile);
-
-    const eyeFile = findFile(manifest, selections.eyes);
-    if (eyeFile) files.push(eyeFile);
 
     for (const acc of selections.accessories) {
       const accId = getAccId(manifest, acc.style, acc.color);
@@ -255,7 +255,7 @@ function CompositedPreview({
         frame = (frame + 1) % WALK_COLS;
       }
 
-      const col = animate ? frame : 1;
+      const col = animate ? frame : 0;
       const row = direction;
 
       ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -419,7 +419,7 @@ export default function AvatarCreatorPage() {
         bridge.emit('register:avatar', { key: 'custom-avatar', canvas: texCanvas });
       }
 
-      navigate('/');
+      navigate('/?view=office');
     } catch (err) {
       console.error('Failed to save avatar:', err);
     }

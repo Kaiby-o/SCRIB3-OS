@@ -59,7 +59,10 @@ export default function DashboardPage() {
   const [auxVisible,     setAuxVisible]     = useState(false);
   const [showMap,        setShowMap]        = useState(false);
   const [mapTransition,  setMapTransition]  = useState(false);
-  const [showOffice,     setShowOffice]     = useState(false);
+  const [showOffice,     setShowOffice]     = useState(() => {
+    const params = new URLSearchParams(window.location.search);
+    return params.get('view') === 'office';
+  });
   const [officeTransition, setOfficeTransition] = useState(false);
   const { containerStyle }                  = useCanvasNavigation();
   const navRef = useRef<HTMLDivElement>(null);
