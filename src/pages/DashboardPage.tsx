@@ -90,12 +90,6 @@ export default function DashboardPage() {
   };
 
   const handleOfficeOpen = () => {
-    // If no avatar config saved, send to character creator first
-    const { profile } = useAuthStore.getState();
-    if (!profile?.avatar_config || Object.keys(profile.avatar_config).length === 0) {
-      navigate('/avatar-creator');
-      return;
-    }
     setOfficeTransition(true);
     setTimeout(() => setShowOffice(true), 500);
   };
@@ -175,6 +169,30 @@ export default function DashboardPage() {
             onMouseLeave={e => (e.currentTarget.style.opacity = '0.7')}
           >
             ← DEVICE
+          </button>
+          <button
+            onClick={() => { setShowOffice(false); setTimeout(() => { setOfficeTransition(false); navigate('/avatar-creator'); }, 50); }}
+            style={{
+              position:     'fixed',
+              top:          '24px',
+              left:         '120px',
+              zIndex:       1000,
+              background:   'none',
+              border:       `1px solid ${bgMode === 'dark' ? 'rgba(255,255,255,0.2)' : 'rgba(0,0,0,0.2)'}`,
+              borderRadius: '4px',
+              color:        bgMode === 'dark' ? '#E8E0E0' : '#3A3035',
+              fontFamily:   "'OwnersWide', 'JetBrains Mono', monospace",
+              fontSize:     '10px',
+              letterSpacing:'0.15em',
+              padding:      '8px 16px',
+              cursor:       'pointer',
+              opacity:      0.7,
+              transition:   'opacity 200ms',
+            }}
+            onMouseEnter={e => (e.currentTarget.style.opacity = '1')}
+            onMouseLeave={e => (e.currentTarget.style.opacity = '0.7')}
+          >
+            EDIT AVATAR
           </button>
           <VirtualOffice bgMode={bgMode} />
         </div>
