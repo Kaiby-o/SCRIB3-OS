@@ -96,8 +96,17 @@ export class OfficeScene extends Phaser.Scene {
     }
 
     // ---- PLAYER ----
-    const spriteIndex = spriteIndexFromId(this.userId);
-    this.playerSpriteKey = CHARACTER_SPRITES[spriteIndex];
+    // Use saved sprite selection from avatar_config, or fall back to hash-based
+    const savedSpriteKey = this.avatarConfig && typeof this.avatarConfig === 'object'
+      ? (this.avatarConfig as Record<string, unknown>).spriteKey as string | undefined
+      : undefined;
+
+    if (savedSpriteKey && CHARACTER_SPRITES.includes(savedSpriteKey)) {
+      this.playerSpriteKey = savedSpriteKey;
+    } else {
+      const spriteIndex = spriteIndexFromId(this.userId);
+      this.playerSpriteKey = CHARACTER_SPRITES[spriteIndex];
+    }
 
     // Spawn in the open plan area (center of map)
     const spawnX = 20 * TILE_SIZE;
