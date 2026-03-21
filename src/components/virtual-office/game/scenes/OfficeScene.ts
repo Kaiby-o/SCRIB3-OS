@@ -9,6 +9,15 @@ import type { RemoteUser } from '../../../../store/office.store';
 
 const TILE_SIZE = 32;
 
+interface CollisionJSON {
+  width: number;
+  height: number;
+  tileSize: number;
+  imageWidth: number;
+  imageHeight: number;
+  data: number[];
+}
+
 /** Pick a deterministic character sprite index from a userId */
 function spriteIndexFromId(userId: string): number {
   let hash = 0;
@@ -46,7 +55,6 @@ export class OfficeScene extends Phaser.Scene {
   private avatarConfig?: AvatarConfig;
   private playerSpriteKey = '';
   private isSitting = false;
-  private interactKey!: Phaser.Input.Keyboard.Key;
   private spaceKey!: Phaser.Input.Keyboard.Key;
 
   constructor() {
@@ -61,42 +69,41 @@ export class OfficeScene extends Phaser.Scene {
     this.username = userInfo?.username ?? 'Player';
     this.avatarConfig = userInfo?.avatarConfig;
 
-    // ---- TILEMAP ----
-    const map = this.make.tilemap({ key: 'office-map' });
+    // ---- LOAD COLLISION DATA ----
+    const collisionData = this.cache.json.get('office-collision') as CollisionJSON;
+    const mapWidth = collisionData.imageWidth;
+    const mapHeight = collisionData.imageHeight;
 
-    // Add tileset images (name must match the "name" field in the JSON tilesets array)
-    const floorsTileset = map.addTilesetImage('floors', 'floors');
-    const wallsTileset = map.addTilesetImage('walls', 'walls');
-    const genericTileset = map.addTilesetImage('generic', 'generic');
+    // ---- LAYER 1: floors + walls (below player) ----
+    const layer1 = this.add.image(0, 0, 'office-layer1');
+    layer1.setOrigin(0, 0);
+    layer1.setDepth(0);
 
-    if (!floorsTileset || !wallsTileset || !genericTileset) {
-      console.error('Failed to load tilesets');
-      return;
+    // ---- LAYER 2: furniture (above player) ----
+    const layer2 = this.add.image(0, 0, 'office-layer2');
+    layer2.setOrigin(0, 0);
+    layer2.setDepth(8);
+
+    // ---- COLLISION BODIES ----
+    const blockedGroup = this.physics.add.staticGroup();
+
+    for (let ty = 0; ty < collisionData.height; ty++) {
+      for (let tx = 0; tx < collisionData.width; tx++) {
+        const idx = ty * collisionData.width + tx;
+        if (collisionData.data[idx] === 1) {
+          const bx = tx * TILE_SIZE + TILE_SIZE / 2;
+          const by = ty * TILE_SIZE + TILE_SIZE / 2;
+          const block = this.add.rectangle(bx, by, TILE_SIZE, TILE_SIZE);
+          block.setVisible(false);
+          blockedGroup.add(block);
+        }
+      }
     }
 
-    const allTilesets = [floorsTileset, wallsTileset, genericTileset];
-
-    // Create layers in draw order
-    const floorLayer = map.createLayer('floor', allTilesets);
-    const wallsLayer = map.createLayer('walls', allTilesets);
-    const furnitureLayer = map.createLayer('furniture', allTilesets);
-    const aboveLayer = map.createLayer('above', allTilesets);
-    const collisionLayer = map.createLayer('collision', allTilesets);
-
-    // Set depths
-    if (floorLayer) floorLayer.setDepth(0);
-    if (wallsLayer) wallsLayer.setDepth(1);
-    if (furnitureLayer) furnitureLayer.setDepth(2);
-    if (aboveLayer) aboveLayer.setDepth(8); // Above player
-
-    // Set up collision layer
-    if (collisionLayer) {
-      collisionLayer.setVisible(false);
-      collisionLayer.setCollisionByExclusion([-1, 0]);
-    }
+    // Refresh physics bodies after adding all blocks
+    blockedGroup.refresh();
 
     // ---- PLAYER ----
-    // Use saved sprite selection from avatar_config, or fall back to hash-based
     const savedSpriteKey = this.avatarConfig && typeof this.avatarConfig === 'object'
       ? (this.avatarConfig as Record<string, unknown>).spriteKey as string | undefined
       : undefined;
@@ -108,9 +115,9 @@ export class OfficeScene extends Phaser.Scene {
       this.playerSpriteKey = CHARACTER_SPRITES[spriteIndex];
     }
 
-    // Spawn in the open plan area (center of map)
-    const spawnX = 20 * TILE_SIZE;
-    const spawnY = 22 * TILE_SIZE;
+    // Spawn roughly in center of the left room (Generic Home)
+    const spawnX = 7 * TILE_SIZE;
+    const spawnY = 8 * TILE_SIZE;
 
     this.player = this.physics.add.sprite(spawnX, spawnY, this.playerSpriteKey, 1);
     this.player.setDepth(4);
@@ -118,10 +125,8 @@ export class OfficeScene extends Phaser.Scene {
     this.player.setOffset(9, 16);
     this.player.setCollideWorldBounds(true);
 
-    // Collision with the collision layer
-    if (collisionLayer) {
-      this.physics.add.collider(this.player, collisionLayer);
-    }
+    // Collision with blocked tiles
+    this.physics.add.collider(this.player, blockedGroup);
 
     // ---- NAME LABEL ----
     const color = getColorFromId(this.userId);
@@ -137,9 +142,6 @@ export class OfficeScene extends Phaser.Scene {
     this.nameLabel.setDepth(6);
 
     // ---- WORLD & CAMERA ----
-    const mapWidth = map.widthInPixels;
-    const mapHeight = map.heightInPixels;
-
     this.physics.world.setBounds(0, 0, mapWidth, mapHeight);
     this.cameras.main.setBounds(0, 0, mapWidth, mapHeight);
     this.cameras.main.startFollow(this.player, true, 0.08, 0.08);
@@ -159,9 +161,7 @@ export class OfficeScene extends Phaser.Scene {
     this.minimapCamera.setZoom(mmW / mapWidth);
     this.minimapCamera.setBackgroundColor(0x1a1a2e);
     this.minimapCamera.setAlpha(0.85);
-    // Minimap follows player
     this.minimapCamera.startFollow(this.player, true, 1, 1);
-    // Ignore name labels in minimap
     this.minimapCamera.ignore(this.nameLabel);
 
     // ---- ROOM LABELS ----
@@ -172,20 +172,17 @@ export class OfficeScene extends Phaser.Scene {
       letterSpacing: 2,
     };
     const labels = [
-      this.add.text(6 * 32, 4 * 32, 'KITCHEN', labelStyle).setDepth(1),
-      this.add.text(29 * 32, 2 * 32, 'CONFERENCE', labelStyle).setDepth(1),
-      this.add.text(12 * 32, 14 * 32, 'OPEN PLAN', labelStyle).setDepth(1),
-      this.add.text(30 * 32, 22 * 32, 'MANAGER', labelStyle).setDepth(1),
-      this.add.text(14 * 32, 26 * 32, 'RECEPTION', labelStyle).setDepth(1),
+      this.add.text(3 * TILE_SIZE, 3 * TILE_SIZE, 'WORK AREA', labelStyle).setDepth(1),
+      this.add.text(3 * TILE_SIZE, 9 * TILE_SIZE, 'LOUNGE', labelStyle).setDepth(1),
+      this.add.text(18 * TILE_SIZE, 4 * TILE_SIZE, 'RECEPTION', labelStyle).setDepth(1),
+      this.add.text(18 * TILE_SIZE, 8 * TILE_SIZE, 'LOBBY', labelStyle).setDepth(1),
     ];
-    // Ignore labels in minimap
     for (const label of labels) {
       this.minimapCamera.ignore(label);
     }
 
     // ---- INPUT ----
     if (this.input.keyboard) {
-      this.interactKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.E);
       this.spaceKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
     }
 
@@ -195,8 +192,22 @@ export class OfficeScene extends Phaser.Scene {
 
     this.interactionSystem = new InteractionSystem(this);
 
-    // Load interactables from the tilemap object layer
-    this.interactionSystem.loadFromObjectLayer(map, 'interactables');
+    // Register some interactable objects at approximate positions
+    this.interactionSystem.registerObject({
+      id: 'desk-1', type: 'desk',
+      x: 5 * TILE_SIZE, y: 5 * TILE_SIZE,
+      width: TILE_SIZE * 2, height: TILE_SIZE,
+    });
+    this.interactionSystem.registerObject({
+      id: 'desk-2', type: 'desk',
+      x: 9 * TILE_SIZE, y: 5 * TILE_SIZE,
+      width: TILE_SIZE * 2, height: TILE_SIZE,
+    });
+    this.interactionSystem.registerObject({
+      id: 'meeting-1', type: 'meeting',
+      x: 20 * TILE_SIZE, y: 6 * TILE_SIZE,
+      width: TILE_SIZE * 3, height: TILE_SIZE * 2,
+    });
 
     // ---- MULTIPLAYER LISTENERS ----
     bridge.on('presence:sync', (users: unknown) => {
@@ -213,11 +224,12 @@ export class OfficeScene extends Phaser.Scene {
     });
 
     // ---- HANDLE RESIZE ----
+    const mmWConst = mmW;
+    const mmMarginConst = mmMargin;
     this.scale.on('resize', (gameSize: Phaser.Structs.Size) => {
-      // Reposition minimap
       this.minimapCamera.setPosition(
-        gameSize.width - mmW - mmMargin,
-        mmMargin,
+        gameSize.width - mmWConst - mmMarginConst,
+        mmMarginConst,
       );
     });
 
@@ -247,12 +259,6 @@ export class OfficeScene extends Phaser.Scene {
       this.player.y,
       interactPressed,
     );
-
-    // Handle sit/stand toggle when interacting with a desk
-    if (interactPressed) {
-      // Listen for sit toggle (handled via bridge event from InteractionSystem)
-      // For now, toggle sitting state when E is pressed near a desk
-    }
 
     // ---- REMOTE AVATARS ----
     for (const avatar of this.remoteAvatars.values()) {
@@ -289,7 +295,6 @@ export class OfficeScene extends Phaser.Scene {
         );
         this.remoteAvatars.set(uid, avatar);
 
-        // Hide remote name labels from minimap
         if (this.minimapCamera) {
           this.minimapCamera.ignore(avatar.nameLabel);
         }

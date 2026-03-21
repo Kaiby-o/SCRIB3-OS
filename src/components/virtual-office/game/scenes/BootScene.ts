@@ -16,11 +16,10 @@ export class BootScene extends Phaser.Scene {
   }
 
   preload(): void {
-    // ---- Tilemap & tilesets (served from public/) ----
-    this.load.tilemapTiledJSON('office-map', 'assets/office/scrib3-office.json');
-    this.load.image('floors', 'assets/office/floors.png');
-    this.load.image('walls', 'assets/office/walls.png');
-    this.load.image('generic', 'assets/office/generic.png');
+    // ---- Pre-composed office images (served from public/) ----
+    this.load.image('office-layer1', 'assets/office/office-layer1.png');
+    this.load.image('office-layer2', 'assets/office/office-layer2.png');
+    this.load.json('office-collision', 'assets/office/office-collision.json');
 
     // ---- Character spritesheets (from public/) ----
     const charFiles = [

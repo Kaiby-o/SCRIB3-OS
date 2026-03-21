@@ -138,7 +138,7 @@ export default function VirtualOffice({ bgMode, onClose, onEditAvatar }: Virtual
 }
 
 /* ── Right-side vertical toolbar ── */
-const TOOLBAR_WIDTH = '140px';
+const TOOLBAR_WIDTH = '160px';
 
 const toolbarStyle: React.CSSProperties = {
   position: 'fixed',
