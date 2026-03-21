@@ -118,10 +118,10 @@ function MessageBubble({ msg }: { msg: ChatMessage }) {
 
 const containerStyle: React.CSSProperties = {
   position: 'fixed',
-  bottom: '16px',
-  right: '16px',
+  top: '268px',
+  right: '10px',
   width: '320px',
-  height: '380px',
+  bottom: '50px',
   background: 'rgba(26, 26, 46, 0.95)',
   border: '1px solid rgba(255,255,255,0.1)',
   borderRadius: '8px',
@@ -222,16 +222,19 @@ const sendStyle: React.CSSProperties = {
 
 const toggleButtonStyle: React.CSSProperties = {
   position: 'fixed',
-  bottom: '16px',
-  right: '16px',
-  background: 'rgba(26, 26, 46, 0.8)',
+  top: '268px',       // Below the toolbar buttons (140px top + ~3 buttons * 42px each)
+  right: '10px',
+  width: '140px',
+  background: 'rgba(26, 26, 46, 0.85)',
   border: '1px solid rgba(255,255,255,0.15)',
-  borderRadius: '6px',
+  borderRadius: '4px',
   color: '#A0AEC0',
   fontFamily: "'JetBrains Mono', monospace",
   fontSize: '10px',
-  letterSpacing: '0.15em',
-  padding: '10px 16px',
+  letterSpacing: '0.12em',
+  padding: '10px 12px',
   cursor: 'pointer',
   zIndex: 950,
+  textAlign: 'center' as const,
+  boxSizing: 'border-box' as const,
 };

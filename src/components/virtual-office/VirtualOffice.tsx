@@ -9,9 +9,11 @@ import ChatPanel from './ChatPanel';
 
 interface VirtualOfficeProps {
   bgMode: 'dark' | 'light';
+  onClose?: () => void;
+  onEditAvatar?: () => void;
 }
 
-export default function VirtualOffice({ bgMode }: VirtualOfficeProps) {
+export default function VirtualOffice({ bgMode, onClose, onEditAvatar }: VirtualOfficeProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const gameRef = useRef<Phaser.Game | null>(null);
   const multiplayerRef = useRef<MultiplayerSystem | null>(null);
@@ -85,10 +87,36 @@ export default function VirtualOffice({ bgMode }: VirtualOfficeProps) {
         }}
       />
 
-      {/* Online count */}
-      <div style={onlineStyle}>
-        <span style={dotStyle} />
-        {onlineCount + 1} ONLINE
+      {/* Right-side vertical toolbar */}
+      <div style={toolbarStyle}>
+        {onClose && (
+          <button
+            onClick={onClose}
+            style={toolbarBtnStyle}
+            onMouseEnter={e => (e.currentTarget.style.opacity = '1')}
+            onMouseLeave={e => (e.currentTarget.style.opacity = '0.7')}
+          >
+            &larr; DEVICE
+          </button>
+        )}
+
+        <div style={onlineBoxStyle}>
+          <span style={dotStyle} />
+          {onlineCount + 1} ONLINE
+        </div>
+
+        {onEditAvatar && (
+          <button
+            onClick={onEditAvatar}
+            style={toolbarBtnStyle}
+            onMouseEnter={e => (e.currentTarget.style.opacity = '1')}
+            onMouseLeave={e => (e.currentTarget.style.opacity = '0.7')}
+          >
+            EDIT AVATAR
+          </button>
+        )}
+
+        {/* Chat toggle / panel injected here via ChatPanel's fixed positioning */}
       </div>
 
       {/* Interaction prompt */}
@@ -98,9 +126,9 @@ export default function VirtualOffice({ bgMode }: VirtualOfficeProps) {
         </div>
       )}
 
-      {/* Controls hint */}
+      {/* Controls hint - bottom left */}
       <div style={controlsStyle}>
-        WASD / ARROWS to move · E to interact · ENTER for chat
+        WASD / ARROWS to move &middot; E to interact &middot; ENTER for chat
       </div>
 
       {/* Chat panel */}
@@ -109,18 +137,51 @@ export default function VirtualOffice({ bgMode }: VirtualOfficeProps) {
   );
 }
 
-const onlineStyle: React.CSSProperties = {
+/* ── Right-side vertical toolbar ── */
+const TOOLBAR_WIDTH = '140px';
+
+const toolbarStyle: React.CSSProperties = {
   position: 'fixed',
-  top: '24px',
-  left: '80px',
+  top: '140px',           // Below minimap (minimap is ~120px + 10px margin)
+  right: '10px',
   display: 'flex',
-  alignItems: 'center',
-  gap: '8px',
+  flexDirection: 'column',
+  gap: '6px',
+  width: TOOLBAR_WIDTH,
+  zIndex: 960,
+};
+
+const toolbarBtnStyle: React.CSSProperties = {
+  width: '100%',
+  background: 'rgba(26, 26, 46, 0.85)',
+  border: '1px solid rgba(255,255,255,0.15)',
+  borderRadius: '4px',
+  color: '#A0AEC0',
   fontFamily: "'JetBrains Mono', monospace",
   fontSize: '10px',
-  letterSpacing: '0.15em',
+  letterSpacing: '0.12em',
+  padding: '10px 12px',
+  cursor: 'pointer',
+  opacity: 0.7,
+  transition: 'opacity 200ms',
+  textAlign: 'center' as const,
+};
+
+const onlineBoxStyle: React.CSSProperties = {
+  width: '100%',
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  gap: '8px',
+  background: 'rgba(26, 26, 46, 0.85)',
+  border: '1px solid rgba(255,255,255,0.15)',
+  borderRadius: '4px',
+  fontFamily: "'JetBrains Mono', monospace",
+  fontSize: '10px',
+  letterSpacing: '0.12em',
   color: '#A0AEC0',
-  zIndex: 950,
+  padding: '10px 12px',
+  boxSizing: 'border-box' as const,
 };
 
 const dotStyle: React.CSSProperties = {
@@ -129,6 +190,7 @@ const dotStyle: React.CSSProperties = {
   borderRadius: '50%',
   background: '#48BB78',
   boxShadow: '0 0 6px rgba(72, 187, 120, 0.6)',
+  flexShrink: 0,
 };
 
 const promptStyle: React.CSSProperties = {

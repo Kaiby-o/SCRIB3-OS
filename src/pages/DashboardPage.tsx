@@ -121,33 +121,35 @@ export default function DashboardPage() {
       transition: 'background 300ms',
     }}>
 
-      {/* ── Toggle icons — fixed, outside zoom container ── */}
-      <div style={{
-        position: 'fixed',
-        top:      '24px',
-        right:    '24px',
-        display:  'flex',
-        gap:      '16px',
-        zIndex:   1000,
-      }}>
-        <img
-          src={bgMode === 'dark' ? iconDarkBg : iconLightBg}
-          alt="Toggle background"
-          onClick={() => setBgMode(m => m === 'dark' ? 'light' : 'dark')}
-          style={{ width: '32px', height: 'auto', cursor: 'pointer', opacity: 0.7, transition: 'opacity 200ms' }}
-          onMouseEnter={e => (e.currentTarget.style.opacity = '1')}
-          onMouseLeave={e => (e.currentTarget.style.opacity = '0.7')}
-        />
-        <img
-          src={hwMode === 'dark' ? iconDarkHw : iconLightHw}
-          alt="Toggle hardware"
-          onClick={() => setHwMode(m => m === 'dark' ? 'light' : 'dark')}
-          style={{ width: '32px', height: 'auto', cursor: 'pointer', opacity: 0.7, transition: 'opacity 200ms' }}
-          onMouseEnter={e => (e.currentTarget.style.opacity = '1')}
-          onMouseLeave={e => (e.currentTarget.style.opacity = '0.7')}
-        />
-        <SettingsCog bgMode={bgMode} />
-      </div>
+      {/* ── Toggle icons — fixed, outside zoom container (hidden in office view) ── */}
+      {!showOffice && (
+        <div style={{
+          position: 'fixed',
+          top:      '24px',
+          right:    '24px',
+          display:  'flex',
+          gap:      '16px',
+          zIndex:   1000,
+        }}>
+          <img
+            src={bgMode === 'dark' ? iconDarkBg : iconLightBg}
+            alt="Toggle background"
+            onClick={() => setBgMode(m => m === 'dark' ? 'light' : 'dark')}
+            style={{ width: '32px', height: 'auto', cursor: 'pointer', opacity: 0.7, transition: 'opacity 200ms' }}
+            onMouseEnter={e => (e.currentTarget.style.opacity = '1')}
+            onMouseLeave={e => (e.currentTarget.style.opacity = '0.7')}
+          />
+          <img
+            src={hwMode === 'dark' ? iconDarkHw : iconLightHw}
+            alt="Toggle hardware"
+            onClick={() => setHwMode(m => m === 'dark' ? 'light' : 'dark')}
+            style={{ width: '32px', height: 'auto', cursor: 'pointer', opacity: 0.7, transition: 'opacity 200ms' }}
+            onMouseEnter={e => (e.currentTarget.style.opacity = '1')}
+            onMouseLeave={e => (e.currentTarget.style.opacity = '0.7')}
+          />
+          <SettingsCog bgMode={bgMode} />
+        </div>
+      )}
 
       {/* ── Virtual Office (full-screen overlay) ── */}
       {showOffice && (
@@ -158,55 +160,11 @@ export default function DashboardPage() {
           background: bgMode === 'dark' ? '#1A1A2E' : '#E8E0E0',
           animation:  'mapFadeIn 400ms ease-out forwards',
         }}>
-          <button
-            onClick={handleOfficeClose}
-            style={{
-              position:     'fixed',
-              top:          '24px',
-              left:         '24px',
-              zIndex:       1000,
-              background:   'none',
-              border:       `1px solid ${bgMode === 'dark' ? 'rgba(255,255,255,0.2)' : 'rgba(0,0,0,0.2)'}`,
-              borderRadius: '4px',
-              color:        bgMode === 'dark' ? '#E8E0E0' : '#3A3035',
-              fontFamily:   "'OwnersWide', 'JetBrains Mono', monospace",
-              fontSize:     '10px',
-              letterSpacing:'0.15em',
-              padding:      '8px 16px',
-              cursor:       'pointer',
-              opacity:      0.7,
-              transition:   'opacity 200ms',
-            }}
-            onMouseEnter={e => (e.currentTarget.style.opacity = '1')}
-            onMouseLeave={e => (e.currentTarget.style.opacity = '0.7')}
-          >
-            ← DEVICE
-          </button>
-          <button
-            onClick={() => { setShowOffice(false); setTimeout(() => { setOfficeTransition(false); navigate('/avatar-creator'); }, 50); }}
-            style={{
-              position:     'fixed',
-              top:          '24px',
-              left:         '120px',
-              zIndex:       1000,
-              background:   'none',
-              border:       `1px solid ${bgMode === 'dark' ? 'rgba(255,255,255,0.2)' : 'rgba(0,0,0,0.2)'}`,
-              borderRadius: '4px',
-              color:        bgMode === 'dark' ? '#E8E0E0' : '#3A3035',
-              fontFamily:   "'OwnersWide', 'JetBrains Mono', monospace",
-              fontSize:     '10px',
-              letterSpacing:'0.15em',
-              padding:      '8px 16px',
-              cursor:       'pointer',
-              opacity:      0.7,
-              transition:   'opacity 200ms',
-            }}
-            onMouseEnter={e => (e.currentTarget.style.opacity = '1')}
-            onMouseLeave={e => (e.currentTarget.style.opacity = '0.7')}
-          >
-            EDIT AVATAR
-          </button>
-          <VirtualOffice bgMode={bgMode} />
+          <VirtualOffice
+            bgMode={bgMode}
+            onClose={handleOfficeClose}
+            onEditAvatar={() => { setShowOffice(false); setTimeout(() => { setOfficeTransition(false); navigate('/avatar-creator'); }, 50); }}
+          />
         </div>
       )}
 
