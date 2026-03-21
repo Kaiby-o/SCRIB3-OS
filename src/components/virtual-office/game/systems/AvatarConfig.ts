@@ -1,4 +1,16 @@
-export interface AvatarConfig {
+/** Layer-based avatar config (from character generator spritesheets) */
+export interface LayerAvatarConfig {
+  body: string;              // e.g. "body-01"
+  eyes: string;              // e.g. "eyes-03"
+  outfit: string;            // e.g. "outfit-05-02"
+  hairstyle: string;         // e.g. "hair-12-04"
+  accessories: string[];     // e.g. ["acc-03-01", "acc-15-02"]
+  compositedSheet: string;   // base64 data URL of the final 96x128 spritesheet
+  spriteKey?: string;        // legacy: preset character key
+}
+
+/** Legacy programmatic avatar config */
+export interface LegacyAvatarConfig {
   skinTone: number;       // 0-7 index into SKIN_TONES
   hairStyle: HairStyle;
   hairColor: string;      // hex
@@ -8,6 +20,23 @@ export interface AvatarConfig {
   accessory: Accessory;
   pantsStyle: PantsStyle;
   pantsColor: string;     // hex
+}
+
+/** Preset-only avatar config (just a sprite key selection) */
+export interface PresetAvatarConfig {
+  spriteKey: string;
+}
+
+export type AvatarConfig = LayerAvatarConfig | LegacyAvatarConfig | PresetAvatarConfig;
+
+/** Type guard: check if config is the new layer-based system */
+export function isLayerConfig(cfg: AvatarConfig | null | undefined): cfg is LayerAvatarConfig {
+  return !!cfg && typeof cfg === 'object' && 'compositedSheet' in cfg && typeof (cfg as LayerAvatarConfig).compositedSheet === 'string';
+}
+
+/** Type guard: check if config is a preset sprite key */
+export function isPresetConfig(cfg: AvatarConfig | null | undefined): cfg is PresetAvatarConfig {
+  return !!cfg && typeof cfg === 'object' && 'spriteKey' in cfg && !('compositedSheet' in cfg);
 }
 
 export type HairStyle = 'short' | 'long' | 'mohawk' | 'buzz' | 'curly' | 'ponytail' | 'bald' | 'afro' | 'messy' | 'slicked';
@@ -87,7 +116,7 @@ export const PANTS_STYLES: { key: PantsStyle; label: string }[] = [
   { key: 'skirt', label: 'Skirt' },
 ];
 
-export function defaultAvatarConfig(): AvatarConfig {
+export function defaultAvatarConfig(): LegacyAvatarConfig {
   return {
     skinTone: 1,
     hairStyle: 'short',
@@ -102,7 +131,7 @@ export function defaultAvatarConfig(): AvatarConfig {
 }
 
 /** Seed avatar config from a userId hash (gives deterministic defaults) */
-export function seededAvatarConfig(userId: string): AvatarConfig {
+export function seededAvatarConfig(userId: string): LegacyAvatarConfig {
   let hash = 0;
   for (let i = 0; i < userId.length; i++) {
     hash = ((hash << 5) - hash) + userId.charCodeAt(i);

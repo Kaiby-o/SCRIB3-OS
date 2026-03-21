@@ -1,0 +1,2658 @@
+{
+  "bodies": [
+    {
+      "id": "body-01",
+      "file": "bodies/Body_32x32_01.png",
+      "label": "Skin 1"
+    },
+    {
+      "id": "body-02",
+      "file": "bodies/Body_32x32_02.png",
+      "label": "Skin 2"
+    },
+    {
+      "id": "body-03",
+      "file": "bodies/Body_32x32_03.png",
+      "label": "Skin 3"
+    },
+    {
+      "id": "body-04",
+      "file": "bodies/Body_32x32_04.png",
+      "label": "Skin 4"
+    },
+    {
+      "id": "body-05",
+      "file": "bodies/Body_32x32_05.png",
+      "label": "Skin 5"
+    },
+    {
+      "id": "body-06",
+      "file": "bodies/Body_32x32_06.png",
+      "label": "Skin 6"
+    },
+    {
+      "id": "body-07",
+      "file": "bodies/Body_32x32_07.png",
+      "label": "Skin 7"
+    },
+    {
+      "id": "body-08",
+      "file": "bodies/Body_32x32_08.png",
+      "label": "Skin 8"
+    },
+    {
+      "id": "body-09",
+      "file": "bodies/Body_32x32_09.png",
+      "label": "Skin 9"
+    }
+  ],
+  "eyes": [
+    {
+      "id": "eyes-01",
+      "file": "eyes/Eyes_32x32_01.png",
+      "label": "Eyes 1"
+    },
+    {
+      "id": "eyes-02",
+      "file": "eyes/Eyes_32x32_02.png",
+      "label": "Eyes 2"
+    },
+    {
+      "id": "eyes-03",
+      "file": "eyes/Eyes_32x32_03.png",
+      "label": "Eyes 3"
+    },
+    {
+      "id": "eyes-04",
+      "file": "eyes/Eyes_32x32_04.png",
+      "label": "Eyes 4"
+    },
+    {
+      "id": "eyes-05",
+      "file": "eyes/Eyes_32x32_05.png",
+      "label": "Eyes 5"
+    },
+    {
+      "id": "eyes-06",
+      "file": "eyes/Eyes_32x32_06.png",
+      "label": "Eyes 6"
+    },
+    {
+      "id": "eyes-07",
+      "file": "eyes/Eyes_32x32_07.png",
+      "label": "Eyes 7"
+    }
+  ],
+  "outfits": [
+    {
+      "style": 1,
+      "label": "Basic Tee",
+      "variants": [
+        {
+          "id": "outfit-01-01",
+          "file": "outfits/Outfit_01_32x32_01.png",
+          "colorIndex": 1
+        },
+        {
+          "id": "outfit-01-02",
+          "file": "outfits/Outfit_01_32x32_02.png",
+          "colorIndex": 2
+        },
+        {
+          "id": "outfit-01-03",
+          "file": "outfits/Outfit_01_32x32_03.png",
+          "colorIndex": 3
+        },
+        {
+          "id": "outfit-01-04",
+          "file": "outfits/Outfit_01_32x32_04.png",
+          "colorIndex": 4
+        },
+        {
+          "id": "outfit-01-05",
+          "file": "outfits/Outfit_01_32x32_05.png",
+          "colorIndex": 5
+        },
+        {
+          "id": "outfit-01-06",
+          "file": "outfits/Outfit_01_32x32_06.png",
+          "colorIndex": 6
+        },
+        {
+          "id": "outfit-01-07",
+          "file": "outfits/Outfit_01_32x32_07.png",
+          "colorIndex": 7
+        },
+        {
+          "id": "outfit-01-08",
+          "file": "outfits/Outfit_01_32x32_08.png",
+          "colorIndex": 8
+        },
+        {
+          "id": "outfit-01-09",
+          "file": "outfits/Outfit_01_32x32_09.png",
+          "colorIndex": 9
+        },
+        {
+          "id": "outfit-01-10",
+          "file": "outfits/Outfit_01_32x32_10.png",
+          "colorIndex": 10
+        }
+      ]
+    },
+    {
+      "style": 2,
+      "label": "Collared Shirt",
+      "variants": [
+        {
+          "id": "outfit-02-01",
+          "file": "outfits/Outfit_02_32x32_01.png",
+          "colorIndex": 1
+        },
+        {
+          "id": "outfit-02-02",
+          "file": "outfits/Outfit_02_32x32_02.png",
+          "colorIndex": 2
+        },
+        {
+          "id": "outfit-02-03",
+          "file": "outfits/Outfit_02_32x32_03.png",
+          "colorIndex": 3
+        },
+        {
+          "id": "outfit-02-04",
+          "file": "outfits/Outfit_02_32x32_04.png",
+          "colorIndex": 4
+        }
+      ]
+    },
+    {
+      "style": 3,
+      "label": "Dress Shirt",
+      "variants": [
+        {
+          "id": "outfit-03-01",
+          "file": "outfits/Outfit_03_32x32_01.png",
+          "colorIndex": 1
+        },
+        {
+          "id": "outfit-03-02",
+          "file": "outfits/Outfit_03_32x32_02.png",
+          "colorIndex": 2
+        },
+        {
+          "id": "outfit-03-03",
+          "file": "outfits/Outfit_03_32x32_03.png",
+          "colorIndex": 3
+        },
+        {
+          "id": "outfit-03-04",
+          "file": "outfits/Outfit_03_32x32_04.png",
+          "colorIndex": 4
+        }
+      ]
+    },
+    {
+      "style": 4,
+      "label": "Tank Top",
+      "variants": [
+        {
+          "id": "outfit-04-01",
+          "file": "outfits/Outfit_04_32x32_01.png",
+          "colorIndex": 1
+        },
+        {
+          "id": "outfit-04-02",
+          "file": "outfits/Outfit_04_32x32_02.png",
+          "colorIndex": 2
+        },
+        {
+          "id": "outfit-04-03",
+          "file": "outfits/Outfit_04_32x32_03.png",
+          "colorIndex": 3
+        }
+      ]
+    },
+    {
+      "style": 5,
+      "label": "V-Neck",
+      "variants": [
+        {
+          "id": "outfit-05-01",
+          "file": "outfits/Outfit_05_32x32_01.png",
+          "colorIndex": 1
+        },
+        {
+          "id": "outfit-05-02",
+          "file": "outfits/Outfit_05_32x32_02.png",
+          "colorIndex": 2
+        },
+        {
+          "id": "outfit-05-03",
+          "file": "outfits/Outfit_05_32x32_03.png",
+          "colorIndex": 3
+        },
+        {
+          "id": "outfit-05-04",
+          "file": "outfits/Outfit_05_32x32_04.png",
+          "colorIndex": 4
+        },
+        {
+          "id": "outfit-05-05",
+          "file": "outfits/Outfit_05_32x32_05.png",
+          "colorIndex": 5
+        }
+      ]
+    },
+    {
+      "style": 6,
+      "label": "Polo",
+      "variants": [
+        {
+          "id": "outfit-06-01",
+          "file": "outfits/Outfit_06_32x32_01.png",
+          "colorIndex": 1
+        },
+        {
+          "id": "outfit-06-02",
+          "file": "outfits/Outfit_06_32x32_02.png",
+          "colorIndex": 2
+        },
+        {
+          "id": "outfit-06-03",
+          "file": "outfits/Outfit_06_32x32_03.png",
+          "colorIndex": 3
+        },
+        {
+          "id": "outfit-06-04",
+          "file": "outfits/Outfit_06_32x32_04.png",
+          "colorIndex": 4
+        }
+      ]
+    },
+    {
+      "style": 7,
+      "label": "Hoodie",
+      "variants": [
+        {
+          "id": "outfit-07-01",
+          "file": "outfits/Outfit_07_32x32_01.png",
+          "colorIndex": 1
+        },
+        {
+          "id": "outfit-07-02",
+          "file": "outfits/Outfit_07_32x32_02.png",
+          "colorIndex": 2
+        },
+        {
+          "id": "outfit-07-03",
+          "file": "outfits/Outfit_07_32x32_03.png",
+          "colorIndex": 3
+        },
+        {
+          "id": "outfit-07-04",
+          "file": "outfits/Outfit_07_32x32_04.png",
+          "colorIndex": 4
+        }
+      ]
+    },
+    {
+      "style": 8,
+      "label": "Sweater",
+      "variants": [
+        {
+          "id": "outfit-08-01",
+          "file": "outfits/Outfit_08_32x32_01.png",
+          "colorIndex": 1
+        },
+        {
+          "id": "outfit-08-02",
+          "file": "outfits/Outfit_08_32x32_02.png",
+          "colorIndex": 2
+        },
+        {
+          "id": "outfit-08-03",
+          "file": "outfits/Outfit_08_32x32_03.png",
+          "colorIndex": 3
+        }
+      ]
+    },
+    {
+      "style": 9,
+      "label": "Jacket",
+      "variants": [
+        {
+          "id": "outfit-09-01",
+          "file": "outfits/Outfit_09_32x32_01.png",
+          "colorIndex": 1
+        },
+        {
+          "id": "outfit-09-02",
+          "file": "outfits/Outfit_09_32x32_02.png",
+          "colorIndex": 2
+        },
+        {
+          "id": "outfit-09-03",
+          "file": "outfits/Outfit_09_32x32_03.png",
+          "colorIndex": 3
+        }
+      ]
+    },
+    {
+      "style": 10,
+      "label": "Blazer",
+      "variants": [
+        {
+          "id": "outfit-10-01",
+          "file": "outfits/Outfit_10_32x32_01.png",
+          "colorIndex": 1
+        },
+        {
+          "id": "outfit-10-02",
+          "file": "outfits/Outfit_10_32x32_02.png",
+          "colorIndex": 2
+        },
+        {
+          "id": "outfit-10-03",
+          "file": "outfits/Outfit_10_32x32_03.png",
+          "colorIndex": 3
+        },
+        {
+          "id": "outfit-10-04",
+          "file": "outfits/Outfit_10_32x32_04.png",
+          "colorIndex": 4
+        },
+        {
+          "id": "outfit-10-05",
+          "file": "outfits/Outfit_10_32x32_05.png",
+          "colorIndex": 5
+        }
+      ]
+    },
+    {
+      "style": 11,
+      "label": "Vest",
+      "variants": [
+        {
+          "id": "outfit-11-01",
+          "file": "outfits/Outfit_11_32x32_01.png",
+          "colorIndex": 1
+        },
+        {
+          "id": "outfit-11-02",
+          "file": "outfits/Outfit_11_32x32_02.png",
+          "colorIndex": 2
+        },
+        {
+          "id": "outfit-11-03",
+          "file": "outfits/Outfit_11_32x32_03.png",
+          "colorIndex": 3
+        },
+        {
+          "id": "outfit-11-04",
+          "file": "outfits/Outfit_11_32x32_04.png",
+          "colorIndex": 4
+        }
+      ]
+    },
+    {
+      "style": 12,
+      "label": "Lab Coat",
+      "variants": [
+        {
+          "id": "outfit-12-01",
+          "file": "outfits/Outfit_12_32x32_01.png",
+          "colorIndex": 1
+        },
+        {
+          "id": "outfit-12-02",
+          "file": "outfits/Outfit_12_32x32_02.png",
+          "colorIndex": 2
+        },
+        {
+          "id": "outfit-12-03",
+          "file": "outfits/Outfit_12_32x32_03.png",
+          "colorIndex": 3
+        }
+      ]
+    },
+    {
+      "style": 13,
+      "label": "Overalls",
+      "variants": [
+        {
+          "id": "outfit-13-01",
+          "file": "outfits/Outfit_13_32x32_01.png",
+          "colorIndex": 1
+        },
+        {
+          "id": "outfit-13-02",
+          "file": "outfits/Outfit_13_32x32_02.png",
+          "colorIndex": 2
+        },
+        {
+          "id": "outfit-13-03",
+          "file": "outfits/Outfit_13_32x32_03.png",
+          "colorIndex": 3
+        },
+        {
+          "id": "outfit-13-04",
+          "file": "outfits/Outfit_13_32x32_04.png",
+          "colorIndex": 4
+        }
+      ]
+    },
+    {
+      "style": 14,
+      "label": "Uniform",
+      "variants": [
+        {
+          "id": "outfit-14-01",
+          "file": "outfits/Outfit_14_32x32_01.png",
+          "colorIndex": 1
+        },
+        {
+          "id": "outfit-14-02",
+          "file": "outfits/Outfit_14_32x32_02.png",
+          "colorIndex": 2
+        },
+        {
+          "id": "outfit-14-03",
+          "file": "outfits/Outfit_14_32x32_03.png",
+          "colorIndex": 3
+        },
+        {
+          "id": "outfit-14-04",
+          "file": "outfits/Outfit_14_32x32_04.png",
+          "colorIndex": 4
+        },
+        {
+          "id": "outfit-14-05",
+          "file": "outfits/Outfit_14_32x32_05.png",
+          "colorIndex": 5
+        }
+      ]
+    },
+    {
+      "style": 15,
+      "label": "Apron",
+      "variants": [
+        {
+          "id": "outfit-15-01",
+          "file": "outfits/Outfit_15_32x32_01.png",
+          "colorIndex": 1
+        },
+        {
+          "id": "outfit-15-02",
+          "file": "outfits/Outfit_15_32x32_02.png",
+          "colorIndex": 2
+        },
+        {
+          "id": "outfit-15-03",
+          "file": "outfits/Outfit_15_32x32_03.png",
+          "colorIndex": 3
+        }
+      ]
+    },
+    {
+      "style": 16,
+      "label": "Crop Top",
+      "variants": [
+        {
+          "id": "outfit-16-01",
+          "file": "outfits/Outfit_16_32x32_01.png",
+          "colorIndex": 1
+        },
+        {
+          "id": "outfit-16-02",
+          "file": "outfits/Outfit_16_32x32_02.png",
+          "colorIndex": 2
+        },
+        {
+          "id": "outfit-16-03",
+          "file": "outfits/Outfit_16_32x32_03.png",
+          "colorIndex": 3
+        }
+      ]
+    },
+    {
+      "style": 17,
+      "label": "Long Sleeve",
+      "variants": [
+        {
+          "id": "outfit-17-01",
+          "file": "outfits/Outfit_17_32x32_01.png",
+          "colorIndex": 1
+        },
+        {
+          "id": "outfit-17-02",
+          "file": "outfits/Outfit_17_32x32_02.png",
+          "colorIndex": 2
+        },
+        {
+          "id": "outfit-17-03",
+          "file": "outfits/Outfit_17_32x32_03.png",
+          "colorIndex": 3
+        }
+      ]
+    },
+    {
+      "style": 18,
+      "label": "Turtleneck",
+      "variants": [
+        {
+          "id": "outfit-18-01",
+          "file": "outfits/Outfit_18_32x32_01.png",
+          "colorIndex": 1
+        },
+        {
+          "id": "outfit-18-02",
+          "file": "outfits/Outfit_18_32x32_02.png",
+          "colorIndex": 2
+        },
+        {
+          "id": "outfit-18-03",
+          "file": "outfits/Outfit_18_32x32_03.png",
+          "colorIndex": 3
+        },
+        {
+          "id": "outfit-18-04",
+          "file": "outfits/Outfit_18_32x32_04.png",
+          "colorIndex": 4
+        }
+      ]
+    },
+    {
+      "style": 19,
+      "label": "Cardigan",
+      "variants": [
+        {
+          "id": "outfit-19-01",
+          "file": "outfits/Outfit_19_32x32_01.png",
+          "colorIndex": 1
+        },
+        {
+          "id": "outfit-19-02",
+          "file": "outfits/Outfit_19_32x32_02.png",
+          "colorIndex": 2
+        },
+        {
+          "id": "outfit-19-03",
+          "file": "outfits/Outfit_19_32x32_03.png",
+          "colorIndex": 3
+        },
+        {
+          "id": "outfit-19-04",
+          "file": "outfits/Outfit_19_32x32_04.png",
+          "colorIndex": 4
+        }
+      ]
+    },
+    {
+      "style": 20,
+      "label": "Flannel",
+      "variants": [
+        {
+          "id": "outfit-20-01",
+          "file": "outfits/Outfit_20_32x32_01.png",
+          "colorIndex": 1
+        },
+        {
+          "id": "outfit-20-02",
+          "file": "outfits/Outfit_20_32x32_02.png",
+          "colorIndex": 2
+        },
+        {
+          "id": "outfit-20-03",
+          "file": "outfits/Outfit_20_32x32_03.png",
+          "colorIndex": 3
+        }
+      ]
+    },
+    {
+      "style": 21,
+      "label": "Denim Jacket",
+      "variants": [
+        {
+          "id": "outfit-21-01",
+          "file": "outfits/Outfit_21_32x32_01.png",
+          "colorIndex": 1
+        },
+        {
+          "id": "outfit-21-02",
+          "file": "outfits/Outfit_21_32x32_02.png",
+          "colorIndex": 2
+        },
+        {
+          "id": "outfit-21-03",
+          "file": "outfits/Outfit_21_32x32_03.png",
+          "colorIndex": 3
+        },
+        {
+          "id": "outfit-21-04",
+          "file": "outfits/Outfit_21_32x32_04.png",
+          "colorIndex": 4
+        }
+      ]
+    },
+    {
+      "style": 22,
+      "label": "Leather Jacket",
+      "variants": [
+        {
+          "id": "outfit-22-01",
+          "file": "outfits/Outfit_22_32x32_01.png",
+          "colorIndex": 1
+        },
+        {
+          "id": "outfit-22-02",
+          "file": "outfits/Outfit_22_32x32_02.png",
+          "colorIndex": 2
+        },
+        {
+          "id": "outfit-22-03",
+          "file": "outfits/Outfit_22_32x32_03.png",
+          "colorIndex": 3
+        },
+        {
+          "id": "outfit-22-04",
+          "file": "outfits/Outfit_22_32x32_04.png",
+          "colorIndex": 4
+        }
+      ]
+    },
+    {
+      "style": 23,
+      "label": "Bomber",
+      "variants": [
+        {
+          "id": "outfit-23-01",
+          "file": "outfits/Outfit_23_32x32_01.png",
+          "colorIndex": 1
+        },
+        {
+          "id": "outfit-23-02",
+          "file": "outfits/Outfit_23_32x32_02.png",
+          "colorIndex": 2
+        },
+        {
+          "id": "outfit-23-03",
+          "file": "outfits/Outfit_23_32x32_03.png",
+          "colorIndex": 3
+        },
+        {
+          "id": "outfit-23-04",
+          "file": "outfits/Outfit_23_32x32_04.png",
+          "colorIndex": 4
+        }
+      ]
+    },
+    {
+      "style": 24,
+      "label": "Parka",
+      "variants": [
+        {
+          "id": "outfit-24-01",
+          "file": "outfits/Outfit_24_32x32_01.png",
+          "colorIndex": 1
+        },
+        {
+          "id": "outfit-24-02",
+          "file": "outfits/Outfit_24_32x32_02.png",
+          "colorIndex": 2
+        },
+        {
+          "id": "outfit-24-03",
+          "file": "outfits/Outfit_24_32x32_03.png",
+          "colorIndex": 3
+        },
+        {
+          "id": "outfit-24-04",
+          "file": "outfits/Outfit_24_32x32_04.png",
+          "colorIndex": 4
+        }
+      ]
+    },
+    {
+      "style": 25,
+      "label": "Raincoat",
+      "variants": [
+        {
+          "id": "outfit-25-01",
+          "file": "outfits/Outfit_25_32x32_01.png",
+          "colorIndex": 1
+        },
+        {
+          "id": "outfit-25-02",
+          "file": "outfits/Outfit_25_32x32_02.png",
+          "colorIndex": 2
+        },
+        {
+          "id": "outfit-25-03",
+          "file": "outfits/Outfit_25_32x32_03.png",
+          "colorIndex": 3
+        },
+        {
+          "id": "outfit-25-04",
+          "file": "outfits/Outfit_25_32x32_04.png",
+          "colorIndex": 4
+        },
+        {
+          "id": "outfit-25-05",
+          "file": "outfits/Outfit_25_32x32_05.png",
+          "colorIndex": 5
+        }
+      ]
+    },
+    {
+      "style": 26,
+      "label": "Suit Jacket",
+      "variants": [
+        {
+          "id": "outfit-26-01",
+          "file": "outfits/Outfit_26_32x32_01.png",
+          "colorIndex": 1
+        },
+        {
+          "id": "outfit-26-02",
+          "file": "outfits/Outfit_26_32x32_02.png",
+          "colorIndex": 2
+        },
+        {
+          "id": "outfit-26-03",
+          "file": "outfits/Outfit_26_32x32_03.png",
+          "colorIndex": 3
+        }
+      ]
+    },
+    {
+      "style": 27,
+      "label": "Dress",
+      "variants": [
+        {
+          "id": "outfit-27-01",
+          "file": "outfits/Outfit_27_32x32_01.png",
+          "colorIndex": 1
+        },
+        {
+          "id": "outfit-27-02",
+          "file": "outfits/Outfit_27_32x32_02.png",
+          "colorIndex": 2
+        },
+        {
+          "id": "outfit-27-03",
+          "file": "outfits/Outfit_27_32x32_03.png",
+          "colorIndex": 3
+        }
+      ]
+    },
+    {
+      "style": 28,
+      "label": "Jumpsuit",
+      "variants": [
+        {
+          "id": "outfit-28-01",
+          "file": "outfits/Outfit_28_32x32_01.png",
+          "colorIndex": 1
+        },
+        {
+          "id": "outfit-28-02",
+          "file": "outfits/Outfit_28_32x32_02.png",
+          "colorIndex": 2
+        },
+        {
+          "id": "outfit-28-03",
+          "file": "outfits/Outfit_28_32x32_03.png",
+          "colorIndex": 3
+        },
+        {
+          "id": "outfit-28-04",
+          "file": "outfits/Outfit_28_32x32_04.png",
+          "colorIndex": 4
+        }
+      ]
+    },
+    {
+      "style": 29,
+      "label": "Athletic",
+      "variants": [
+        {
+          "id": "outfit-29-01",
+          "file": "outfits/Outfit_29_32x32_01.png",
+          "colorIndex": 1
+        },
+        {
+          "id": "outfit-29-02",
+          "file": "outfits/Outfit_29_32x32_02.png",
+          "colorIndex": 2
+        },
+        {
+          "id": "outfit-29-03",
+          "file": "outfits/Outfit_29_32x32_03.png",
+          "colorIndex": 3
+        },
+        {
+          "id": "outfit-29-04",
+          "file": "outfits/Outfit_29_32x32_04.png",
+          "colorIndex": 4
+        }
+      ]
+    },
+    {
+      "style": 30,
+      "label": "Hawaiian Shirt",
+      "variants": [
+        {
+          "id": "outfit-30-01",
+          "file": "outfits/Outfit_30_32x32_01.png",
+          "colorIndex": 1
+        },
+        {
+          "id": "outfit-30-02",
+          "file": "outfits/Outfit_30_32x32_02.png",
+          "colorIndex": 2
+        },
+        {
+          "id": "outfit-30-03",
+          "file": "outfits/Outfit_30_32x32_03.png",
+          "colorIndex": 3
+        }
+      ]
+    },
+    {
+      "style": 31,
+      "label": "Poncho",
+      "variants": [
+        {
+          "id": "outfit-31-01",
+          "file": "outfits/Outfit_31_32x32_01.png",
+          "colorIndex": 1
+        },
+        {
+          "id": "outfit-31-02",
+          "file": "outfits/Outfit_31_32x32_02.png",
+          "colorIndex": 2
+        },
+        {
+          "id": "outfit-31-03",
+          "file": "outfits/Outfit_31_32x32_03.png",
+          "colorIndex": 3
+        },
+        {
+          "id": "outfit-31-04",
+          "file": "outfits/Outfit_31_32x32_04.png",
+          "colorIndex": 4
+        },
+        {
+          "id": "outfit-31-05",
+          "file": "outfits/Outfit_31_32x32_05.png",
+          "colorIndex": 5
+        }
+      ]
+    },
+    {
+      "style": 32,
+      "label": "Cape",
+      "variants": [
+        {
+          "id": "outfit-32-01",
+          "file": "outfits/Outfit_32_32x32_01.png",
+          "colorIndex": 1
+        },
+        {
+          "id": "outfit-32-02",
+          "file": "outfits/Outfit_32_32x32_02.png",
+          "colorIndex": 2
+        },
+        {
+          "id": "outfit-32-03",
+          "file": "outfits/Outfit_32_32x32_03.png",
+          "colorIndex": 3
+        },
+        {
+          "id": "outfit-32-04",
+          "file": "outfits/Outfit_32_32x32_04.png",
+          "colorIndex": 4
+        },
+        {
+          "id": "outfit-32-05",
+          "file": "outfits/Outfit_32_32x32_05.png",
+          "colorIndex": 5
+        }
+      ]
+    },
+    {
+      "style": 33,
+      "label": "Toga",
+      "variants": [
+        {
+          "id": "outfit-33-01",
+          "file": "outfits/Outfit_33_32x32_01.png",
+          "colorIndex": 1
+        },
+        {
+          "id": "outfit-33-02",
+          "file": "outfits/Outfit_33_32x32_02.png",
+          "colorIndex": 2
+        },
+        {
+          "id": "outfit-33-03",
+          "file": "outfits/Outfit_33_32x32_03.png",
+          "colorIndex": 3
+        }
+      ]
+    }
+  ],
+  "hairstyles": [
+    {
+      "style": 1,
+      "label": "Short Crop",
+      "variants": [
+        {
+          "id": "hair-01-01",
+          "file": "hairstyles/Hairstyle_01_32x32_01.png",
+          "colorIndex": 1
+        },
+        {
+          "id": "hair-01-02",
+          "file": "hairstyles/Hairstyle_01_32x32_02.png",
+          "colorIndex": 2
+        },
+        {
+          "id": "hair-01-03",
+          "file": "hairstyles/Hairstyle_01_32x32_03.png",
+          "colorIndex": 3
+        },
+        {
+          "id": "hair-01-04",
+          "file": "hairstyles/Hairstyle_01_32x32_04.png",
+          "colorIndex": 4
+        },
+        {
+          "id": "hair-01-05",
+          "file": "hairstyles/Hairstyle_01_32x32_05.png",
+          "colorIndex": 5
+        },
+        {
+          "id": "hair-01-06",
+          "file": "hairstyles/Hairstyle_01_32x32_06.png",
+          "colorIndex": 6
+        },
+        {
+          "id": "hair-01-07",
+          "file": "hairstyles/Hairstyle_01_32x32_07.png",
+          "colorIndex": 7
+        }
+      ]
+    },
+    {
+      "style": 2,
+      "label": "Side Part",
+      "variants": [
+        {
+          "id": "hair-02-01",
+          "file": "hairstyles/Hairstyle_02_32x32_01.png",
+          "colorIndex": 1
+        },
+        {
+          "id": "hair-02-02",
+          "file": "hairstyles/Hairstyle_02_32x32_02.png",
+          "colorIndex": 2
+        },
+        {
+          "id": "hair-02-03",
+          "file": "hairstyles/Hairstyle_02_32x32_03.png",
+          "colorIndex": 3
+        },
+        {
+          "id": "hair-02-04",
+          "file": "hairstyles/Hairstyle_02_32x32_04.png",
+          "colorIndex": 4
+        },
+        {
+          "id": "hair-02-05",
+          "file": "hairstyles/Hairstyle_02_32x32_05.png",
+          "colorIndex": 5
+        },
+        {
+          "id": "hair-02-06",
+          "file": "hairstyles/Hairstyle_02_32x32_06.png",
+          "colorIndex": 6
+        },
+        {
+          "id": "hair-02-07",
+          "file": "hairstyles/Hairstyle_02_32x32_07.png",
+          "colorIndex": 7
+        }
+      ]
+    },
+    {
+      "style": 3,
+      "label": "Spiky",
+      "variants": [
+        {
+          "id": "hair-03-01",
+          "file": "hairstyles/Hairstyle_03_32x32_01.png",
+          "colorIndex": 1
+        },
+        {
+          "id": "hair-03-02",
+          "file": "hairstyles/Hairstyle_03_32x32_02.png",
+          "colorIndex": 2
+        },
+        {
+          "id": "hair-03-03",
+          "file": "hairstyles/Hairstyle_03_32x32_03.png",
+          "colorIndex": 3
+        },
+        {
+          "id": "hair-03-04",
+          "file": "hairstyles/Hairstyle_03_32x32_04.png",
+          "colorIndex": 4
+        },
+        {
+          "id": "hair-03-05",
+          "file": "hairstyles/Hairstyle_03_32x32_05.png",
+          "colorIndex": 5
+        },
+        {
+          "id": "hair-03-06",
+          "file": "hairstyles/Hairstyle_03_32x32_06.png",
+          "colorIndex": 6
+        },
+        {
+          "id": "hair-03-07",
+          "file": "hairstyles/Hairstyle_03_32x32_07.png",
+          "colorIndex": 7
+        }
+      ]
+    },
+    {
+      "style": 4,
+      "label": "Bowl Cut",
+      "variants": [
+        {
+          "id": "hair-04-01",
+          "file": "hairstyles/Hairstyle_04_32x32_01.png",
+          "colorIndex": 1
+        },
+        {
+          "id": "hair-04-02",
+          "file": "hairstyles/Hairstyle_04_32x32_02.png",
+          "colorIndex": 2
+        },
+        {
+          "id": "hair-04-03",
+          "file": "hairstyles/Hairstyle_04_32x32_03.png",
+          "colorIndex": 3
+        },
+        {
+          "id": "hair-04-04",
+          "file": "hairstyles/Hairstyle_04_32x32_04.png",
+          "colorIndex": 4
+        },
+        {
+          "id": "hair-04-05",
+          "file": "hairstyles/Hairstyle_04_32x32_05.png",
+          "colorIndex": 5
+        },
+        {
+          "id": "hair-04-06",
+          "file": "hairstyles/Hairstyle_04_32x32_06.png",
+          "colorIndex": 6
+        },
+        {
+          "id": "hair-04-07",
+          "file": "hairstyles/Hairstyle_04_32x32_07.png",
+          "colorIndex": 7
+        }
+      ]
+    },
+    {
+      "style": 5,
+      "label": "Wavy",
+      "variants": [
+        {
+          "id": "hair-05-01",
+          "file": "hairstyles/Hairstyle_05_32x32_01.png",
+          "colorIndex": 1
+        },
+        {
+          "id": "hair-05-02",
+          "file": "hairstyles/Hairstyle_05_32x32_02.png",
+          "colorIndex": 2
+        },
+        {
+          "id": "hair-05-03",
+          "file": "hairstyles/Hairstyle_05_32x32_03.png",
+          "colorIndex": 3
+        },
+        {
+          "id": "hair-05-04",
+          "file": "hairstyles/Hairstyle_05_32x32_04.png",
+          "colorIndex": 4
+        },
+        {
+          "id": "hair-05-05",
+          "file": "hairstyles/Hairstyle_05_32x32_05.png",
+          "colorIndex": 5
+        },
+        {
+          "id": "hair-05-06",
+          "file": "hairstyles/Hairstyle_05_32x32_06.png",
+          "colorIndex": 6
+        },
+        {
+          "id": "hair-05-07",
+          "file": "hairstyles/Hairstyle_05_32x32_07.png",
+          "colorIndex": 7
+        }
+      ]
+    },
+    {
+      "style": 6,
+      "label": "Long Straight",
+      "variants": [
+        {
+          "id": "hair-06-01",
+          "file": "hairstyles/Hairstyle_06_32x32_01.png",
+          "colorIndex": 1
+        },
+        {
+          "id": "hair-06-02",
+          "file": "hairstyles/Hairstyle_06_32x32_02.png",
+          "colorIndex": 2
+        },
+        {
+          "id": "hair-06-03",
+          "file": "hairstyles/Hairstyle_06_32x32_03.png",
+          "colorIndex": 3
+        },
+        {
+          "id": "hair-06-04",
+          "file": "hairstyles/Hairstyle_06_32x32_04.png",
+          "colorIndex": 4
+        },
+        {
+          "id": "hair-06-05",
+          "file": "hairstyles/Hairstyle_06_32x32_05.png",
+          "colorIndex": 5
+        },
+        {
+          "id": "hair-06-06",
+          "file": "hairstyles/Hairstyle_06_32x32_06.png",
+          "colorIndex": 6
+        },
+        {
+          "id": "hair-06-07",
+          "file": "hairstyles/Hairstyle_06_32x32_07.png",
+          "colorIndex": 7
+        }
+      ]
+    },
+    {
+      "style": 7,
+      "label": "Ponytail",
+      "variants": [
+        {
+          "id": "hair-07-01",
+          "file": "hairstyles/Hairstyle_07_32x32_01.png",
+          "colorIndex": 1
+        },
+        {
+          "id": "hair-07-02",
+          "file": "hairstyles/Hairstyle_07_32x32_02.png",
+          "colorIndex": 2
+        },
+        {
+          "id": "hair-07-03",
+          "file": "hairstyles/Hairstyle_07_32x32_03.png",
+          "colorIndex": 3
+        },
+        {
+          "id": "hair-07-04",
+          "file": "hairstyles/Hairstyle_07_32x32_04.png",
+          "colorIndex": 4
+        },
+        {
+          "id": "hair-07-05",
+          "file": "hairstyles/Hairstyle_07_32x32_05.png",
+          "colorIndex": 5
+        },
+        {
+          "id": "hair-07-06",
+          "file": "hairstyles/Hairstyle_07_32x32_06.png",
+          "colorIndex": 6
+        },
+        {
+          "id": "hair-07-07",
+          "file": "hairstyles/Hairstyle_07_32x32_07.png",
+          "colorIndex": 7
+        }
+      ]
+    },
+    {
+      "style": 8,
+      "label": "Pigtails",
+      "variants": [
+        {
+          "id": "hair-08-01",
+          "file": "hairstyles/Hairstyle_08_32x32_01.png",
+          "colorIndex": 1
+        },
+        {
+          "id": "hair-08-02",
+          "file": "hairstyles/Hairstyle_08_32x32_02.png",
+          "colorIndex": 2
+        },
+        {
+          "id": "hair-08-03",
+          "file": "hairstyles/Hairstyle_08_32x32_03.png",
+          "colorIndex": 3
+        },
+        {
+          "id": "hair-08-04",
+          "file": "hairstyles/Hairstyle_08_32x32_04.png",
+          "colorIndex": 4
+        },
+        {
+          "id": "hair-08-05",
+          "file": "hairstyles/Hairstyle_08_32x32_05.png",
+          "colorIndex": 5
+        },
+        {
+          "id": "hair-08-06",
+          "file": "hairstyles/Hairstyle_08_32x32_06.png",
+          "colorIndex": 6
+        },
+        {
+          "id": "hair-08-07",
+          "file": "hairstyles/Hairstyle_08_32x32_07.png",
+          "colorIndex": 7
+        }
+      ]
+    },
+    {
+      "style": 9,
+      "label": "Bun",
+      "variants": [
+        {
+          "id": "hair-09-01",
+          "file": "hairstyles/Hairstyle_09_32x32_01.png",
+          "colorIndex": 1
+        },
+        {
+          "id": "hair-09-02",
+          "file": "hairstyles/Hairstyle_09_32x32_02.png",
+          "colorIndex": 2
+        },
+        {
+          "id": "hair-09-03",
+          "file": "hairstyles/Hairstyle_09_32x32_03.png",
+          "colorIndex": 3
+        },
+        {
+          "id": "hair-09-04",
+          "file": "hairstyles/Hairstyle_09_32x32_04.png",
+          "colorIndex": 4
+        },
+        {
+          "id": "hair-09-05",
+          "file": "hairstyles/Hairstyle_09_32x32_05.png",
+          "colorIndex": 5
+        },
+        {
+          "id": "hair-09-06",
+          "file": "hairstyles/Hairstyle_09_32x32_06.png",
+          "colorIndex": 6
+        },
+        {
+          "id": "hair-09-07",
+          "file": "hairstyles/Hairstyle_09_32x32_07.png",
+          "colorIndex": 7
+        }
+      ]
+    },
+    {
+      "style": 10,
+      "label": "Afro",
+      "variants": [
+        {
+          "id": "hair-10-01",
+          "file": "hairstyles/Hairstyle_10_32x32_01.png",
+          "colorIndex": 1
+        },
+        {
+          "id": "hair-10-02",
+          "file": "hairstyles/Hairstyle_10_32x32_02.png",
+          "colorIndex": 2
+        },
+        {
+          "id": "hair-10-03",
+          "file": "hairstyles/Hairstyle_10_32x32_03.png",
+          "colorIndex": 3
+        },
+        {
+          "id": "hair-10-04",
+          "file": "hairstyles/Hairstyle_10_32x32_04.png",
+          "colorIndex": 4
+        },
+        {
+          "id": "hair-10-05",
+          "file": "hairstyles/Hairstyle_10_32x32_05.png",
+          "colorIndex": 5
+        },
+        {
+          "id": "hair-10-06",
+          "file": "hairstyles/Hairstyle_10_32x32_06.png",
+          "colorIndex": 6
+        },
+        {
+          "id": "hair-10-07",
+          "file": "hairstyles/Hairstyle_10_32x32_07.png",
+          "colorIndex": 7
+        }
+      ]
+    },
+    {
+      "style": 11,
+      "label": "Braids",
+      "variants": [
+        {
+          "id": "hair-11-01",
+          "file": "hairstyles/Hairstyle_11_32x32_01.png",
+          "colorIndex": 1
+        },
+        {
+          "id": "hair-11-02",
+          "file": "hairstyles/Hairstyle_11_32x32_02.png",
+          "colorIndex": 2
+        },
+        {
+          "id": "hair-11-03",
+          "file": "hairstyles/Hairstyle_11_32x32_03.png",
+          "colorIndex": 3
+        },
+        {
+          "id": "hair-11-04",
+          "file": "hairstyles/Hairstyle_11_32x32_04.png",
+          "colorIndex": 4
+        },
+        {
+          "id": "hair-11-05",
+          "file": "hairstyles/Hairstyle_11_32x32_05.png",
+          "colorIndex": 5
+        },
+        {
+          "id": "hair-11-06",
+          "file": "hairstyles/Hairstyle_11_32x32_06.png",
+          "colorIndex": 6
+        },
+        {
+          "id": "hair-11-07",
+          "file": "hairstyles/Hairstyle_11_32x32_07.png",
+          "colorIndex": 7
+        }
+      ]
+    },
+    {
+      "style": 12,
+      "label": "Mohawk",
+      "variants": [
+        {
+          "id": "hair-12-01",
+          "file": "hairstyles/Hairstyle_12_32x32_01.png",
+          "colorIndex": 1
+        },
+        {
+          "id": "hair-12-02",
+          "file": "hairstyles/Hairstyle_12_32x32_02.png",
+          "colorIndex": 2
+        },
+        {
+          "id": "hair-12-03",
+          "file": "hairstyles/Hairstyle_12_32x32_03.png",
+          "colorIndex": 3
+        },
+        {
+          "id": "hair-12-04",
+          "file": "hairstyles/Hairstyle_12_32x32_04.png",
+          "colorIndex": 4
+        },
+        {
+          "id": "hair-12-05",
+          "file": "hairstyles/Hairstyle_12_32x32_05.png",
+          "colorIndex": 5
+        },
+        {
+          "id": "hair-12-06",
+          "file": "hairstyles/Hairstyle_12_32x32_06.png",
+          "colorIndex": 6
+        },
+        {
+          "id": "hair-12-07",
+          "file": "hairstyles/Hairstyle_12_32x32_07.png",
+          "colorIndex": 7
+        }
+      ]
+    },
+    {
+      "style": 13,
+      "label": "Undercut",
+      "variants": [
+        {
+          "id": "hair-13-01",
+          "file": "hairstyles/Hairstyle_13_32x32_01.png",
+          "colorIndex": 1
+        },
+        {
+          "id": "hair-13-02",
+          "file": "hairstyles/Hairstyle_13_32x32_02.png",
+          "colorIndex": 2
+        },
+        {
+          "id": "hair-13-03",
+          "file": "hairstyles/Hairstyle_13_32x32_03.png",
+          "colorIndex": 3
+        },
+        {
+          "id": "hair-13-04",
+          "file": "hairstyles/Hairstyle_13_32x32_04.png",
+          "colorIndex": 4
+        },
+        {
+          "id": "hair-13-05",
+          "file": "hairstyles/Hairstyle_13_32x32_05.png",
+          "colorIndex": 5
+        },
+        {
+          "id": "hair-13-06",
+          "file": "hairstyles/Hairstyle_13_32x32_06.png",
+          "colorIndex": 6
+        },
+        {
+          "id": "hair-13-07",
+          "file": "hairstyles/Hairstyle_13_32x32_07.png",
+          "colorIndex": 7
+        }
+      ]
+    },
+    {
+      "style": 14,
+      "label": "Curly",
+      "variants": [
+        {
+          "id": "hair-14-01",
+          "file": "hairstyles/Hairstyle_14_32x32_01.png",
+          "colorIndex": 1
+        },
+        {
+          "id": "hair-14-02",
+          "file": "hairstyles/Hairstyle_14_32x32_02.png",
+          "colorIndex": 2
+        },
+        {
+          "id": "hair-14-03",
+          "file": "hairstyles/Hairstyle_14_32x32_03.png",
+          "colorIndex": 3
+        },
+        {
+          "id": "hair-14-04",
+          "file": "hairstyles/Hairstyle_14_32x32_04.png",
+          "colorIndex": 4
+        },
+        {
+          "id": "hair-14-05",
+          "file": "hairstyles/Hairstyle_14_32x32_05.png",
+          "colorIndex": 5
+        },
+        {
+          "id": "hair-14-06",
+          "file": "hairstyles/Hairstyle_14_32x32_06.png",
+          "colorIndex": 6
+        },
+        {
+          "id": "hair-14-07",
+          "file": "hairstyles/Hairstyle_14_32x32_07.png",
+          "colorIndex": 7
+        }
+      ]
+    },
+    {
+      "style": 15,
+      "label": "Messy",
+      "variants": [
+        {
+          "id": "hair-15-01",
+          "file": "hairstyles/Hairstyle_15_32x32_01.png",
+          "colorIndex": 1
+        },
+        {
+          "id": "hair-15-02",
+          "file": "hairstyles/Hairstyle_15_32x32_02.png",
+          "colorIndex": 2
+        },
+        {
+          "id": "hair-15-03",
+          "file": "hairstyles/Hairstyle_15_32x32_03.png",
+          "colorIndex": 3
+        },
+        {
+          "id": "hair-15-04",
+          "file": "hairstyles/Hairstyle_15_32x32_04.png",
+          "colorIndex": 4
+        },
+        {
+          "id": "hair-15-05",
+          "file": "hairstyles/Hairstyle_15_32x32_05.png",
+          "colorIndex": 5
+        },
+        {
+          "id": "hair-15-06",
+          "file": "hairstyles/Hairstyle_15_32x32_06.png",
+          "colorIndex": 6
+        },
+        {
+          "id": "hair-15-07",
+          "file": "hairstyles/Hairstyle_15_32x32_07.png",
+          "colorIndex": 7
+        }
+      ]
+    },
+    {
+      "style": 16,
+      "label": "Slicked Back",
+      "variants": [
+        {
+          "id": "hair-16-01",
+          "file": "hairstyles/Hairstyle_16_32x32_01.png",
+          "colorIndex": 1
+        },
+        {
+          "id": "hair-16-02",
+          "file": "hairstyles/Hairstyle_16_32x32_02.png",
+          "colorIndex": 2
+        },
+        {
+          "id": "hair-16-03",
+          "file": "hairstyles/Hairstyle_16_32x32_03.png",
+          "colorIndex": 3
+        },
+        {
+          "id": "hair-16-04",
+          "file": "hairstyles/Hairstyle_16_32x32_04.png",
+          "colorIndex": 4
+        },
+        {
+          "id": "hair-16-05",
+          "file": "hairstyles/Hairstyle_16_32x32_05.png",
+          "colorIndex": 5
+        },
+        {
+          "id": "hair-16-06",
+          "file": "hairstyles/Hairstyle_16_32x32_06.png",
+          "colorIndex": 6
+        },
+        {
+          "id": "hair-16-07",
+          "file": "hairstyles/Hairstyle_16_32x32_07.png",
+          "colorIndex": 7
+        }
+      ]
+    },
+    {
+      "style": 17,
+      "label": "Bob",
+      "variants": [
+        {
+          "id": "hair-17-01",
+          "file": "hairstyles/Hairstyle_17_32x32_01.png",
+          "colorIndex": 1
+        },
+        {
+          "id": "hair-17-02",
+          "file": "hairstyles/Hairstyle_17_32x32_02.png",
+          "colorIndex": 2
+        },
+        {
+          "id": "hair-17-03",
+          "file": "hairstyles/Hairstyle_17_32x32_03.png",
+          "colorIndex": 3
+        },
+        {
+          "id": "hair-17-04",
+          "file": "hairstyles/Hairstyle_17_32x32_04.png",
+          "colorIndex": 4
+        },
+        {
+          "id": "hair-17-05",
+          "file": "hairstyles/Hairstyle_17_32x32_05.png",
+          "colorIndex": 5
+        },
+        {
+          "id": "hair-17-06",
+          "file": "hairstyles/Hairstyle_17_32x32_06.png",
+          "colorIndex": 6
+        },
+        {
+          "id": "hair-17-07",
+          "file": "hairstyles/Hairstyle_17_32x32_07.png",
+          "colorIndex": 7
+        }
+      ]
+    },
+    {
+      "style": 18,
+      "label": "Pixie",
+      "variants": [
+        {
+          "id": "hair-18-01",
+          "file": "hairstyles/Hairstyle_18_32x32_01.png",
+          "colorIndex": 1
+        },
+        {
+          "id": "hair-18-02",
+          "file": "hairstyles/Hairstyle_18_32x32_02.png",
+          "colorIndex": 2
+        },
+        {
+          "id": "hair-18-03",
+          "file": "hairstyles/Hairstyle_18_32x32_03.png",
+          "colorIndex": 3
+        },
+        {
+          "id": "hair-18-04",
+          "file": "hairstyles/Hairstyle_18_32x32_04.png",
+          "colorIndex": 4
+        },
+        {
+          "id": "hair-18-05",
+          "file": "hairstyles/Hairstyle_18_32x32_05.png",
+          "colorIndex": 5
+        },
+        {
+          "id": "hair-18-06",
+          "file": "hairstyles/Hairstyle_18_32x32_06.png",
+          "colorIndex": 6
+        },
+        {
+          "id": "hair-18-07",
+          "file": "hairstyles/Hairstyle_18_32x32_07.png",
+          "colorIndex": 7
+        }
+      ]
+    },
+    {
+      "style": 19,
+      "label": "Shaggy",
+      "variants": [
+        {
+          "id": "hair-19-01",
+          "file": "hairstyles/Hairstyle_19_32x32_01.png",
+          "colorIndex": 1
+        },
+        {
+          "id": "hair-19-02",
+          "file": "hairstyles/Hairstyle_19_32x32_02.png",
+          "colorIndex": 2
+        },
+        {
+          "id": "hair-19-03",
+          "file": "hairstyles/Hairstyle_19_32x32_03.png",
+          "colorIndex": 3
+        },
+        {
+          "id": "hair-19-04",
+          "file": "hairstyles/Hairstyle_19_32x32_04.png",
+          "colorIndex": 4
+        },
+        {
+          "id": "hair-19-05",
+          "file": "hairstyles/Hairstyle_19_32x32_05.png",
+          "colorIndex": 5
+        },
+        {
+          "id": "hair-19-06",
+          "file": "hairstyles/Hairstyle_19_32x32_06.png",
+          "colorIndex": 6
+        },
+        {
+          "id": "hair-19-07",
+          "file": "hairstyles/Hairstyle_19_32x32_07.png",
+          "colorIndex": 7
+        }
+      ]
+    },
+    {
+      "style": 20,
+      "label": "Buzz Cut",
+      "variants": [
+        {
+          "id": "hair-20-01",
+          "file": "hairstyles/Hairstyle_20_32x32_01.png",
+          "colorIndex": 1
+        },
+        {
+          "id": "hair-20-02",
+          "file": "hairstyles/Hairstyle_20_32x32_02.png",
+          "colorIndex": 2
+        },
+        {
+          "id": "hair-20-03",
+          "file": "hairstyles/Hairstyle_20_32x32_03.png",
+          "colorIndex": 3
+        },
+        {
+          "id": "hair-20-04",
+          "file": "hairstyles/Hairstyle_20_32x32_04.png",
+          "colorIndex": 4
+        },
+        {
+          "id": "hair-20-05",
+          "file": "hairstyles/Hairstyle_20_32x32_05.png",
+          "colorIndex": 5
+        },
+        {
+          "id": "hair-20-06",
+          "file": "hairstyles/Hairstyle_20_32x32_06.png",
+          "colorIndex": 6
+        },
+        {
+          "id": "hair-20-07",
+          "file": "hairstyles/Hairstyle_20_32x32_07.png",
+          "colorIndex": 7
+        }
+      ]
+    },
+    {
+      "style": 21,
+      "label": "Dreadlocks",
+      "variants": [
+        {
+          "id": "hair-21-01",
+          "file": "hairstyles/Hairstyle_21_32x32_01.png",
+          "colorIndex": 1
+        },
+        {
+          "id": "hair-21-02",
+          "file": "hairstyles/Hairstyle_21_32x32_02.png",
+          "colorIndex": 2
+        },
+        {
+          "id": "hair-21-03",
+          "file": "hairstyles/Hairstyle_21_32x32_03.png",
+          "colorIndex": 3
+        },
+        {
+          "id": "hair-21-04",
+          "file": "hairstyles/Hairstyle_21_32x32_04.png",
+          "colorIndex": 4
+        },
+        {
+          "id": "hair-21-05",
+          "file": "hairstyles/Hairstyle_21_32x32_05.png",
+          "colorIndex": 5
+        },
+        {
+          "id": "hair-21-06",
+          "file": "hairstyles/Hairstyle_21_32x32_06.png",
+          "colorIndex": 6
+        },
+        {
+          "id": "hair-21-07",
+          "file": "hairstyles/Hairstyle_21_32x32_07.png",
+          "colorIndex": 7
+        }
+      ]
+    },
+    {
+      "style": 22,
+      "label": "Twin Tails",
+      "variants": [
+        {
+          "id": "hair-22-01",
+          "file": "hairstyles/Hairstyle_22_32x32_01.png",
+          "colorIndex": 1
+        },
+        {
+          "id": "hair-22-02",
+          "file": "hairstyles/Hairstyle_22_32x32_02.png",
+          "colorIndex": 2
+        },
+        {
+          "id": "hair-22-03",
+          "file": "hairstyles/Hairstyle_22_32x32_03.png",
+          "colorIndex": 3
+        },
+        {
+          "id": "hair-22-04",
+          "file": "hairstyles/Hairstyle_22_32x32_04.png",
+          "colorIndex": 4
+        },
+        {
+          "id": "hair-22-05",
+          "file": "hairstyles/Hairstyle_22_32x32_05.png",
+          "colorIndex": 5
+        },
+        {
+          "id": "hair-22-06",
+          "file": "hairstyles/Hairstyle_22_32x32_06.png",
+          "colorIndex": 6
+        },
+        {
+          "id": "hair-22-07",
+          "file": "hairstyles/Hairstyle_22_32x32_07.png",
+          "colorIndex": 7
+        }
+      ]
+    },
+    {
+      "style": 23,
+      "label": "Side Shave",
+      "variants": [
+        {
+          "id": "hair-23-01",
+          "file": "hairstyles/Hairstyle_23_32x32_01.png",
+          "colorIndex": 1
+        },
+        {
+          "id": "hair-23-02",
+          "file": "hairstyles/Hairstyle_23_32x32_02.png",
+          "colorIndex": 2
+        },
+        {
+          "id": "hair-23-03",
+          "file": "hairstyles/Hairstyle_23_32x32_03.png",
+          "colorIndex": 3
+        },
+        {
+          "id": "hair-23-04",
+          "file": "hairstyles/Hairstyle_23_32x32_04.png",
+          "colorIndex": 4
+        },
+        {
+          "id": "hair-23-05",
+          "file": "hairstyles/Hairstyle_23_32x32_05.png",
+          "colorIndex": 5
+        },
+        {
+          "id": "hair-23-06",
+          "file": "hairstyles/Hairstyle_23_32x32_06.png",
+          "colorIndex": 6
+        },
+        {
+          "id": "hair-23-07",
+          "file": "hairstyles/Hairstyle_23_32x32_07.png",
+          "colorIndex": 7
+        }
+      ]
+    },
+    {
+      "style": 24,
+      "label": "Bangs",
+      "variants": [
+        {
+          "id": "hair-24-01",
+          "file": "hairstyles/Hairstyle_24_32x32_01.png",
+          "colorIndex": 1
+        },
+        {
+          "id": "hair-24-02",
+          "file": "hairstyles/Hairstyle_24_32x32_02.png",
+          "colorIndex": 2
+        },
+        {
+          "id": "hair-24-03",
+          "file": "hairstyles/Hairstyle_24_32x32_03.png",
+          "colorIndex": 3
+        },
+        {
+          "id": "hair-24-04",
+          "file": "hairstyles/Hairstyle_24_32x32_04.png",
+          "colorIndex": 4
+        },
+        {
+          "id": "hair-24-05",
+          "file": "hairstyles/Hairstyle_24_32x32_05.png",
+          "colorIndex": 5
+        },
+        {
+          "id": "hair-24-06",
+          "file": "hairstyles/Hairstyle_24_32x32_06.png",
+          "colorIndex": 6
+        },
+        {
+          "id": "hair-24-07",
+          "file": "hairstyles/Hairstyle_24_32x32_07.png",
+          "colorIndex": 7
+        }
+      ]
+    },
+    {
+      "style": 25,
+      "label": "Mullet",
+      "variants": [
+        {
+          "id": "hair-25-01",
+          "file": "hairstyles/Hairstyle_25_32x32_01.png",
+          "colorIndex": 1
+        },
+        {
+          "id": "hair-25-02",
+          "file": "hairstyles/Hairstyle_25_32x32_02.png",
+          "colorIndex": 2
+        },
+        {
+          "id": "hair-25-03",
+          "file": "hairstyles/Hairstyle_25_32x32_03.png",
+          "colorIndex": 3
+        },
+        {
+          "id": "hair-25-04",
+          "file": "hairstyles/Hairstyle_25_32x32_04.png",
+          "colorIndex": 4
+        },
+        {
+          "id": "hair-25-05",
+          "file": "hairstyles/Hairstyle_25_32x32_05.png",
+          "colorIndex": 5
+        },
+        {
+          "id": "hair-25-06",
+          "file": "hairstyles/Hairstyle_25_32x32_06.png",
+          "colorIndex": 6
+        },
+        {
+          "id": "hair-25-07",
+          "file": "hairstyles/Hairstyle_25_32x32_07.png",
+          "colorIndex": 7
+        }
+      ]
+    },
+    {
+      "style": 26,
+      "label": "High Pony",
+      "variants": [
+        {
+          "id": "hair-26-01",
+          "file": "hairstyles/Hairstyle_26_32x32_01.png",
+          "colorIndex": 1
+        },
+        {
+          "id": "hair-26-02",
+          "file": "hairstyles/Hairstyle_26_32x32_02.png",
+          "colorIndex": 2
+        },
+        {
+          "id": "hair-26-03",
+          "file": "hairstyles/Hairstyle_26_32x32_03.png",
+          "colorIndex": 3
+        },
+        {
+          "id": "hair-26-04",
+          "file": "hairstyles/Hairstyle_26_32x32_04.png",
+          "colorIndex": 4
+        },
+        {
+          "id": "hair-26-05",
+          "file": "hairstyles/Hairstyle_26_32x32_05.png",
+          "colorIndex": 5
+        },
+        {
+          "id": "hair-26-06",
+          "file": "hairstyles/Hairstyle_26_32x32_06.png",
+          "colorIndex": 6
+        },
+        {
+          "id": "hair-26-07",
+          "file": "hairstyles/Hairstyle_26_32x32_07.png",
+          "colorIndex": 7
+        }
+      ]
+    },
+    {
+      "style": 27,
+      "label": "Cornrows",
+      "variants": [
+        {
+          "id": "hair-27-01",
+          "file": "hairstyles/Hairstyle_27_32x32_01.png",
+          "colorIndex": 1
+        },
+        {
+          "id": "hair-27-02",
+          "file": "hairstyles/Hairstyle_27_32x32_02.png",
+          "colorIndex": 2
+        },
+        {
+          "id": "hair-27-03",
+          "file": "hairstyles/Hairstyle_27_32x32_03.png",
+          "colorIndex": 3
+        },
+        {
+          "id": "hair-27-04",
+          "file": "hairstyles/Hairstyle_27_32x32_04.png",
+          "colorIndex": 4
+        },
+        {
+          "id": "hair-27-05",
+          "file": "hairstyles/Hairstyle_27_32x32_05.png",
+          "colorIndex": 5
+        },
+        {
+          "id": "hair-27-06",
+          "file": "hairstyles/Hairstyle_27_32x32_06.png",
+          "colorIndex": 6
+        }
+      ]
+    },
+    {
+      "style": 28,
+      "label": "Top Knot",
+      "variants": [
+        {
+          "id": "hair-28-01",
+          "file": "hairstyles/Hairstyle_28_32x32_01.png",
+          "colorIndex": 1
+        },
+        {
+          "id": "hair-28-02",
+          "file": "hairstyles/Hairstyle_28_32x32_02.png",
+          "colorIndex": 2
+        },
+        {
+          "id": "hair-28-03",
+          "file": "hairstyles/Hairstyle_28_32x32_03.png",
+          "colorIndex": 3
+        },
+        {
+          "id": "hair-28-04",
+          "file": "hairstyles/Hairstyle_28_32x32_04.png",
+          "colorIndex": 4
+        },
+        {
+          "id": "hair-28-05",
+          "file": "hairstyles/Hairstyle_28_32x32_05.png",
+          "colorIndex": 5
+        },
+        {
+          "id": "hair-28-06",
+          "file": "hairstyles/Hairstyle_28_32x32_06.png",
+          "colorIndex": 6
+        }
+      ]
+    },
+    {
+      "style": 29,
+      "label": "Feathered",
+      "variants": [
+        {
+          "id": "hair-29-01",
+          "file": "hairstyles/Hairstyle_29_32x32_01.png",
+          "colorIndex": 1
+        },
+        {
+          "id": "hair-29-02",
+          "file": "hairstyles/Hairstyle_29_32x32_02.png",
+          "colorIndex": 2
+        },
+        {
+          "id": "hair-29-03",
+          "file": "hairstyles/Hairstyle_29_32x32_03.png",
+          "colorIndex": 3
+        },
+        {
+          "id": "hair-29-04",
+          "file": "hairstyles/Hairstyle_29_32x32_04.png",
+          "colorIndex": 4
+        },
+        {
+          "id": "hair-29-05",
+          "file": "hairstyles/Hairstyle_29_32x32_05.png",
+          "colorIndex": 5
+        },
+        {
+          "id": "hair-29-06",
+          "file": "hairstyles/Hairstyle_29_32x32_06.png",
+          "colorIndex": 6
+        }
+      ]
+    }
+  ],
+  "accessories": [
+    {
+      "style": 1,
+      "name": "Ladybug",
+      "variants": [
+        {
+          "id": "acc-01-01",
+          "file": "accessories/Accessory_01_Ladybug_32x32_01.png",
+          "colorIndex": 1
+        },
+        {
+          "id": "acc-01-02",
+          "file": "accessories/Accessory_01_Ladybug_32x32_02.png",
+          "colorIndex": 2
+        },
+        {
+          "id": "acc-01-03",
+          "file": "accessories/Accessory_01_Ladybug_32x32_03.png",
+          "colorIndex": 3
+        },
+        {
+          "id": "acc-01-04",
+          "file": "accessories/Accessory_01_Ladybug_32x32_04.png",
+          "colorIndex": 4
+        }
+      ]
+    },
+    {
+      "style": 2,
+      "name": "Bee",
+      "variants": [
+        {
+          "id": "acc-02-01",
+          "file": "accessories/Accessory_02_Bee_32x32_01.png",
+          "colorIndex": 1
+        },
+        {
+          "id": "acc-02-02",
+          "file": "accessories/Accessory_02_Bee_32x32_02.png",
+          "colorIndex": 2
+        },
+        {
+          "id": "acc-02-03",
+          "file": "accessories/Accessory_02_Bee_32x32_03.png",
+          "colorIndex": 3
+        }
+      ]
+    },
+    {
+      "style": 3,
+      "name": "Backpack",
+      "variants": [
+        {
+          "id": "acc-03-01",
+          "file": "accessories/Accessory_03_Backpack_32x32_01.png",
+          "colorIndex": 1
+        },
+        {
+          "id": "acc-03-02",
+          "file": "accessories/Accessory_03_Backpack_32x32_02.png",
+          "colorIndex": 2
+        },
+        {
+          "id": "acc-03-03",
+          "file": "accessories/Accessory_03_Backpack_32x32_03.png",
+          "colorIndex": 3
+        },
+        {
+          "id": "acc-03-04",
+          "file": "accessories/Accessory_03_Backpack_32x32_04.png",
+          "colorIndex": 4
+        },
+        {
+          "id": "acc-03-05",
+          "file": "accessories/Accessory_03_Backpack_32x32_05.png",
+          "colorIndex": 5
+        },
+        {
+          "id": "acc-03-06",
+          "file": "accessories/Accessory_03_Backpack_32x32_06.png",
+          "colorIndex": 6
+        },
+        {
+          "id": "acc-03-07",
+          "file": "accessories/Accessory_03_Backpack_32x32_07.png",
+          "colorIndex": 7
+        },
+        {
+          "id": "acc-03-08",
+          "file": "accessories/Accessory_03_Backpack_32x32_08.png",
+          "colorIndex": 8
+        },
+        {
+          "id": "acc-03-09",
+          "file": "accessories/Accessory_03_Backpack_32x32_09.png",
+          "colorIndex": 9
+        },
+        {
+          "id": "acc-03-10",
+          "file": "accessories/Accessory_03_Backpack_32x32_10.png",
+          "colorIndex": 10
+        }
+      ]
+    },
+    {
+      "style": 4,
+      "name": "Snapback",
+      "variants": [
+        {
+          "id": "acc-04-01",
+          "file": "accessories/Accessory_04_Snapback_32x32_01.png",
+          "colorIndex": 1
+        },
+        {
+          "id": "acc-04-02",
+          "file": "accessories/Accessory_04_Snapback_32x32_02.png",
+          "colorIndex": 2
+        },
+        {
+          "id": "acc-04-03",
+          "file": "accessories/Accessory_04_Snapback_32x32_03.png",
+          "colorIndex": 3
+        },
+        {
+          "id": "acc-04-04",
+          "file": "accessories/Accessory_04_Snapback_32x32_04.png",
+          "colorIndex": 4
+        },
+        {
+          "id": "acc-04-05",
+          "file": "accessories/Accessory_04_Snapback_32x32_05.png",
+          "colorIndex": 5
+        },
+        {
+          "id": "acc-04-06",
+          "file": "accessories/Accessory_04_Snapback_32x32_06.png",
+          "colorIndex": 6
+        }
+      ]
+    },
+    {
+      "style": 5,
+      "name": "Dino Snapback",
+      "variants": [
+        {
+          "id": "acc-05-01",
+          "file": "accessories/Accessory_05_Dino_Snapback_32x32_01.png",
+          "colorIndex": 1
+        },
+        {
+          "id": "acc-05-02",
+          "file": "accessories/Accessory_05_Dino_Snapback_32x32_02.png",
+          "colorIndex": 2
+        },
+        {
+          "id": "acc-05-03",
+          "file": "accessories/Accessory_05_Dino_Snapback_32x32_03.png",
+          "colorIndex": 3
+        }
+      ]
+    },
+    {
+      "style": 6,
+      "name": "Policeman Hat",
+      "variants": [
+        {
+          "id": "acc-06-01",
+          "file": "accessories/Accessory_06_Policeman_Hat_32x32_01.png",
+          "colorIndex": 1
+        },
+        {
+          "id": "acc-06-02",
+          "file": "accessories/Accessory_06_Policeman_Hat_32x32_02.png",
+          "colorIndex": 2
+        },
+        {
+          "id": "acc-06-03",
+          "file": "accessories/Accessory_06_Policeman_Hat_32x32_03.png",
+          "colorIndex": 3
+        },
+        {
+          "id": "acc-06-04",
+          "file": "accessories/Accessory_06_Policeman_Hat_32x32_04.png",
+          "colorIndex": 4
+        },
+        {
+          "id": "acc-06-05",
+          "file": "accessories/Accessory_06_Policeman_Hat_32x32_05.png",
+          "colorIndex": 5
+        },
+        {
+          "id": "acc-06-06",
+          "file": "accessories/Accessory_06_Policeman_Hat_32x32_06.png",
+          "colorIndex": 6
+        }
+      ]
+    },
+    {
+      "style": 7,
+      "name": "Bataclava",
+      "variants": [
+        {
+          "id": "acc-07-01",
+          "file": "accessories/Accessory_07_Bataclava_32x32_01.png",
+          "colorIndex": 1
+        },
+        {
+          "id": "acc-07-02",
+          "file": "accessories/Accessory_07_Bataclava_32x32_02.png",
+          "colorIndex": 2
+        },
+        {
+          "id": "acc-07-03",
+          "file": "accessories/Accessory_07_Bataclava_32x32_03.png",
+          "colorIndex": 3
+        }
+      ]
+    },
+    {
+      "style": 8,
+      "name": "Detective Hat",
+      "variants": [
+        {
+          "id": "acc-08-01",
+          "file": "accessories/Accessory_08_Detective_Hat_32x32_01.png",
+          "colorIndex": 1
+        },
+        {
+          "id": "acc-08-02",
+          "file": "accessories/Accessory_08_Detective_Hat_32x32_02.png",
+          "colorIndex": 2
+        },
+        {
+          "id": "acc-08-03",
+          "file": "accessories/Accessory_08_Detective_Hat_32x32_03.png",
+          "colorIndex": 3
+        }
+      ]
+    },
+    {
+      "style": 9,
+      "name": "Zombie Brain",
+      "variants": [
+        {
+          "id": "acc-09-01",
+          "file": "accessories/Accessory_09_Zombie_Brain_32x32_01.png",
+          "colorIndex": 1
+        },
+        {
+          "id": "acc-09-02",
+          "file": "accessories/Accessory_09_Zombie_Brain_32x32_02.png",
+          "colorIndex": 2
+        },
+        {
+          "id": "acc-09-03",
+          "file": "accessories/Accessory_09_Zombie_Brain_32x32_03.png",
+          "colorIndex": 3
+        }
+      ]
+    },
+    {
+      "style": 10,
+      "name": "Bolt",
+      "variants": [
+        {
+          "id": "acc-10-01",
+          "file": "accessories/Accessory_10_Bolt_32x32_01.png",
+          "colorIndex": 1
+        },
+        {
+          "id": "acc-10-02",
+          "file": "accessories/Accessory_10_Bolt_32x32_02.png",
+          "colorIndex": 2
+        },
+        {
+          "id": "acc-10-03",
+          "file": "accessories/Accessory_10_Bolt_32x32_03.png",
+          "colorIndex": 3
+        }
+      ]
+    },
+    {
+      "style": 11,
+      "name": "Beanie",
+      "variants": [
+        {
+          "id": "acc-11-01",
+          "file": "accessories/Accessory_11_Beanie_32x32_01.png",
+          "colorIndex": 1
+        },
+        {
+          "id": "acc-11-02",
+          "file": "accessories/Accessory_11_Beanie_32x32_02.png",
+          "colorIndex": 2
+        },
+        {
+          "id": "acc-11-03",
+          "file": "accessories/Accessory_11_Beanie_32x32_03.png",
+          "colorIndex": 3
+        },
+        {
+          "id": "acc-11-04",
+          "file": "accessories/Accessory_11_Beanie_32x32_04.png",
+          "colorIndex": 4
+        },
+        {
+          "id": "acc-11-05",
+          "file": "accessories/Accessory_11_Beanie_32x32_05.png",
+          "colorIndex": 5
+        }
+      ]
+    },
+    {
+      "style": 12,
+      "name": "Mustache",
+      "variants": [
+        {
+          "id": "acc-12-01",
+          "file": "accessories/Accessory_12_Mustache_32x32_01.png",
+          "colorIndex": 1
+        },
+        {
+          "id": "acc-12-02",
+          "file": "accessories/Accessory_12_Mustache_32x32_02.png",
+          "colorIndex": 2
+        },
+        {
+          "id": "acc-12-03",
+          "file": "accessories/Accessory_12_Mustache_32x32_03.png",
+          "colorIndex": 3
+        },
+        {
+          "id": "acc-12-04",
+          "file": "accessories/Accessory_12_Mustache_32x32_04.png",
+          "colorIndex": 4
+        },
+        {
+          "id": "acc-12-05",
+          "file": "accessories/Accessory_12_Mustache_32x32_05.png",
+          "colorIndex": 5
+        }
+      ]
+    },
+    {
+      "style": 13,
+      "name": "Beard",
+      "variants": [
+        {
+          "id": "acc-13-01",
+          "file": "accessories/Accessory_13_Beard_32x32_01.png",
+          "colorIndex": 1
+        },
+        {
+          "id": "acc-13-02",
+          "file": "accessories/Accessory_13_Beard_32x32_02.png",
+          "colorIndex": 2
+        },
+        {
+          "id": "acc-13-03",
+          "file": "accessories/Accessory_13_Beard_32x32_03.png",
+          "colorIndex": 3
+        },
+        {
+          "id": "acc-13-04",
+          "file": "accessories/Accessory_13_Beard_32x32_04.png",
+          "colorIndex": 4
+        },
+        {
+          "id": "acc-13-05",
+          "file": "accessories/Accessory_13_Beard_32x32_05.png",
+          "colorIndex": 5
+        }
+      ]
+    },
+    {
+      "style": 14,
+      "name": "Gloves",
+      "variants": [
+        {
+          "id": "acc-14-01",
+          "file": "accessories/Accessory_14_Gloves_32x32_01.png",
+          "colorIndex": 1
+        },
+        {
+          "id": "acc-14-02",
+          "file": "accessories/Accessory_14_Gloves_32x32_02.png",
+          "colorIndex": 2
+        },
+        {
+          "id": "acc-14-03",
+          "file": "accessories/Accessory_14_Gloves_32x32_03.png",
+          "colorIndex": 3
+        },
+        {
+          "id": "acc-14-04",
+          "file": "accessories/Accessory_14_Gloves_32x32_04.png",
+          "colorIndex": 4
+        }
+      ]
+    },
+    {
+      "style": 15,
+      "name": "Glasses",
+      "variants": [
+        {
+          "id": "acc-15-01",
+          "file": "accessories/Accessory_15_Glasses_32x32_01.png",
+          "colorIndex": 1
+        },
+        {
+          "id": "acc-15-02",
+          "file": "accessories/Accessory_15_Glasses_32x32_02.png",
+          "colorIndex": 2
+        },
+        {
+          "id": "acc-15-03",
+          "file": "accessories/Accessory_15_Glasses_32x32_03.png",
+          "colorIndex": 3
+        },
+        {
+          "id": "acc-15-04",
+          "file": "accessories/Accessory_15_Glasses_32x32_04.png",
+          "colorIndex": 4
+        },
+        {
+          "id": "acc-15-05",
+          "file": "accessories/Accessory_15_Glasses_32x32_05.png",
+          "colorIndex": 5
+        },
+        {
+          "id": "acc-15-06",
+          "file": "accessories/Accessory_15_Glasses_32x32_06.png",
+          "colorIndex": 6
+        }
+      ]
+    },
+    {
+      "style": 16,
+      "name": "Monocle",
+      "variants": [
+        {
+          "id": "acc-16-01",
+          "file": "accessories/Accessory_16_Monocle_32x32_01.png",
+          "colorIndex": 1
+        },
+        {
+          "id": "acc-16-02",
+          "file": "accessories/Accessory_16_Monocle_32x32_02.png",
+          "colorIndex": 2
+        },
+        {
+          "id": "acc-16-03",
+          "file": "accessories/Accessory_16_Monocle_32x32_03.png",
+          "colorIndex": 3
+        }
+      ]
+    },
+    {
+      "style": 17,
+      "name": "Medical Mask",
+      "variants": [
+        {
+          "id": "acc-17-01",
+          "file": "accessories/Accessory_17_Medical_Mask_32x32_01.png",
+          "colorIndex": 1
+        },
+        {
+          "id": "acc-17-02",
+          "file": "accessories/Accessory_17_Medical_Mask_32x32_02.png",
+          "colorIndex": 2
+        },
+        {
+          "id": "acc-17-03",
+          "file": "accessories/Accessory_17_Medical_Mask_32x32_03.png",
+          "colorIndex": 3
+        },
+        {
+          "id": "acc-17-04",
+          "file": "accessories/Accessory_17_Medical_Mask_32x32_04.png",
+          "colorIndex": 4
+        },
+        {
+          "id": "acc-17-05",
+          "file": "accessories/Accessory_17_Medical_Mask_32x32_05.png",
+          "colorIndex": 5
+        }
+      ]
+    },
+    {
+      "style": 18,
+      "name": "Chef",
+      "variants": [
+        {
+          "id": "acc-18-01",
+          "file": "accessories/Accessory_18_Chef_32x32_01.png",
+          "colorIndex": 1
+        },
+        {
+          "id": "acc-18-02",
+          "file": "accessories/Accessory_18_Chef_32x32_02.png",
+          "colorIndex": 2
+        },
+        {
+          "id": "acc-18-03",
+          "file": "accessories/Accessory_18_Chef_32x32_03.png",
+          "colorIndex": 3
+        }
+      ]
+    },
+    {
+      "style": 19,
+      "name": "Party Cone",
+      "variants": [
+        {
+          "id": "acc-19-01",
+          "file": "accessories/Accessory_19_Party_Cone_32x32_01.png",
+          "colorIndex": 1
+        },
+        {
+          "id": "acc-19-02",
+          "file": "accessories/Accessory_19_Party_Cone_32x32_02.png",
+          "colorIndex": 2
+        },
+        {
+          "id": "acc-19-03",
+          "file": "accessories/Accessory_19_Party_Cone_32x32_03.png",
+          "colorIndex": 3
+        },
+        {
+          "id": "acc-19-04",
+          "file": "accessories/Accessory_19_Party_Cone_32x32_04.png",
+          "colorIndex": 4
+        }
+      ]
+    }
+  ]
+}

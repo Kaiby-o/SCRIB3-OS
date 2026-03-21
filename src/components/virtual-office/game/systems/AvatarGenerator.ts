@@ -1,5 +1,5 @@
 import {
-  type AvatarConfig,
+  type LegacyAvatarConfig,
   type HairStyle,
   type EyeStyle,
   type OutfitStyle,
@@ -55,7 +55,7 @@ function getInitials(username: string): string {
 export function generateAvatarCanvas(
   userId: string,
   username: string,
-  config?: AvatarConfig,
+  config?: LegacyAvatarConfig,
 ): HTMLCanvasElement {
   const canvas = document.createElement('canvas');
   canvas.width = S * 4;

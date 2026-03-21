@@ -1,11 +1,11 @@
 import { useRef, useEffect } from 'react';
-import type { AvatarConfig } from './virtual-office/game/systems/AvatarConfig';
+import type { LegacyAvatarConfig } from './virtual-office/game/systems/AvatarConfig';
 import { generateAvatarCanvas } from './virtual-office/game/systems/AvatarGenerator';
 
 interface AvatarPreviewProps {
   userId: string;
   username: string;
-  config: AvatarConfig;
+  config: LegacyAvatarConfig;
   scale?: number;
   animate?: boolean;
 }

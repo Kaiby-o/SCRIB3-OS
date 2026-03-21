@@ -4,6 +4,7 @@ import { MovementSystem } from '../systems/MovementSystem';
 import { InteractionSystem } from '../systems/InteractionSystem';
 import { RemoteAvatar } from '../entities/RemoteAvatar';
 import { CHARACTER_SPRITES } from './BootScene';
+import { isLayerConfig, isPresetConfig } from '../systems/AvatarConfig';
 import type { AvatarConfig } from '../systems/AvatarConfig';
 import type { RemoteUser } from '../../../../store/office.store';
 
@@ -104,12 +105,34 @@ export class OfficeScene extends Phaser.Scene {
     blockedGroup.refresh();
 
     // ---- PLAYER ----
-    const savedSpriteKey = this.avatarConfig && typeof this.avatarConfig === 'object'
-      ? (this.avatarConfig as Record<string, unknown>).spriteKey as string | undefined
-      : undefined;
-
-    if (savedSpriteKey && CHARACTER_SPRITES.includes(savedSpriteKey)) {
-      this.playerSpriteKey = savedSpriteKey;
+    // Determine sprite key: layer-based composited sheet > preset key > fallback
+    if (isLayerConfig(this.avatarConfig)) {
+      // New layer-based avatar: create texture from base64 composited sheet
+      const texKey = 'custom-avatar';
+      if (!this.textures.exists(texKey)) {
+        const img = new Image();
+        img.src = this.avatarConfig.compositedSheet;
+        img.onload = () => {
+          const cvs = document.createElement('canvas');
+          cvs.width = img.width;
+          cvs.height = img.height;
+          const cctx = cvs.getContext('2d')!;
+          cctx.drawImage(img, 0, 0);
+          if (!this.textures.exists(texKey)) {
+            this.textures.addSpriteSheet(texKey, cvs, { frameWidth: 32, frameHeight: 32 });
+            this.createWalkAnimations(texKey);
+            // Re-apply texture to player once loaded
+            if (this.player) {
+              this.player.setTexture(texKey, 1);
+              this.playerSpriteKey = texKey;
+              this.movementSystem.setSpriteKey(texKey);
+            }
+          }
+        };
+      }
+      this.playerSpriteKey = texKey;
+    } else if (isPresetConfig(this.avatarConfig) && CHARACTER_SPRITES.includes(this.avatarConfig.spriteKey)) {
+      this.playerSpriteKey = this.avatarConfig.spriteKey;
     } else {
       const spriteIndex = spriteIndexFromId(this.userId);
       this.playerSpriteKey = CHARACTER_SPRITES[spriteIndex];
@@ -119,7 +142,12 @@ export class OfficeScene extends Phaser.Scene {
     const spawnX = 7 * TILE_SIZE;
     const spawnY = 8 * TILE_SIZE;
 
-    this.player = this.physics.add.sprite(spawnX, spawnY, this.playerSpriteKey, 1);
+    // Use a fallback texture if custom-avatar isn't loaded yet
+    const initialTexture = this.textures.exists(this.playerSpriteKey)
+      ? this.playerSpriteKey
+      : CHARACTER_SPRITES[spriteIndexFromId(this.userId)];
+
+    this.player = this.physics.add.sprite(spawnX, spawnY, initialTexture, 1);
     this.player.setDepth(4);
     this.player.setSize(14, 14);
     this.player.setOffset(9, 16);
@@ -274,6 +302,30 @@ export class OfficeScene extends Phaser.Scene {
         direction: this.movementSystem.getDirection(),
       });
     }
+  }
+
+  private createWalkAnimations(key: string): void {
+    if (this.anims.exists(`${key}-walk-down`)) return;
+    this.anims.create({
+      key: `${key}-walk-down`,
+      frames: this.anims.generateFrameNumbers(key, { start: 0, end: 2 }),
+      frameRate: 8, repeat: -1,
+    });
+    this.anims.create({
+      key: `${key}-walk-left`,
+      frames: this.anims.generateFrameNumbers(key, { start: 3, end: 5 }),
+      frameRate: 8, repeat: -1,
+    });
+    this.anims.create({
+      key: `${key}-walk-right`,
+      frames: this.anims.generateFrameNumbers(key, { start: 6, end: 8 }),
+      frameRate: 8, repeat: -1,
+    });
+    this.anims.create({
+      key: `${key}-walk-up`,
+      frames: this.anims.generateFrameNumbers(key, { start: 9, end: 11 }),
+      frameRate: 8, repeat: -1,
+    });
   }
 
   private syncRemoteAvatars(users: Record<string, RemoteUser>): void {
