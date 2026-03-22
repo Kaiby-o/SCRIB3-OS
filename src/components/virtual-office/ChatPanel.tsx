@@ -224,7 +224,7 @@ const toggleButtonStyle: React.CSSProperties = {
   position: 'fixed',
   top: '268px',       // Below the toolbar buttons (140px top + ~3 buttons * 42px each)
   right: '10px',
-  width: '140px',
+  width: '160px',
   background: 'rgba(26, 26, 46, 0.85)',
   border: '1px solid rgba(255,255,255,0.15)',
   borderRadius: '4px',

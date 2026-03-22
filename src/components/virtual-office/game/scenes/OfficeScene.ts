@@ -173,7 +173,7 @@ export class OfficeScene extends Phaser.Scene {
     this.physics.world.setBounds(0, 0, mapWidth, mapHeight);
     this.cameras.main.setBounds(0, 0, mapWidth, mapHeight);
     this.cameras.main.startFollow(this.player, true, 0.08, 0.08);
-    this.cameras.main.setZoom(2);
+    this.cameras.main.setZoom(1.2);
 
     // ---- MINIMAP ----
     const mmW = 160;

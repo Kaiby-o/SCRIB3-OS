@@ -390,9 +390,12 @@ export default function AvatarCreatorPage() {
   const handleSave = async () => {
     if (!manifest) return;
     setSaving(true);
+    console.log('[AvatarCreator] handleSave started');
     try {
+      console.log('[AvatarCreator] Step 1: Compositing walk sheet...');
       const sheet = await compositeWalkSheet(manifest, sel);
       const compositedSheet = sheet.toDataURL('image/png');
+      console.log('[AvatarCreator] Step 1 done. Sheet size:', compositedSheet.length, 'chars');
 
       const config = {
         body: sel.body,
@@ -402,28 +405,39 @@ export default function AvatarCreatorPage() {
         accessories: sel.accessories.map(a => getAccId(manifest, a.style, a.color)),
         compositedSheet,
       };
+      console.log('[AvatarCreator] Step 2: Config built. body:', config.body, 'eyes:', config.eyes);
 
       // Save to Supabase if logged in
       if (profile?.id) {
+        console.log('[AvatarCreator] Step 3: Saving to Supabase for user', profile.id);
         const { error } = await supabase
           .from('profiles')
           .update({ avatar_config: config })
           .eq('id', profile.id);
-        if (error) console.warn('Supabase save warning:', error.message);
+        if (error) {
+          console.warn('[AvatarCreator] Supabase save warning:', error.message);
+        } else {
+          console.log('[AvatarCreator] Step 3 done: Supabase save successful');
+        }
+      } else {
+        console.log('[AvatarCreator] Step 3: No profile.id, skipping Supabase save');
       }
 
-      // Update local state regardless of DB save
+      // Update local state regardless of DB save or profile state
+      console.log('[AvatarCreator] Step 4: Updating local auth store');
       if (profile) {
         useAuthStore.setState({
           profile: { ...profile, avatar_config: config as unknown as import('../components/virtual-office/game/systems/AvatarConfig').AvatarConfig },
         });
       }
 
-      // Navigate to office
+      // Navigate to office (always, even if profile is null)
+      console.log('[AvatarCreator] Step 5: Navigating to office');
       window.location.href = '/?view=office';
     } catch (err) {
-      console.error('Failed to save avatar:', err);
-      // Still try to navigate even if save fails
+      console.error('[AvatarCreator] Failed to save avatar:', err);
+      // Still navigate even if save fails
+      console.log('[AvatarCreator] Navigating to office despite error');
       window.location.href = '/?view=office';
     }
     setSaving(false);
@@ -485,7 +499,7 @@ export default function AvatarCreatorPage() {
         {/* Left: Preview */}
         <div style={previewColumnStyle}>
           <div style={previewFrameStyle}>
-            <CompositedPreview manifest={manifest} selections={sel} scale={6} direction={0} animate />
+            <CompositedPreview manifest={manifest} selections={sel} scale={8} direction={0} animate />
           </div>
 
           {/* Additional front previews at different scales */}
@@ -573,37 +587,59 @@ interface TabProps {
   setSel: React.Dispatch<React.SetStateAction<Selections>>;
 }
 
+const SKIN_COLORS: Record<string, string> = {
+  'body-01': '#F5D0A9',
+  'body-02': '#E8B88A',
+  'body-03': '#D4A574',
+  'body-04': '#C68642',
+  'body-05': '#A0693E',
+  'body-06': '#7A4B2E',
+  'body-07': '#5C3A1E',
+  'body-08': '#F0B4C8',
+  'body-09': '#D8C8E0',
+};
+
 function BodyTab({ manifest, sel, setSel }: TabProps) {
   return (
     <>
       <div style={sectionLabelStyle}>SKIN TONE</div>
       <div style={gridStyle}>
-        {manifest.bodies.map(b => (
-          <button
-            key={b.id}
-            onClick={() => setSel(s => ({ ...s, body: b.id }))}
-            style={{
-              ...cardStyle,
-              ...(sel.body === b.id ? selectedCardStyle : {}),
-            }}
-          >
-            <LayerPreview file={b.file} scale={2.5} />
-            <span style={cardLabelStyle}>{b.label}</span>
-          </button>
-        ))}
+        {manifest.bodies.map(b => {
+          const swatchColor = SKIN_COLORS[b.id] || '#888888';
+          return (
+            <button
+              key={b.id}
+              onClick={() => setSel(s => ({ ...s, body: b.id }))}
+              style={{
+                ...cardStyle,
+                ...(sel.body === b.id ? selectedCardStyle : {}),
+              }}
+            >
+              <div style={{
+                width: 48,
+                height: 48,
+                borderRadius: 8,
+                background: swatchColor,
+                border: sel.body === b.id ? '2px solid #63B3ED' : '2px solid rgba(255,255,255,0.15)',
+                boxSizing: 'border-box' as const,
+              }} />
+              <span style={cardLabelStyle}>{b.label}</span>
+            </button>
+          );
+        })}
       </div>
     </>
   );
 }
 
+const EYE_DECORATORS = ['◆', '◇', '●', '○', '★', '☆', '▲'];
+
 function EyesTab({ manifest, sel, setSel }: TabProps) {
-  // Show eyes composited on top of current body for better preview
-  const bodyFile = findFile(manifest, sel.body) || '';
   return (
     <>
       <div style={sectionLabelStyle}>EYE STYLE</div>
       <div style={gridStyle}>
-        {manifest.eyes.map(e => (
+        {manifest.eyes.map((e, i) => (
           <button
             key={e.id}
             onClick={() => setSel(s => ({ ...s, eyes: e.id }))}
@@ -612,8 +648,21 @@ function EyesTab({ manifest, sel, setSel }: TabProps) {
               ...(sel.eyes === e.id ? selectedCardStyle : {}),
             }}
           >
-            <MultiLayerPreview files={bodyFile ? [bodyFile, e.file] : [e.file]} scale={2.5} />
-            <span style={cardLabelStyle}>{e.label}</span>
+            <div style={{
+              width: 48,
+              height: 48,
+              display: 'flex',
+              flexDirection: 'column' as const,
+              alignItems: 'center',
+              justifyContent: 'center',
+              background: 'rgba(255,255,255,0.06)',
+              borderRadius: 8,
+              fontSize: '18px',
+              color: sel.eyes === e.id ? '#63B3ED' : '#A0AEC0',
+            }}>
+              <span>{EYE_DECORATORS[i % EYE_DECORATORS.length]}</span>
+            </div>
+            <span style={cardLabelStyle}>Style {i + 1}</span>
           </button>
         ))}
       </div>
@@ -640,7 +689,7 @@ function OutfitTab({ manifest, sel, setSel }: TabProps) {
                 ...(sel.outfitStyle === o.style ? selectedCardStyle : {}),
               }}
             >
-              <MultiLayerPreview files={bodyFile ? [bodyFile, previewFile] : [previewFile]} scale={2} />
+              <MultiLayerPreview files={bodyFile ? [bodyFile, previewFile] : [previewFile]} scale={3} />
               <span style={cardLabelStyle}>{o.label}</span>
             </button>
           );
@@ -660,7 +709,7 @@ function OutfitTab({ manifest, sel, setSel }: TabProps) {
                   ...(sel.outfitColor === v.colorIndex ? selectedCardStyle : {}),
                 }}
               >
-                <MultiLayerPreview files={bodyFile ? [bodyFile, v.file] : [v.file]} scale={2} />
+                <MultiLayerPreview files={bodyFile ? [bodyFile, v.file] : [v.file]} scale={3} />
                 <span style={cardLabelStyle}>{v.colorIndex}</span>
               </button>
             ))}
@@ -694,7 +743,7 @@ function HairTab({ manifest, sel, setSel }: TabProps) {
                 ...(sel.hairStyle === h.style ? selectedCardStyle : {}),
               }}
             >
-              <MultiLayerPreview files={[...baseLayers, previewFile]} scale={2} />
+              <MultiLayerPreview files={[...baseLayers, previewFile]} scale={3} />
               <span style={cardLabelStyle}>{h.label}</span>
             </button>
           );
@@ -714,7 +763,7 @@ function HairTab({ manifest, sel, setSel }: TabProps) {
                   ...(sel.hairColor === v.colorIndex ? selectedCardStyle : {}),
                 }}
               >
-                <MultiLayerPreview files={[...baseLayers, v.file]} scale={2} />
+                <MultiLayerPreview files={[...baseLayers, v.file]} scale={3} />
                 <span style={cardLabelStyle}>{v.colorIndex}</span>
               </button>
             ))}
@@ -723,6 +772,19 @@ function HairTab({ manifest, sel, setSel }: TabProps) {
       )}
     </>
   );
+}
+
+/* ─── Accessory conflict groups ─── */
+const ACC_HEAD_SLOT = new Set([4, 5, 6, 7, 8, 11, 18, 19]);
+const ACC_FACE_SLOT = new Set([15, 16, 17]);
+const ACC_BODY_SLOT = new Set([3]);
+// MISC (1, 2, 9, 10, 12, 13, 14) can stack freely
+
+function getAccSlot(style: number): 'HEAD' | 'FACE' | 'BODY' | 'MISC' {
+  if (ACC_HEAD_SLOT.has(style)) return 'HEAD';
+  if (ACC_FACE_SLOT.has(style)) return 'FACE';
+  if (ACC_BODY_SLOT.has(style)) return 'BODY';
+  return 'MISC';
 }
 
 function AccessoriesTab({ manifest, sel, setSel }: TabProps) {
@@ -739,10 +801,21 @@ function AccessoriesTab({ manifest, sel, setSel }: TabProps) {
 
   const toggleAcc = (style: number, color: number) => {
     setSel(s => {
+      // If already selected, deselect it
       if (s.accessories.some(a => a.style === style)) {
         return { ...s, accessories: s.accessories.filter(a => a.style !== style) };
       }
-      return { ...s, accessories: [...s.accessories, { style, color }] };
+
+      // Check conflict groups: HEAD, FACE, BODY are exclusive within their slot
+      const slot = getAccSlot(style);
+      let filtered = s.accessories;
+      if (slot !== 'MISC') {
+        // Remove any existing accessory from the same slot
+        const slotSet = slot === 'HEAD' ? ACC_HEAD_SLOT : slot === 'FACE' ? ACC_FACE_SLOT : ACC_BODY_SLOT;
+        filtered = s.accessories.filter(a => !slotSet.has(a.style));
+      }
+
+      return { ...s, accessories: [...filtered, { style, color }] };
     });
   };
 
@@ -773,7 +846,7 @@ function AccessoriesTab({ manifest, sel, setSel }: TabProps) {
                 ...(selected ? selectedCardStyle : {}),
               }}
             >
-              <MultiLayerPreview files={[...baseLayers, previewFile]} scale={2} />
+              <MultiLayerPreview files={[...baseLayers, previewFile]} scale={3} />
               <span style={cardLabelStyle}>{a.name}</span>
               {selected && <span style={checkStyle}>&#10003;</span>}
             </button>
@@ -796,7 +869,7 @@ function AccessoriesTab({ manifest, sel, setSel }: TabProps) {
                   ...(getAccColor(expandedAcc.style) === v.colorIndex ? selectedCardStyle : {}),
                 }}
               >
-                <MultiLayerPreview files={[...baseLayers, v.file]} scale={2} />
+                <MultiLayerPreview files={[...baseLayers, v.file]} scale={3} />
                 <span style={cardLabelStyle}>{v.colorIndex}</span>
               </button>
             ))}
@@ -970,13 +1043,13 @@ const sectionLabelStyle: React.CSSProperties = {
 
 const gridStyle: React.CSSProperties = {
   display: 'grid',
-  gridTemplateColumns: 'repeat(auto-fill, minmax(72px, 1fr))',
+  gridTemplateColumns: 'repeat(auto-fill, minmax(110px, 1fr))',
   gap: '6px',
 };
 
 const colorGridStyle: React.CSSProperties = {
   display: 'grid',
-  gridTemplateColumns: 'repeat(auto-fill, minmax(64px, 1fr))',
+  gridTemplateColumns: 'repeat(auto-fill, minmax(100px, 1fr))',
   gap: '6px',
 };
 
