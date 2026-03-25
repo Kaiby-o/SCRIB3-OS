@@ -1,0 +1,68 @@
+/* ===== KAIO ===== */
+
+@font-face {
+  font-family: 'Kaio';
+  src: url('/fonts/Kaio-Light.woff2') format('woff2');
+  font-weight: 300;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Kaio';
+  src: url('/fonts/Kaio-Regular.woff2') format('woff2');
+  font-weight: 400;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Kaio';
+  src: url('/fonts/Kaio-Medium.woff2') format('woff2');
+  font-weight: 500;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Kaio';
+  src: url('/fonts/Kaio-Bold.woff2') format('woff2');
+  font-weight: 700;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Kaio';
+  src: url('/fonts/Kaio-Black.woff2') format('woff2');
+  font-weight: 800;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Kaio';
+  src: url('/fonts/Kaio-Super.woff2') format('woff2');
+  font-weight: 900;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Kaio';
+  src: url('/fonts/Kaio-Krilin.woff2') format('woff2');
+  font-weight: 950;
+  font-display: swap;
+}
+
+/* ===== OWNERS WIDE ===== */
+
+@font-face {
+  font-family: 'Owners Wide';
+  src: url('/fonts/OwnersWide-Regular.otf') format('opentype');
+  font-weight: 400;
+  font-display: swap;
+}
+
+/* ===== NT STARDUST ===== */
+
+@font-face {
+  font-family: 'NT Stardust';
+  src: url('/fonts/NTStardust-Regular.otf') format('opentype');
+  font-weight: 400;
+  font-display: swap;
+}

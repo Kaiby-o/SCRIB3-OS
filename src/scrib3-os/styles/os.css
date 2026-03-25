@@ -1,0 +1,149 @@
+@import "tailwindcss";
+@import "./fonts.css";
+
+/* ===== Theme Custom Properties ===== */
+
+:root,
+[data-theme="light"] {
+  --bg-primary: #EAF2D7;
+  --bg-surface: rgba(234, 242, 215, 0.2);
+  --text-primary: #000000;
+  --border-default: #000000;
+  --accent: #D7ABC5;
+  --text-on-accent: #000000;
+  --text-on-dark: #EAF2D7;
+}
+
+[data-theme="dark"] {
+  --bg-primary: #000000;
+  --bg-surface: rgba(234, 242, 215, 0.08);
+  --text-primary: #EAF2D7;
+  --border-default: #EAF2D7;
+  --accent: #D7ABC5;
+  --text-on-accent: #000000;
+  --text-on-dark: #EAF2D7;
+}
+
+/* ===== Tailwind v4 Theme Extension ===== */
+
+@theme {
+  /* Colours */
+  --color-off-white: #EAF2D7;
+  --color-s3-black: #000000;
+  --color-s3-pink: #D7ABC5;
+  --color-surface: rgba(234, 242, 215, 0.2);
+
+  /* Theme-aware colours */
+  --color-bg-primary: var(--bg-primary);
+  --color-text-primary: var(--text-primary);
+  --color-border-default: var(--border-default);
+
+  /* Font families */
+  --font-kaio: 'Kaio', sans-serif;
+  --font-owners: 'Owners Wide', sans-serif;
+  --font-stardust: 'NT Stardust', sans-serif;
+
+  /* Border radius */
+  --radius-panel: 10.258px;
+  --radius-pill: 75.641px;
+  --radius-pill-sm: 40px;
+
+  /* Spacing */
+  --spacing-page: 40px;
+  --spacing-nav: 85px;
+}
+
+/* ===== Typography Utility Classes ===== */
+
+.text-display-hero {
+  font-family: 'Kaio', sans-serif;
+  font-weight: 800;
+  font-size: 80px;
+  line-height: 0.9;
+  letter-spacing: 0px;
+  font-feature-settings: 'ordn' 1, 'dlig' 1;
+  text-transform: uppercase;
+}
+
+.text-display-dash {
+  font-family: 'Kaio', sans-serif;
+  font-weight: 800;
+  font-size: 30px;
+  line-height: 0.88;
+  font-feature-settings: 'ordn' 1, 'dlig' 1;
+  text-transform: uppercase;
+}
+
+.text-display-name {
+  font-family: 'Kaio', sans-serif;
+  font-weight: 800;
+  font-size: 15px;
+  line-height: 1.4;
+  text-transform: uppercase;
+}
+
+.text-body {
+  font-family: 'Owners Wide', sans-serif;
+  font-weight: 400;
+  font-size: 20px;
+  line-height: 1.1;
+  letter-spacing: 1.6px;
+}
+
+.text-body-sml {
+  font-family: 'Owners Wide', sans-serif;
+  font-weight: 400;
+  font-size: 16px;
+  line-height: 1.4;
+  letter-spacing: 0.96px;
+}
+
+.text-pill-nav {
+  font-family: 'Owners Wide', sans-serif;
+  font-weight: 400;
+  font-size: 12.55px;
+  line-height: 1.25;
+  letter-spacing: 1.004px;
+  text-transform: uppercase;
+}
+
+.text-meta {
+  font-family: 'NT Stardust', sans-serif;
+  font-weight: 400;
+  font-size: 3.5px;
+  letter-spacing: 0.13px;
+}
+
+.text-time {
+  font-family: 'Owners Wide', sans-serif;
+  font-size: 18px;
+  text-transform: lowercase;
+  font-feature-settings: 'dlig' 1;
+}
+
+/* ===== OS Base Styles ===== */
+
+/* Override DEVICE layer's global body styles when on OS routes */
+.os-root {
+  background-color: var(--bg-primary) !important;
+  color: var(--text-primary);
+  min-height: 100vh;
+  font-family: 'Owners Wide', sans-serif;
+  font-weight: 400;
+  font-size: 16px;
+  line-height: 1.4;
+  letter-spacing: 0.96px;
+  overflow: auto !important;
+}
+
+/* Reset all DEVICE global styles when on OS routes */
+html:has(.os-root),
+body:has(.os-root) {
+  background: var(--bg-primary, #EAF2D7) !important;
+  overflow: auto !important;
+}
+
+html:has(.os-root) #root {
+  background: var(--bg-primary, #EAF2D7) !important;
+  touch-action: auto !important;
+}

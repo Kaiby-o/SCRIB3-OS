@@ -1,0 +1,49 @@
+.housing {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--chassis-recess);
+  border: 1px solid var(--inset-border);
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.led {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+}
+
+.off {
+  background: #1A1A1A;
+  box-shadow: none;
+}
+
+.standby {
+  background: var(--blush);
+  box-shadow: 0 0 4px var(--blush);
+}
+
+.active {
+  background: var(--status-ok);
+  box-shadow: 0 0 6px var(--status-ok), 0 0 12px rgba(57, 255, 20, 0.4);
+  animation: indicator-pulse 2s ease-in-out infinite;
+}
+
+.error {
+  background: var(--status-err);
+  box-shadow: 0 0 6px var(--status-err);
+  animation: indicator-blink 0.5s step-end infinite;
+}
+
+@keyframes indicator-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+@keyframes indicator-blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}
