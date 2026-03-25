@@ -1,37 +1,61 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
-import LoginPage from './pages/LoginPage';
-import DashboardPage from './pages/DashboardPage';
-import AvatarCreatorPage from './pages/AvatarCreatorPage';
-import { useAuthStore } from './store/auth.store';
-
-function ProtectedRoute({ children }: { children: React.ReactNode }) {
-  const { user } = useAuthStore();
-  if (!user) return <Navigate to="/login" replace />;
-  return <>{children}</>;
-}
+// OS layer imports
+import OSLanding from './scrib3-os/pages/LandingPage';
+import OSDashboard from './scrib3-os/pages/DashboardPage';
+import OSProfile from './scrib3-os/pages/ProfilePage';
+import { AuthGuard, RoleGuard } from './scrib3-os/components/AuthGuard';
+// DEVICE layer imports
+import DeviceDashboard from './scrib3-device/pages/DashboardPage';
+import AvatarCreatorPage from './scrib3-device/pages/AvatarCreatorPage';
 
 export default function App() {
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/login" element={<LoginPage />} />
+        {/* ===== SCRIB3-OS routes ===== */}
+        <Route path="/" element={<OSLanding />} />
+        <Route path="/login" element={<Navigate to="/" replace />} />
         <Route
-          path="/"
+          path="/dashboard"
           element={
-            <ProtectedRoute>
-              <DashboardPage />
-            </ProtectedRoute>
+            <AuthGuard>
+              <OSDashboard />
+            </AuthGuard>
           }
         />
         <Route
-          path="/avatar-creator"
+          path="/profile/:id"
           element={
-            <ProtectedRoute>
-              <AvatarCreatorPage />
-            </ProtectedRoute>
+            <AuthGuard>
+              <OSProfile />
+            </AuthGuard>
           }
         />
-        <Route path="*" element={<Navigate to="/login" replace />} />
+
+        {/* ===== SCRIB3-DEVICE routes (admin only) ===== */}
+        <Route
+          path="/device"
+          element={
+            <AuthGuard>
+              <RoleGuard allowed={['admin']}>
+                <DeviceDashboard />
+              </RoleGuard>
+            </AuthGuard>
+          }
+        />
+        <Route
+          path="/device/avatar-creator"
+          element={
+            <AuthGuard>
+              <RoleGuard allowed={['admin']}>
+                <AvatarCreatorPage />
+              </RoleGuard>
+            </AuthGuard>
+          }
+        />
+
+        {/* Catch-all */}
+        <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </BrowserRouter>
   );

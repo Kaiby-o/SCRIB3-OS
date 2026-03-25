@@ -1,5 +1,147 @@
 # Changelog
 
+## 2026-03-25 — SCRIB3-OS Rebuild (Session 1)
+
+### Phase 0 — Migration
+- Repo restructured: `src/scrib3-os/` (new) + `src/scrib3-device/` (frozen)
+- Root router splits: `/` → OS, `/device` → DEVICE (admin only)
+- All DEVICE internal navigation updated to `/device` prefix
+- Build verified clean
+
+### Phase 1 — Design Foundation
+- Font files copied to `public/fonts/` (Kaio 7 weights, Owners Wide, NT Stardust)
+- `@font-face` declarations in `src/scrib3-os/styles/fonts.css`
+- Design tokens in `src/scrib3-os/styles/tokens.ts`
+- Tailwind v4 integrated via `@tailwindcss/vite` plugin
+- CSS custom properties for light/dark theming in `os.css`
+- Typography utility classes: `text-display-hero`, `text-display-dash`, `text-body`, etc.
+
+### Phase 2 — Shared Components
+- `PillNav.tsx` — top-centre pill navigation bar
+- `UserProfileCard.tsx` — dark bottom-left card (name, role, XP bar)
+- `ClockDisplay.tsx` — live local time
+- `ModulePanel.tsx` — bento grid panel wrapper with "Coming Soon" placeholder
+- `NavOverlay.tsx` — 3-layer navigation (black overlay → pink sub-category), clip-path animations, escape key, body scroll lock. Context provided via `NavOverlayProvider` + `useNavOverlay` hook
+
+### Phase 3 — Dashboard Core
+- `dashboardConfig.ts` — full role config map (team, client, vendor, csuite, admin)
+- `DashboardLayout.tsx` — single component, reads role from auth store, renders header + grid + profile card + clock + nav overlay. Zero duplication per role.
+
+### Phase 4 — Auth & Routing (partial)
+- `src/scrib3-os/lib/supabase.ts` — OS Supabase client (same project as DEVICE)
+- `src/scrib3-os/hooks/useAuth.ts` — Zustand store with `signIn`, `signOut`, `init` (session persistence), role extraction from profiles table
+- `AuthGuard.tsx` + `RoleGuard.tsx` — route protection components
+- OS Login page wired to real Supabase auth
+- Dashboard reads role from auth, renders appropriate config
+- `/device` route gated behind `AuthGuard` + `RoleGuard(['admin'])`
+- `scripts/seed-users.ts` — interactive CLI script to create 4 seed users (prompts for passwords, never hardcoded)
+
+### Planning Artefacts
+- `PLAN.md`, `PRD.md`
+- `.claude/SKILL-DASHBOARD-VARIANTS.md`, `SKILL-RLS-SUPABASE.md`, `SKILL-NAV-OVERLAY.md`, `SKILL-FONT-SYSTEM.md`, `SKILL-DARK-MODE.md`
+
+---
+
+### Phase 4 (continued) — Seed & RLS
+- SQL migration applied: `role`, `display_name`, `email` columns on profiles + updated CHECK constraint for both DEVICE and OS role values
+- 4 users seeded via `scripts/seed-now.ts`: Ben (admin), Sixtyne (csuite), CK (team), Nick (csuite)
+- Full login → role detection → role-specific dashboard verified (BEN LYDIATT / ADMIN)
+- `get_user_role()` helper function created (SECURITY DEFINER)
+- `project_members` join table created
+- RLS enabled on profiles, projects, project_members, tasks
+- 14 RLS policies applied (see `.claude/SKILL-RLS-SUPABASE.md`)
+
+### Phase 6 — Polish
+- CSS bleed investigated — confirmed as JPEG screenshot artifact, not actual CSS issue
+- All computed backgrounds verified as correct `#EAF2D7`
+- DEVICE layer CSS scoped correctly (body overrides via `body:has(.os-root)`)
+- Final build passes clean (146 modules, 9.28s)
+
+### ✅ SESSION 1 COMPLETE
+
+**All 6 phases done.** The SCRIB3-OS shell is fully functional:
+- Landing (`/`) → Login (`/login`) → Dashboard (`/dashboard`) with real Supabase auth
+- Role-based dashboard layout driven by `dashboardConfig.ts`
+- 3-layer NavOverlay with clip-path animations
+- Profile card shows real user data from Supabase
+- `/device` route admin-gated with RoleGuard
+- RLS policies enforce data access per role
+
+---
+
+## 2026-03-25 — SCRIB3-OS Visual Refinement + Auth (Session 2)
+
+### Landing Page Overhaul
+- Laptop SVG frame (`public/assets/laptop-frame.svg`) as centred background image
+- SCRIB3 text replaced with LogoScrib3 SVG component (`public/assets/logo-scrib3.svg`)
+- ENTER button: 40% height reduction, hover → off-white, spacing matched to wordmark
+- Content cluster: scaled 80%, shifted to sit centred on laptop screen
+- Burger menu icon (`public/assets/icon-burger.svg`) top-right
+
+### Nav Overlay Refinements
+- Dark/Light toggle removed (dark mode deferred)
+- Centre links: Kaio weight 800, 80px, 90% line-height, 16px gap
+- Smaller text: Owners Wide font explicitly set
+- Corner elements: 30% size increase
+- Link spacing: doubled from 0 to 16px gap
+- All four links (HOME, WORK, OUR TEAM, LET'S TALK) → https://scrib3.co/
+
+### Login Dialog
+- Custom login-shape SVG background (`public/assets/login-shape.svg`)
+- Fixed 580px height — shape persists across sign-in / forgot-password views
+- GM SCRIB3R heading + remember-me toggle: blue `#6E93C3`
+- Laptop shrinks away when login opens (scale 0.3 transition)
+- No drop shadow — clean cutout aesthetic
+- All body text: Owners Wide font
+- Forgot password: same dialog shape, content-only swap
+- "Don't have an account? Get in Touch" footer
+
+### Google OAuth
+- `supabase.auth.signInWithOAuth({ provider: 'google' })` wired up
+- Google Cloud OAuth client (Web application type) configured
+- Consent screen branded as SCRIB3-OS with logo
+- Callback URI: `https://dzufyjiczbgsvjyinpks.supabase.co/auth/v1/callback`
+
+### ✅ SESSION 2 COMPLETE
+
+**Next planned work:**
+- Stakeholder journeys: client onboarding → client portals
+- Dashboard content modules (bento grid, metrics)
+- "Having Issues?" email form wiring
+- Visual polish pass on dashboard
+- Seed accounts: `ben.lydiat@scrib3.co` (admin), `sixtyne@scrib3.co` (csuite), `ck@scrib3.co` (team), `nick@scrib3.co` (csuite) — password: `Scrib3Dev2026!`
+
+**Next session priorities:**
+1. Visual refinement against Figma screenshots (page-by-page comparison)
+2. Populate module panels with real placeholder content (charts, lists, cards)
+3. Wire profile page to real data
+4. Test all 5 role dashboard variants
+5. Dark mode toggle functionality
+6. Consider: sign-out button, session expiry handling
+
+---
+
+## 2026-03-22 — Unification Sprint (pre-OS rebuild)
+
+### Migration (Phase 0)
+- **Repo restructure:** Split codebase into `src/scrib3-os/` (new professional platform) and `src/scrib3-device/` (existing gamified admin layer)
+- **All existing code preserved** under `src/scrib3-device/` — nothing deleted
+- **Root router updated:** `/` → OS landing, `/login` → shared auth, `/dashboard` → OS dashboard, `/device` → DEVICE (admin only)
+- **Internal DEVICE navigation updated:** all routes now prefix `/device` to stay within the admin layer
+- **Build verified:** Vite build passes clean, no broken imports
+
+### Planning Artefacts
+- `PLAN.md` — 7-phase build plan with task order, dependencies, tech decisions, risks
+- `PRD.md` — Full product requirements for SCRIB3-OS (roles, pages, user stories, modules, design constraints)
+- `.claude/SKILL-DASHBOARD-VARIANTS.md` — Single `DashboardLayout` + role config pattern
+- `.claude/SKILL-RLS-SUPABASE.md` — Supabase RLS policies for 5 roles
+- `.claude/SKILL-NAV-OVERLAY.md` — 3-layer navigation overlay system
+- `.claude/SKILL-FONT-SYSTEM.md` — Self-hosted font loading (Kaio, Owners Wide, NT Stardust)
+- `.claude/SKILL-DARK-MODE.md` — CSS custom property theming (light/dark toggle)
+- `CLAUDE.md` updated to document the two-layer architecture
+
+---
+
 ## 2026-03-22 — Unification Sprint
 
 ### Session Summary
