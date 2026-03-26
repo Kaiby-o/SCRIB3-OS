@@ -1,4 +1,5 @@
 import React from 'react';
+import { mockEngagements, getHealthTier } from '../../lib/engagementHealth';
 
 /* ------------------------------------------------------------------ */
 /*  Shared micro-components for module panel content                   */
@@ -303,49 +304,74 @@ export const InvoiceStatusContent: React.FC = () => (
 /*  C-SUITE modules                                                    */
 /* ------------------------------------------------------------------ */
 
-export const PortfolioOverviewContent: React.FC = () => (
-  <div className="flex flex-col gap-3">
-    <div className="flex gap-6">
-      <div className="flex flex-col gap-1">
-        <Value large>14</Value>
-        <Label>active projects</Label>
-      </div>
-      <div className="flex flex-col gap-1">
-        <Value large>3</Value>
-        <Label>at risk</Label>
-      </div>
-      <div className="flex flex-col gap-1">
-        <Value large>89%</Value>
-        <Label>on track</Label>
-      </div>
-    </div>
-    <div className="mt-2">
-      <Row left={<><StatusDot color="#D7ABC5" />Nexus Brand Refresh</>} right={<ProgressBar percent={68} color="#D7ABC5" />} />
-      <Row left={<><StatusDot color="#6E93C3" />SCRIB3 Redesign</>} right={<ProgressBar percent={42} color="#6E93C3" />} />
-      <Row left={<><StatusDot color="#000" />Token Campaign</>} right={<ProgressBar percent={91} />} />
-    </div>
-  </div>
-);
+export const PortfolioOverviewContent: React.FC = () => {
+  const totalRemit = mockEngagements.reduce((a, e) => a + e.monthlyRemit, 0);
+  const atRisk = mockEngagements.filter((e) => e.currentMarginPct < 20).length;
 
-export const RevenueContent: React.FC = () => (
-  <div className="flex flex-col gap-3">
-    <div className="flex gap-6">
-      <div className="flex flex-col gap-1">
-        <Value large>$142K</Value>
-        <Label>q1 revenue</Label>
+  return (
+    <div className="flex flex-col gap-3">
+      <div className="flex gap-6">
+        <div className="flex flex-col gap-1">
+          <Value large>{mockEngagements.length}</Value>
+          <Label>engagements</Label>
+        </div>
+        <div className="flex flex-col gap-1">
+          <Value large>{atRisk}</Value>
+          <Label>at risk</Label>
+        </div>
+        <div className="flex flex-col gap-1">
+          <Value large>${(totalRemit / 1000).toFixed(0)}K</Value>
+          <Label>monthly remit</Label>
+        </div>
       </div>
-      <div className="flex flex-col gap-1">
-        <Value>+18%</Value>
-        <Label>vs q4</Label>
+      <div className="mt-2">
+        {mockEngagements.slice(0, 3).map((e) => {
+          const tier = getHealthTier(e.currentMarginPct);
+          return (
+            <Row
+              key={e.id}
+              left={<><StatusDot color={tier.color} />{e.clientName}</>}
+              right={<ProgressBar percent={Math.max(0, e.currentMarginPct)} color={tier.color} />}
+            />
+          );
+        })}
       </div>
     </div>
-    <div className="mt-2">
-      <Row left="Retainer Revenue" right="$82,000" />
-      <Row left="Project Revenue" right="$48,500" />
-      <Row left="Ad Hoc" right="$11,500" muted />
+  );
+};
+
+export const RevenueContent: React.FC = () => {
+  const totalBudgeted = mockEngagements.reduce((a, e) => a + e.totalBudgeted, 0);
+  const totalSpend = mockEngagements.reduce((a, e) => a + e.totalSpend, 0);
+  const totalSurplus = totalBudgeted - totalSpend;
+
+  return (
+    <div className="flex flex-col gap-3">
+      <div className="flex gap-6">
+        <div className="flex flex-col gap-1">
+          <Value large>${(totalBudgeted / 1000).toFixed(0)}K</Value>
+          <Label>total budgeted</Label>
+        </div>
+        <div className="flex flex-col gap-1">
+          <Value>{totalSurplus >= 0 ? '+' : ''}{`$${(totalSurplus / 1000).toFixed(1)}K`}</Value>
+          <Label>surplus</Label>
+        </div>
+      </div>
+      <div className="mt-2">
+        {mockEngagements.slice(0, 3).map((e) => (
+          <Row
+            key={e.id}
+            left={e.clientName}
+            right={`$${(e.monthlyRemit / 1000).toFixed(0)}K/mo`}
+          />
+        ))}
+        {mockEngagements.length > 3 && (
+          <Row left={`+${mockEngagements.length - 3} more`} right="" muted />
+        )}
+      </div>
     </div>
-  </div>
-);
+  );
+};
 
 export const TeamUtilisationContent: React.FC = () => (
   <div className="flex flex-col gap-1">
@@ -360,18 +386,27 @@ export const TeamUtilisationContent: React.FC = () => (
   </div>
 );
 
-export const ClientHealthContent: React.FC = () => (
-  <div className="flex flex-col gap-1">
-    <div className="flex items-center gap-3 mb-3">
-      <Value>8</Value>
-      <Label>active clients</Label>
+export const ClientHealthContent: React.FC = () => {
+  const sorted = [...mockEngagements].sort((a, b) => a.currentMarginPct - b.currentMarginPct);
+  return (
+    <div className="flex flex-col gap-1">
+      <div className="flex items-center gap-3 mb-3">
+        <Value>{mockEngagements.length}</Value>
+        <Label>active engagements</Label>
+      </div>
+      {sorted.slice(0, 4).map((e) => {
+        const tier = getHealthTier(e.currentMarginPct);
+        return (
+          <Row
+            key={e.id}
+            left={<><StatusDot color={tier.color} />{e.clientName}</>}
+            right={`${tier.emoji} ${e.currentMarginPct.toFixed(0)}%`}
+          />
+        );
+      })}
     </div>
-    <Row left={<><StatusDot color="#D7ABC5" />Nexus Labs</>} right="Healthy" />
-    <Row left={<><StatusDot color="#6E93C3" />BlockVenture</>} right="Healthy" />
-    <Row left={<><StatusDot color="#D7ABC5" />MetaDAO</>} right="At Risk" />
-    <Row left={<><StatusDot color="#000" />ChainPay</>} right="Healthy" muted />
-  </div>
-);
+  );
+};
 
 export const KeyMetricsContent: React.FC = () => (
   <div

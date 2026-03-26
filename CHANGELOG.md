@@ -65,13 +65,31 @@
 - Routes gated behind `AuthGuard` + `RoleGuard(['admin', 'team', 'csuite'])`
 - Nav overlay "Client List" and "Onboarding" sub-items now route to `/clients` and `/clients/onboard`
 
+### 🔴 Engagement Health Calculator (Plan v4 §3D — Sixtyne priority)
+- **`/finance`** — Engagement Health overview (admin/csuite gated)
+  - All 6 priority clients: Cardano, Franklin Templeton, Rootstock, Rome Protocol, Midnight, Canton
+  - Summary stats: monthly remit total, total budgeted, total spend, surplus, avg margin, at-risk count
+  - Table sorted by margin (worst first): client, account lead, monthly remit, actual vs budget, surplus, margin bar, health badge
+  - Health tiers from Notion $CRIB3: 🔴 Loss (≤0%) → 🟠 Break Even (0-20%) → 🟡 Acceptable (20-30%) → 🟢 Healthy (30-40%) → ⭐ Great (≥40%)
+  - Tier legend in header
+- **`/finance/:slug`** — Per-client detail page
+  - Contract info cards: monthly remit, target margin, safety buffer, floor, overhead, avg $/day, surplus, working days
+  - Monthly Gantt breakdown table: budgeted, team costs, vendor costs, expenses, total spend, difference, margin, cumulative difference, health emoji
+  - Floor breach rows highlighted in red
+  - **SOW Forecast simulator** — "what if" mode: input any revenue figure + months ahead → see projected cost, margin, surplus, health tier
+- **Data layer**: `engagementHealth.ts` — types, mock data for 6 clients, health tier calculator, forecast simulator
+- **C-Suite dashboard modules updated**: Portfolio Overview, Revenue, and Client Health now pull from real engagement data instead of static placeholders
+- **Nav wiring**: Revenue, Costs, Forecasts, Health sub-items → `/finance`
+
 ### ✅ SESSION 3 COMPLETE
 
-**Next planned work:**
+**Next planned work (from Plan v4):**
+- 🔴 Bandwidth Estimates (Sixtyne) — native form replacing Fillout, Friday auto-send, Monday digest
+- 🔴 Vendor & Invoice system (Sixtyne — Montana gap) — vendor onboarding, invoice flow, Camila routing
+- 🔴 Pre-alignment framework (Nick) — mandatory checklist before any production work
+- 🔴 Scope Watch (Sixtyne + Elena) — per-client out-of-scope request tracking
+- Connect finance calculator to Supabase
 - Figma screenshot comparison + pixel polish
-- Connect onboarding form to Supabase (create client records)
-- Consider: real-time data modules, notification system
-- Sub-item routes: expand as new pages are built
 
 ---
 
