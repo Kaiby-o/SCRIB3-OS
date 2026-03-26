@@ -34,14 +34,27 @@
 - Auto-redirect to own profile when no ID provided
 - Back button with hover interaction
 
+### Dark Mode Toggle
+- `useTheme.ts` — Zustand store with localStorage persistence
+- FOUC prevention: inline `<script>` in `index.html` sets `data-theme` before React hydrates
+- Dark/Light pill toggle in NavOverlay Layer 1 (top-left) with pink active state
+- CSS custom properties already defined in `os.css` (`[data-theme="dark"]`) — now fully wired
+- Pink accent unchanged in both modes (brand constant)
+- Overlay backgrounds, profile card — fixed colours (not theme-responsive)
+
+### Nav Overlay Sub-Item Navigation
+- Sub-items now navigate to routes on click (closes overlay, navigates)
+- Admin DEVICE sub-items route to `/device` and `/device/avatar-creator`
+- Category heading label shown at top-centre of Layer 2
+- All other sub-items currently route to `/dashboard` (ready for future page expansion)
+
 ### ✅ SESSION 3 COMPLETE
 
 **Next planned work:**
 - Figma screenshot comparison + pixel polish
-- Dark mode toggle functionality
-- Wire nav overlay sub-items to actual navigation
-- Consider: real-time data modules, notification system
 - Client onboarding flow
+- Consider: real-time data modules, notification system
+- Sub-item routes: expand as new pages are built
 
 ---
 
