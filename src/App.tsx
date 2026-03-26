@@ -7,6 +7,9 @@ import OSClientList from './scrib3-os/pages/ClientListPage';
 import OSClientOnboard from './scrib3-os/pages/ClientOnboardPage';
 import OSFinanceOverview from './scrib3-os/pages/FinanceOverviewPage';
 import OSFinanceDetail from './scrib3-os/pages/FinanceDetailPage';
+import OSVendorManagement from './scrib3-os/pages/VendorManagementPage';
+import OSVendorOnboard from './scrib3-os/pages/VendorOnboardPage';
+import OSPreAlignment from './scrib3-os/pages/PreAlignmentPage';
 import { AuthGuard, RoleGuard } from './scrib3-os/components/AuthGuard';
 // DEVICE layer imports
 import DeviceDashboard from './scrib3-device/pages/DashboardPage';
@@ -72,6 +75,37 @@ export default function App() {
             <AuthGuard>
               <RoleGuard allowed={['admin', 'csuite']}>
                 <OSFinanceDetail />
+              </RoleGuard>
+            </AuthGuard>
+          }
+        />
+
+        <Route
+          path="/vendors"
+          element={
+            <AuthGuard>
+              <RoleGuard allowed={['admin', 'team', 'csuite']}>
+                <OSVendorManagement />
+              </RoleGuard>
+            </AuthGuard>
+          }
+        />
+        <Route
+          path="/vendors/onboard"
+          element={
+            <AuthGuard>
+              <RoleGuard allowed={['admin', 'team', 'csuite']}>
+                <OSVendorOnboard />
+              </RoleGuard>
+            </AuthGuard>
+          }
+        />
+        <Route
+          path="/pre-alignment"
+          element={
+            <AuthGuard>
+              <RoleGuard allowed={['admin', 'team', 'csuite']}>
+                <OSPreAlignment />
               </RoleGuard>
             </AuthGuard>
           }

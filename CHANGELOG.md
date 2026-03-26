@@ -81,14 +81,43 @@
 - **C-Suite dashboard modules updated**: Portfolio Overview, Revenue, and Client Health now pull from real engagement data instead of static placeholders
 - **Nav wiring**: Revenue, Costs, Forecasts, Health sub-items → `/finance`
 
+### 🔴 Vendor & Invoice System (Plan v4 §3F — Sixtyne, Montana gap)
+- **`/vendors`** — Vendor management page with tab switcher (Vendors | Invoices)
+  - **Vendors tab**: 5 mock vendors with onboarding status, bank/tax form tracking, work type, SCRIB3 POC
+  - Stats: total vendors, onboarded, pending
+  - "+ New Vendor" button → `/vendors/onboard`
+  - **Invoices tab**: 5 mock invoices with line items (project code + client per line)
+  - Invoice flow documented: submit → POC validates → Camila processes payment
+  - Filter pills: all, submitted, validated, processing, paid, rejected
+  - Stats: awaiting review $, in processing $, paid $
+- **`/vendors/onboard`** — Vendor onboarding form
+  - Fields: name, email, business name, mailing address, SCRIB3 POC, work type
+  - Payment section: bank/ACH checkbox, tax form type (W9/W8BEN-E), tax form submitted
+  - Currency: USD, US format
+  - Rule enforced: no invoice accepted without completed onboarding
+- **Data layer**: `vendors.ts` — vendor profiles, invoices, status types, color mapping
+- Routes gated to admin/team/csuite
+- Nav sub-items wired: vendor-related items → `/vendors`
+
+### 🔴 Pre-Alignment Framework (Plan v4 §3G — Nick)
+- **`/pre-alignment`** — Mandatory project alignment checklist
+  - **Pre-Alignment Checklist** (10 fields): production lead, creative lead, account lead, executors, done definition, timeline, in-scope, not-in-scope, approval chain, where everything lives
+  - **Five-Bullet Brief** (5 fields): objective, tone, audience, constraints, success criteria
+  - **Comprehension Loop**: recipient reflection + briefer confirmation checkbox
+  - Progress bar: X/17 fields complete
+  - Green check dots on filled fields, section badges
+  - Submit blocked until ALL fields complete — "Blocked — alignment incomplete" until then
+  - Success screen: project cleared for production
+- Route gated to admin/team/csuite
+- Nav "Proposals" sub-item → `/pre-alignment`
+
 ### ✅ SESSION 3 COMPLETE
 
 **Next planned work (from Plan v4):**
 - 🔴 Bandwidth Estimates (Sixtyne) — native form replacing Fillout, Friday auto-send, Monday digest
-- 🔴 Vendor & Invoice system (Sixtyne — Montana gap) — vendor onboarding, invoice flow, Camila routing
-- 🔴 Pre-alignment framework (Nick) — mandatory checklist before any production work
 - 🔴 Scope Watch (Sixtyne + Elena) — per-client out-of-scope request tracking
-- Connect finance calculator to Supabase
+- Phase 2: Team profiles, PD system, team directory (full team seed)
+- Connect all systems to Supabase (finance, vendors, invoices, pre-alignment)
 - Figma screenshot comparison + pixel polish
 
 ---
