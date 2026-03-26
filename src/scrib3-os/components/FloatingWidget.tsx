@@ -55,7 +55,7 @@ const FloatingWidget: React.FC = () => {
         }}
         onClick={() => setExpanded(true)}
       >
-        <ProfileAvatar name={displayName} size={32} />
+        <ProfileAvatar name={displayName} size={32} avatarUrl={profile?.avatar_url} />
         <span style={{ fontFamily: "'Kaio', sans-serif", fontWeight: 900, fontSize: '13px', color: '#EAF2D7', textTransform: 'uppercase' }}>
           {displayName}
         </span>
@@ -76,7 +76,7 @@ const FloatingWidget: React.FC = () => {
       }}
     >
       {/* Profile picture */}
-      <ProfileAvatar name={displayName} size={48} />
+      <ProfileAvatar name={displayName} size={48} avatarUrl={profile?.avatar_url} />
 
       {/* User info */}
       <div className="flex flex-col gap-0" style={{ minWidth: 0 }}>
@@ -195,7 +195,7 @@ const FloatingWidget: React.FC = () => {
 /*  Profile Avatar — hexagonal/rounded shape with 2px offwhite stroke  */
 /* ------------------------------------------------------------------ */
 
-const ProfileAvatar: React.FC<{ name: string; size: number }> = ({ name, size }) => (
+const ProfileAvatar: React.FC<{ name: string; size: number; avatarUrl?: string | null }> = ({ name, size, avatarUrl }) => (
   <div
     style={{
       width: size,
@@ -210,9 +210,13 @@ const ProfileAvatar: React.FC<{ name: string; size: number }> = ({ name, size })
       overflow: 'hidden',
     }}
   >
-    <span style={{ color: '#EAF2D7', fontFamily: "'Kaio', sans-serif", fontWeight: 900, fontSize: size * 0.38 }}>
-      {name.split(' ').map((w) => w[0]).join('').toUpperCase().slice(0, 2)}
-    </span>
+    {avatarUrl ? (
+      <img src={avatarUrl} alt={name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+    ) : (
+      <span style={{ color: '#EAF2D7', fontFamily: "'Kaio', sans-serif", fontWeight: 900, fontSize: size * 0.38 }}>
+        {name.split(' ').map((w) => w[0]).join('').toUpperCase().slice(0, 2)}
+      </span>
+    )}
   </div>
 );
 
