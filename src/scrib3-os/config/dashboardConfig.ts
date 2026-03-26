@@ -126,13 +126,36 @@ const csuiteConfig: DashboardConfig = {
   gridColumns: 'repeat(3, 1fr)',
 }
 
+const adminConfig: DashboardConfig = {
+  headerLabel: 'ADMIN DASHBOARD',
+  pillNavItems: ['Overview', 'Projects', 'Team', 'System'],
+  categories: [
+    { label: 'TEAM', subItems: ['Directory', 'Profiles', 'Activity'] },
+    { label: 'UNITS', subItems: ['Business Units', 'Departments'] },
+    { label: 'CLIENTS', subItems: ['Client List', 'Onboarding'] },
+    { label: 'PROJECTS', subItems: ['Active', 'Archived', 'Proposals'] },
+    { label: 'SYSTEM', subItems: ['Users', 'Roles', 'Settings', 'Logs'] },
+    { label: 'DEVICE', subItems: ['Virtual Office', 'Avatar Creator'] },
+  ],
+  modules: [
+    { id: 'active-projects', label: 'ACTIVE PROJECTS', gridArea: 'projects' },
+    { id: 'task-queue', label: 'TASK QUEUE', gridArea: 'tasks' },
+    { id: 'team-activity', label: 'TEAM ACTIVITY', gridArea: 'activity' },
+    { id: 'system-overview', label: 'SYSTEM OVERVIEW', gridArea: 'system' },
+    { id: 'recent-files', label: 'RECENT FILES', gridArea: 'files' },
+  ],
+  gridTemplate: `
+    "projects projects tasks"
+    "activity system system"
+    "files files files"
+  `,
+  gridColumns: 'repeat(3, 1fr)',
+}
+
 export const dashboardConfigs: Record<UserRole, DashboardConfig> = {
   team: teamConfig,
   client: clientConfig,
   vendor: vendorConfig,
   csuite: csuiteConfig,
-  admin: {
-    ...teamConfig,
-    headerLabel: 'ADMIN DASHBOARD',
-  },
+  admin: adminConfig,
 }

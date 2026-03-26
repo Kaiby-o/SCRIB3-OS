@@ -52,7 +52,7 @@ export const NavOverlayProvider: React.FC<NavOverlayProviderProps> = ({
     null,
   );
   const [categoryOrigin, setCategoryOrigin] = useState({ x: '100%', y: '0%' });
-  const [darkMode, setDarkMode] = useState(true);
+  const [_darkMode, _setDarkMode] = useState(true);
   const issuesInputRef = useRef<HTMLInputElement>(null);
 
   /* helpers */

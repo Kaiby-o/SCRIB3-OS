@@ -1,5 +1,50 @@
 # Changelog
 
+## 2026-03-26 — SCRIB3-OS Dashboard Content + Polish (Session 3)
+
+### Build Fixes
+- Fixed all TypeScript errors across OS and DEVICE layers (unused vars, type mismatches, erasableSyntaxOnly violations)
+- Build now passes clean
+
+### Dashboard Module Content
+- Created `ModuleContent.tsx` — 19 content components for all 5 role dashboards
+- **Team/Admin**: Active Projects (7 with progress), Task Queue (12 pending), Team Activity (live feed), Internal Comms (3 unread), Recent Files
+- **Client**: My Projects (3 active), Deliverables (4 awaiting review), Timeline (milestones), Approvals (2 pending), Contact (account manager card)
+- **Vendor**: Assigned Briefs (3 active), File Exchange (6 uploaded), Deadlines (4 upcoming), Invoice Status ($4,200 outstanding)
+- **C-Suite**: Portfolio Overview (14 projects, 89% on track), Revenue ($142K Q1), Team Utilisation (76% avg), Client Health (8 active), Key Metrics (4-stat grid)
+- **Admin**: System Overview (users, roles, RLS policies, OAuth status) — unique to admin role
+
+### Admin Dashboard
+- Admin now has its own distinct config (not just a copy of team)
+- Admin-specific nav categories: SYSTEM (Users, Roles, Settings, Logs), DEVICE (Virtual Office, Avatar Creator)
+- Admin-specific pill nav: Overview, Projects, Team, System
+
+### Dashboard Polish
+- Header: SCRIB3 text replaced with LogoScrib3 SVG component
+- Header: Hamburger icon now uses consistent SVG (matches landing page)
+- Sign-out button added (bottom-left, subtle hover reveal)
+- Profile card expand button navigates to `/profile/:id`
+
+### Profile Page Overhaul
+- Horizontal avatar + name layout (editorial style)
+- Role title mapping (admin → Administrator, csuite → Executive, etc.)
+- 4-card info grid: Email, Experience, Status, Joined date
+- XP progress bar with pink fill
+- "This is your profile" indicator for own profile
+- Auto-redirect to own profile when no ID provided
+- Back button with hover interaction
+
+### ✅ SESSION 3 COMPLETE
+
+**Next planned work:**
+- Figma screenshot comparison + pixel polish
+- Dark mode toggle functionality
+- Wire nav overlay sub-items to actual navigation
+- Consider: real-time data modules, notification system
+- Client onboarding flow
+
+---
+
 ## 2026-03-25 — SCRIB3-OS Rebuild (Session 1)
 
 ### Phase 0 — Migration

@@ -14,7 +14,7 @@ export class MovementSystem {
   private isMoving = false;
   private spriteKey = '';
 
-  constructor(private scene: Phaser.Scene) {
+  constructor(scene: Phaser.Scene) {
     if (scene.input.keyboard) {
       this.cursors = scene.input.keyboard.createCursorKeys();
       this.wasd = {

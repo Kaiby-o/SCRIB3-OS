@@ -18,7 +18,7 @@ export class InteractionSystem {
   private nearestId: string | null = null;
   private interactCooldown = 0;
 
-  constructor(private scene: Phaser.Scene) {}
+  constructor(_scene: Phaser.Scene) {}
 
   registerObject(data: InteractableData): void {
     this.interactables.push(data);

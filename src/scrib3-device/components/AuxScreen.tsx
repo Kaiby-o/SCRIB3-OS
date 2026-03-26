@@ -100,7 +100,7 @@ function useClock() {
 export default function AuxScreen({
   hwMode,
   visible,
-  onClose,
+  onClose: _onClose,
   isOwnProfile = true,
 }: AuxScreenProps) {
   const { aesthetic } = useSettingsStore();

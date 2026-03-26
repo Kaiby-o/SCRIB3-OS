@@ -78,7 +78,7 @@ export function generateAvatarCanvas(
 function drawAvatar(
   c: CanvasRenderingContext2D,
   ox: number,
-  cfg: AvatarConfig,
+  cfg: import('./AvatarConfig').LegacyAvatarConfig,
   skin: string,
   skinShade: string,
   initials: string,

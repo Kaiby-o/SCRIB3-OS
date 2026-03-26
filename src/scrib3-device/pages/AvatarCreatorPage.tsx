@@ -166,7 +166,9 @@ function getLayerFileList(manifest: Manifest, sel: Selections): string[] {
 }
 
 /* ─── Layer Preview: draws a single frame from a layer spritesheet ─── */
-function LayerPreview({
+// @ts-expect-error preserved for future use
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+function _LayerPreview({
   file,
   scale = 2.5,
   col = 1,

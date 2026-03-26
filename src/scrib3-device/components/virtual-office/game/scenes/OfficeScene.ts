@@ -119,7 +119,7 @@ export class OfficeScene extends Phaser.Scene {
           const cctx = cvs.getContext('2d')!;
           cctx.drawImage(img, 0, 0);
           if (!this.textures.exists(texKey)) {
-            this.textures.addSpriteSheet(texKey, cvs, { frameWidth: 32, frameHeight: 32 });
+            this.textures.addSpriteSheet(texKey, cvs as unknown as HTMLImageElement, { frameWidth: 32, frameHeight: 32 });
             this.createWalkAnimations(texKey);
             // Re-apply texture to player once loaded
             if (this.player) {

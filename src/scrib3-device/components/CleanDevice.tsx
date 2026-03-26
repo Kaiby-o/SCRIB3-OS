@@ -31,7 +31,6 @@ export default function CleanDevice({ hwMode, children }: CleanDeviceProps) {
     ? 'inset 3px 3px 8px rgba(0,0,0,0.4), inset -3px -3px 8px rgba(255,255,255,0.02)'
     : 'inset 3px 3px 8px rgba(0,0,0,0.06), inset -3px -3px 8px rgba(255,255,255,0.5)';
   const accent = '#D7ABC5';
-  const accentDim = isDark ? 'rgba(215,171,197,0.15)' : 'rgba(215,171,197,0.2)';
 
   return (
     <div style={{

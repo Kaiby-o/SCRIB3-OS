@@ -3,7 +3,7 @@ import { useSettingsStore } from '../store/settings.store';
 import avatarSrc from '../assets/avatars/bencrt 1.svg';
 
 export default function ProfileCard({
-  bgMode,
+  bgMode: _bgMode,
   hwMode,
   visible,
   onClick,

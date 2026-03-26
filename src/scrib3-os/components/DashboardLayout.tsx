@@ -1,11 +1,14 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import PillNav from './PillNav';
 import UserProfileCard from './UserProfileCard';
 import ClockDisplay from './ClockDisplay';
 import ModulePanel from './ModulePanel';
+import LogoScrib3 from './LogoScrib3';
 import { NavOverlayProvider, useNavOverlay } from './NavOverlay';
 import { dashboardConfigs, type UserRole } from '../config/dashboardConfig';
 import { useAuthStore } from '../hooks/useAuth';
+import { moduleContentMap } from './modules/ModuleContent';
 
 /* ------------------------------------------------------------------ */
 /*  Inner layout (needs NavOverlay context)                            */
@@ -13,7 +16,8 @@ import { useAuthStore } from '../hooks/useAuth';
 
 const DashboardInner: React.FC<{ role: UserRole }> = ({ role }) => {
   const navOverlay = useNavOverlay();
-  const { profile } = useAuthStore();
+  const navigate = useNavigate();
+  const { profile, signOut, user } = useAuthStore();
   const config = dashboardConfigs[role];
   const [activeNav, setActiveNav] = React.useState(config.pillNavItems[0]);
 
@@ -31,16 +35,7 @@ const DashboardInner: React.FC<{ role: UserRole }> = ({ role }) => {
         }}
       >
         {/* Logo */}
-        <span
-          style={{
-            fontFamily: "'Kaio', sans-serif",
-            fontWeight: 900,
-            fontSize: '20px',
-            textTransform: 'uppercase',
-          }}
-        >
-          SCRIB3
-        </span>
+        <LogoScrib3 height={18} color="var(--text-primary)" />
 
         {/* Centre nav */}
         <PillNav
@@ -53,16 +48,24 @@ const DashboardInner: React.FC<{ role: UserRole }> = ({ role }) => {
         <button
           onClick={navOverlay.open}
           style={{
-            fontFamily: "'Kaio', sans-serif",
-            fontSize: '24px',
-            color: 'var(--text-primary)',
             background: 'none',
             border: 'none',
             cursor: 'pointer',
+            padding: '8px',
           }}
           aria-label="Open navigation menu"
         >
-          &#9776;
+          <svg
+            width="28"
+            height="28"
+            viewBox="0 0 56 56"
+            fill="none"
+          >
+            <path
+              d="M42.5 33.7998H13.5V31.8662H42.5V33.7998ZM42.5 24.1338H13.5V22.2002H42.5V24.1338Z"
+              fill="var(--text-primary)"
+            />
+          </svg>
         </button>
       </header>
 
@@ -80,13 +83,18 @@ const DashboardInner: React.FC<{ role: UserRole }> = ({ role }) => {
           gap: '16px',
         }}
       >
-        {config.modules.map((mod) => (
-          <ModulePanel
-            key={mod.id}
-            label={mod.label}
-            style={{ gridArea: mod.gridArea }}
-          />
-        ))}
+        {config.modules.map((mod) => {
+          const Content = moduleContentMap[mod.id];
+          return (
+            <ModulePanel
+              key={mod.id}
+              label={mod.label}
+              style={{ gridArea: mod.gridArea }}
+            >
+              {Content ? <Content /> : undefined}
+            </ModulePanel>
+          );
+        })}
       </main>
 
       {/* ---- Fixed Bottom-Left ---- */}
@@ -100,9 +108,30 @@ const DashboardInner: React.FC<{ role: UserRole }> = ({ role }) => {
           avatarUrl={profile?.avatar_url ?? undefined}
           xp={profile?.xp ?? 0}
           maxXp={100}
+          onExpand={() => user?.id && navigate(`/profile/${user.id}`)}
         />
-        <div style={{ paddingLeft: '20px' }}>
+        <div className="flex items-center gap-4" style={{ paddingLeft: '20px' }}>
           <ClockDisplay />
+          <button
+            onClick={() => signOut()}
+            style={{
+              fontFamily: "'Owners Wide', sans-serif",
+              fontSize: '11px',
+              letterSpacing: '1px',
+              textTransform: 'uppercase',
+              color: 'var(--text-primary)',
+              opacity: 0.4,
+              background: 'none',
+              border: 'none',
+              cursor: 'pointer',
+              padding: 0,
+              transition: 'opacity 0.2s',
+            }}
+            onMouseEnter={(e) => (e.currentTarget.style.opacity = '1')}
+            onMouseLeave={(e) => (e.currentTarget.style.opacity = '0.4')}
+          >
+            Sign Out
+          </button>
         </div>
       </div>
     </div>
@@ -114,7 +143,7 @@ const DashboardInner: React.FC<{ role: UserRole }> = ({ role }) => {
 /* ------------------------------------------------------------------ */
 
 const DashboardLayout: React.FC = () => {
-  const { role: authRole, profile } = useAuthStore();
+  const { role: authRole } = useAuthStore();
   const role: UserRole = authRole ?? 'team';
   const config = dashboardConfigs[role];
 

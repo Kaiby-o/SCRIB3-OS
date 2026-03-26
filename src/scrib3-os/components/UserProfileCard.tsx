@@ -6,6 +6,7 @@ interface UserProfileCardProps {
   avatarUrl?: string;
   xp?: number;
   maxXp?: number;
+  onExpand?: () => void;
 }
 
 const UserProfileCard: React.FC<UserProfileCardProps> = ({
@@ -14,6 +15,7 @@ const UserProfileCard: React.FC<UserProfileCardProps> = ({
   avatarUrl,
   xp = 0,
   maxXp = 100,
+  onExpand,
 }) => {
   const xpPercent = maxXp > 0 ? Math.min((xp / maxXp) * 100, 100) : 0;
 
@@ -104,6 +106,7 @@ const UserProfileCard: React.FC<UserProfileCardProps> = ({
           background: 'transparent',
           color: '#EAF2D7',
         }}
+        onClick={onExpand}
         aria-label="Expand profile"
       >
         <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
