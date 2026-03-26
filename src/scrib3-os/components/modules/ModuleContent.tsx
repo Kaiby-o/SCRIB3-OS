@@ -238,7 +238,7 @@ export const ContactContent: React.FC = () => (
       </div>
       <div className="flex flex-col">
         <span style={{ fontFamily: "'Owners Wide', sans-serif", fontSize: '14px', letterSpacing: '0.5px' }}>
-          Ben Lydiatt
+          Ben Lydiat
         </span>
         <span style={{ fontFamily: "'Owners Wide', sans-serif", fontSize: '11px', opacity: 0.5, letterSpacing: '0.5px' }}>
           ben@scrib3.co

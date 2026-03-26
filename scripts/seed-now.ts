@@ -17,7 +17,7 @@ const supabase = createClient(SUPABASE_URL, SERVICE_ROLE_KEY, {
 });
 
 const USERS = [
-  { email: 'ben.lydiat@scrib3.co', display_name: 'Ben Lydiatt', role: 'admin' },
+  { email: 'ben.lydiat@scrib3.co', display_name: 'Ben Lydiat', role: 'admin' },
   { email: 'sixtyne@scrib3.co', display_name: 'Sixtyne Perez', role: 'csuite' },
   { email: 'ck@scrib3.co', display_name: 'CK', role: 'team' },
   { email: 'nick@scrib3.co', display_name: 'Nick Mitchell', role: 'csuite' },

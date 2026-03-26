@@ -60,7 +60,7 @@ const defaultForm: OnboardForm = {
   slackChannel: '',
   notionHub: '',
   driveFolder: '',
-  accountLead: 'Ben Lydiatt',
+  accountLead: 'Ben Lydiat',
   kickoffDate: '',
   firstDeliverable: '',
   milestones: '',
@@ -407,7 +407,7 @@ const PhaseSetup: React.FC<PhaseProps> = ({ form, update }) => (
       label="Account Lead"
       value={form.accountLead}
       onChange={(v) => update('accountLead', v)}
-      options={['Ben Lydiatt', 'Sixtyne Perez', 'CK', 'Nick Mitchell']}
+      options={['Ben Lydiat', 'Sixtyne Perez', 'CK', 'Nick Mitchell']}
     />
   </div>
 );

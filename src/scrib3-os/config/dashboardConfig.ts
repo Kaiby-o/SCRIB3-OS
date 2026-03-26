@@ -13,6 +13,7 @@ export interface ModuleConfig {
   id: string
   label: string
   gridArea: string
+  pillFilter?: string[] // which pills show this module (undefined = show on all)
 }
 
 export interface DashboardConfig {
@@ -26,7 +27,7 @@ export interface DashboardConfig {
 
 const teamConfig: DashboardConfig = {
   headerLabel: 'TEAM DASHBOARD',
-  pillNavItems: ['Overview', 'Projects', 'Tasks', 'Files'],
+  pillNavItems: ['Overview', 'Projects', 'Tasks', 'Comms'],
   categories: [
     { label: 'TEAM', subItems: ['Directory', 'Profiles', 'Activity'] },
     { label: 'UNITS', subItems: ['Business Units', 'Departments'] },
@@ -36,16 +37,14 @@ const teamConfig: DashboardConfig = {
     { label: 'TOOLS', subItems: ['Resources', 'Templates', 'Integrations'] },
   ],
   modules: [
-    { id: 'active-projects', label: 'ACTIVE PROJECTS', gridArea: 'projects' },
-    { id: 'task-queue', label: 'TASK QUEUE', gridArea: 'tasks' },
-    { id: 'team-activity', label: 'TEAM ACTIVITY', gridArea: 'activity' },
-    { id: 'comms', label: 'INTERNAL COMMS', gridArea: 'comms' },
-    { id: 'recent-files', label: 'RECENT FILES', gridArea: 'files' },
+    { id: 'active-projects', label: 'ACTIVE PROJECTS', gridArea: 'projects', pillFilter: ['Overview', 'Projects'] },
+    { id: 'task-queue', label: 'TASK QUEUE', gridArea: 'tasks', pillFilter: ['Overview', 'Tasks'] },
+    { id: 'team-activity', label: 'TEAM ACTIVITY', gridArea: 'activity', pillFilter: ['Overview', 'Comms'] },
+    { id: 'comms', label: 'INTERNAL COMMS', gridArea: 'comms', pillFilter: ['Overview', 'Comms'] },
   ],
   gridTemplate: `
     "projects projects tasks"
     "activity comms comms"
-    "files files files"
   `,
   gridColumns: 'repeat(3, 1fr)',
 }
@@ -137,16 +136,14 @@ const adminConfig: DashboardConfig = {
     { label: 'SYSTEM', subItems: ['Users', 'Roles', 'Settings', 'Logs'] },
   ],
   modules: [
-    { id: 'active-projects', label: 'ACTIVE PROJECTS', gridArea: 'projects' },
-    { id: 'task-queue', label: 'TASK QUEUE', gridArea: 'tasks' },
-    { id: 'team-activity', label: 'TEAM ACTIVITY', gridArea: 'activity' },
-    { id: 'system-overview', label: 'SYSTEM OVERVIEW', gridArea: 'system' },
-    { id: 'recent-files', label: 'RECENT FILES', gridArea: 'files' },
+    { id: 'active-projects', label: 'ACTIVE PROJECTS', gridArea: 'projects', pillFilter: ['Overview', 'Projects'] },
+    { id: 'task-queue', label: 'TASK QUEUE', gridArea: 'tasks', pillFilter: ['Overview', 'Projects'] },
+    { id: 'team-activity', label: 'TEAM ACTIVITY', gridArea: 'activity', pillFilter: ['Overview', 'Team'] },
+    { id: 'system-overview', label: 'SYSTEM OVERVIEW', gridArea: 'system', pillFilter: ['Overview', 'System'] },
   ],
   gridTemplate: `
     "projects projects tasks"
     "activity system system"
-    "files files files"
   `,
   gridColumns: 'repeat(3, 1fr)',
 }

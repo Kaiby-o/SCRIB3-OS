@@ -18,7 +18,7 @@ const easing = 'cubic-bezier(0.22, 0.61, 0.36, 1)';
 const FloatingWidget: React.FC = () => {
   const navigate = useNavigate();
   const { profile, role } = useAuthStore();
-  const [expanded, setExpanded] = useState(true);
+  const [expanded, setExpanded] = useState(false);
 
   // Mock values — in production these come from Supabase
   const xp = profile?.xp ?? 0;
@@ -52,7 +52,7 @@ const FloatingWidget: React.FC = () => {
           {displayName}
         </span>
         <OnlineDot />
-        <span style={{ color: '#EAF2D7', fontSize: '16px', opacity: 0.5 }}>‹</span>
+        <span style={{ color: '#EAF2D7', fontSize: '16px', opacity: 0.5 }}>›</span>
       </div>
     );
   }

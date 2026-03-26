@@ -15,7 +15,7 @@ SCRIB3-OS is a browser-native internal operating platform for SCRIB3, a Web3/bra
 
 | Role | Access Level | Description | Example Users |
 |------|-------------|-------------|---------------|
-| `admin` | Full — OS + DEVICE | Product owner. Full platform access including DEVICE admin layer. | Ben Lydiatt |
+| `admin` | Full — OS + DEVICE | Product owner. Full platform access including DEVICE admin layer. | Ben Lydiat |
 | `team` | OS — full internal | SCRIB3 team members. All internal dashboards, team profiles, project views. | CK |
 | `csuite` | OS — strategic | C-suite leadership. High-level project status, financial overview, team performance. | Sixtyne Perez, Nick Mitchell |
 | `client` | OS — scoped | External clients. Their projects only — deliverables, timelines, approvals. | (TBD — seed later) |

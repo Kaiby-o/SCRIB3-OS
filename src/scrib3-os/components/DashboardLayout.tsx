@@ -78,7 +78,9 @@ const DashboardInner: React.FC<{ role: UserRole }> = ({ role }) => {
           gap: '16px',
         }}
       >
-        {config.modules.map((mod) => {
+        {config.modules
+          .filter((mod) => !mod.pillFilter || mod.pillFilter.includes(activeNav))
+          .map((mod) => {
           const Content = moduleContentMap[mod.id];
           return (
             <ModulePanel

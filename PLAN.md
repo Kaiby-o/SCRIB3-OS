@@ -1,6 +1,6 @@
 # SCRIB3-OS Build Plan
 
-> **Version:** 2.0 | **Date:** 2026-03-26 | **Author:** Ben Lydiatt + Claude
+> **Version:** 2.0 | **Date:** 2026-03-26 | **Author:** Ben Lydiat + Claude
 > **Status:** PHASES 1–6 SHELL COMPLETE. Plan v4 integrated. All 5 red priorities built.
 > **Last session:** 2026-03-26 (Session 3). Massive build sprint — 24 routes, 11 data layers, 29-person team roster, 6 priority clients, floating widget, XP system, all nav sub-items wired to real pages. Next: Supabase wiring, mobile pass, drag-and-drop dashboards.
 

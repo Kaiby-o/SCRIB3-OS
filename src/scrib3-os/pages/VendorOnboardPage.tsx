@@ -23,7 +23,7 @@ const defaultForm: VendorForm = {
   email: '',
   businessName: '',
   mailingAddress: '',
-  scrib3Poc: 'Ben Lydiatt',
+  scrib3Poc: 'Ben Lydiat',
   workType: '',
   bankDetailsSubmitted: false,
   taxFormType: 'w9',
@@ -102,7 +102,7 @@ const VendorOnboardPage: React.FC = () => {
             <Field label="Business Name" value={form.businessName} onChange={(v) => update('businessName', v)} placeholder="Legal business name" />
             <Field label="Mailing Address" value={form.mailingAddress} onChange={(v) => update('mailingAddress', v)} placeholder="Full mailing address" multiline />
             <Select label="Primary SCRIB3 Point of Contact" value={form.scrib3Poc} onChange={(v) => update('scrib3Poc', v)}
-              options={['Ben Lydiatt', 'Elena Zheng', 'Omar Anwar', 'Kevin Moran', 'Samantha Kelly', 'Matthew Brannon', 'Madisen', 'Kim']} />
+              options={['Ben Lydiat', 'Elena Zheng', 'Omar Anwar', 'Kevin Moran', 'Samantha Kelly', 'Matthew Brannon', 'Madisen', 'Kim']} />
             <Select label="Type of Work" value={form.workType} onChange={(v) => update('workType', v)}
               options={['', 'PR', 'Development', 'Design', 'Motion Graphics / Animation', 'Content / Social', 'Strategy / Consulting', 'Other']} />
 

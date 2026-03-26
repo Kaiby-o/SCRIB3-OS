@@ -152,7 +152,7 @@ Google OAuth and email/password authentication via Supabase. Row-level security 
 
 ## Collaborators
 
-- **Ben Lydiatt** ([@Kaiby-o](https://github.com/Kaiby-o)) — VP Creative & Digital
+- **Ben Lydiat** ([@Kaiby-o](https://github.com/Kaiby-o)) — VP Creative & Digital
 - **CK** ([@CK42BB](https://github.com/CK42BB)) — Engineering
 
 ## License
