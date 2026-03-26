@@ -7,7 +7,6 @@ import React, {
   useRef,
 } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useThemeStore } from '../hooks/useTheme';
 
 /* ------------------------------------------------------------------ */
 /*  Types                                                              */
@@ -115,52 +114,69 @@ const subItemRoutes: Record<string, string> = {
 /* ------------------------------------------------------------------ */
 
 const ThemeToggle: React.FC = () => {
-  const { theme, toggle } = useThemeStore();
+  const [toast, setToast] = useState(false);
   const easing = 'cubic-bezier(0.22, 0.61, 0.36, 1)';
 
+  const showToast = () => {
+    setToast(true);
+    setTimeout(() => setToast(false), 1500);
+  };
+
   return (
-    <div
-      style={{
-        display: 'flex',
-        border: '1px solid #EAF2D7',
-        borderRadius: '75.641px',
-        overflow: 'hidden',
-      }}
-    >
-      <button
-        onClick={theme === 'light' ? toggle : undefined}
+    <div style={{ position: 'relative' }}>
+      {toast && (
+        <div style={{
+          position: 'absolute', top: -28, left: 0, background: '#EAF2D7', color: '#000',
+          fontFamily: "'Owners Wide', sans-serif", fontSize: '10px', letterSpacing: '1px',
+          textTransform: 'uppercase', padding: '4px 12px', borderRadius: '75.641px',
+          whiteSpace: 'nowrap', zIndex: 10,
+        }}>
+          Coming Soon
+        </div>
+      )}
+      <div
         style={{
-          padding: '6px 16px',
-          fontFamily: "'Owners Wide', sans-serif",
-          fontSize: '12.55px',
-          letterSpacing: '1.004px',
-          textTransform: 'uppercase',
-          color: theme === 'dark' ? '#000000' : '#EAF2D7',
-          background: theme === 'dark' ? '#D7ABC5' : 'transparent',
-          border: 'none',
-          cursor: 'pointer',
-          transition: `background 200ms ${easing}, color 200ms ${easing}`,
+          display: 'flex',
+          border: '1px solid #EAF2D7',
+          borderRadius: '75.641px',
+          overflow: 'hidden',
         }}
       >
-        Dark
-      </button>
-      <button
-        onClick={theme === 'dark' ? toggle : undefined}
-        style={{
-          padding: '6px 16px',
-          fontFamily: "'Owners Wide', sans-serif",
-          fontSize: '12.55px',
-          letterSpacing: '1.004px',
-          textTransform: 'uppercase',
-          color: theme === 'light' ? '#000000' : '#EAF2D7',
-          background: theme === 'light' ? '#D7ABC5' : 'transparent',
-          border: 'none',
-          cursor: 'pointer',
-          transition: `background 200ms ${easing}, color 200ms ${easing}`,
-        }}
-      >
-        Light
-      </button>
+        <button
+          onClick={showToast}
+          style={{
+            padding: '6px 16px',
+            fontFamily: "'Owners Wide', sans-serif",
+            fontSize: '12.55px',
+            letterSpacing: '1.004px',
+            textTransform: 'uppercase',
+            color: '#EAF2D7',
+            background: 'transparent',
+            border: 'none',
+            cursor: 'pointer',
+            transition: `background 200ms ${easing}, color 200ms ${easing}`,
+          }}
+        >
+          Dark
+        </button>
+        <button
+          onClick={showToast}
+          style={{
+            padding: '6px 16px',
+            fontFamily: "'Owners Wide', sans-serif",
+            fontSize: '12.55px',
+            letterSpacing: '1.004px',
+            textTransform: 'uppercase',
+            color: '#000000',
+            background: '#D7ABC5',
+            border: 'none',
+            cursor: 'pointer',
+            transition: `background 200ms ${easing}, color 200ms ${easing}`,
+          }}
+        >
+          Light
+        </button>
+      </div>
     </div>
   );
 };
@@ -302,26 +318,48 @@ export const NavOverlayProvider: React.FC<NavOverlayProviderProps> = ({
           ))}
         </div>
 
-        {/* Bottom-left: "Having Issues?" input — Owners Wide */}
-        <div className="absolute bottom-8 left-10">
-          <input
-            ref={issuesInputRef}
-            type="text"
-            placeholder="Having Issues?"
-            style={{
-              fontFamily: "'Owners Wide', sans-serif",
-              fontSize: '13px',
-              letterSpacing: '0.96px',
-              background: 'transparent',
-              border: '1px solid #EAF2D7',
-              borderRadius: '75.641px',
-              padding: '10px 20px',
-              color: '#EAF2D7',
-              outline: 'none',
-              minWidth: '220px',
-            }}
-          />
-        </div>
+        {/* Bottom-left: "Having Issues?" — matches landing page format */}
+        <form
+          onSubmit={(e) => {
+            e.preventDefault();
+            const val = issuesInputRef.current?.value?.trim();
+            if (!val || !val.includes('@')) return;
+            const subject = encodeURIComponent('SCRIB3 OS — Having Issues');
+            const body = encodeURIComponent(`${val} is having issues with the SCRIB3 OS site.`);
+            window.open(`mailto:ben.lydiat@scrib3.co?subject=${subject}&body=${body}`, '_blank');
+            if (issuesInputRef.current) issuesInputRef.current.value = '';
+          }}
+          className="absolute flex flex-col"
+          style={{ bottom: 32, left: 40, gap: '8px' }}
+        >
+          <span style={{ fontFamily: "'Owners Wide', sans-serif", color: '#EAF2D7', opacity: 0.7, fontSize: '13px', letterSpacing: '0.96px' }}>
+            Having Issues?
+          </span>
+          <div
+            className="flex items-center gap-2"
+            style={{ border: '1px solid #EAF2D7', borderRadius: '75.641px', padding: '10px 20px', minWidth: '240px' }}
+          >
+            <svg width="18" height="14" viewBox="0 0 24 18" fill="none" stroke="#EAF2D7" strokeWidth="1.5">
+              <rect x="1" y="1" width="22" height="16" rx="2" />
+              <path d="M1 1l11 9 11-9" />
+            </svg>
+            <input
+              ref={issuesInputRef}
+              type="email"
+              placeholder="Enter email here"
+              style={{
+                fontFamily: "'Owners Wide', sans-serif",
+                background: 'transparent',
+                border: 'none',
+                color: '#EAF2D7',
+                outline: 'none',
+                flex: 1,
+                fontSize: '13px',
+                letterSpacing: '0.96px',
+              }}
+            />
+          </div>
+        </form>
       </div>
 
       {/* ---- Layer 2: Pink overlay ---- */}
