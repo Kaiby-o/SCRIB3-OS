@@ -215,12 +215,36 @@
 - 7 initial examples pre-populated from team achievements
 - Empty slots shown with dashed placeholder — "added by Ben / CSuite"
 
+### Phase 4 — Projects, Units & Work Management
+
+**Project Data Layer** (`projects.ts`)
+- 10 mock projects across 7 clients with full schema: code, brief, services, status, type, leads (production/creative/account), team members, freelancers, pre-alignment status, brief status
+
+**`/projects` — Project Registry** (Plan v4 §4A)
+- 10 projects with [CLIENT_CODE]-[NNN] format
+- Filter by: status (Active/In Progress/On Hold/Completed/Not Started), client, search
+- Stats: active count, completed, missing alignment (⚠ warning banner), client count
+- Table: code, client, title, status badge, type, production lead, team size, alignment ✅/⚠️, brief status
+- "+ New Project" button → `/pre-alignment`
+
+**`/units` — Unit Dashboards** (Plan v4 §4B)
+- 5 unit tabs: Accounts | C-Suite | Brand | PR | Ops
+- **Accounts**: client health table with margin/health badges, team member cards
+- **C-Suite**: monthly remit total, avg margin, team bandwidth, engagement pipeline with renewal info
+- **Brand**: active briefs table with code/title/client/lead/services/dates, bandwidth per creative
+- **PR**: coverage tracker with media placements, podcast bookings, tier-1 interview counts
+- **Ops**: invoice pipeline (pending invoices), awaiting review amounts, ops team cards
+- All units show team member cards with bandwidth bars
+
+**Nav wiring**: Active/Archived → `/projects`, Business Units/Departments → `/units`, Status/Roadmap → `/projects`
+
 **Next planned work (from Plan v4):**
 - Phase 3.5: Mobile accessibility pass (validate all pages at 375px)
-- Phase 4 remaining: Project registry (§4A), Unit dashboards (§4B), Linear integration (§4C)
 - Phase 2.5: Floating user widget, XP system
+- Phase 4C: Linear integration (API connection — needs key)
+- Phase 5: Modular drag-and-drop dashboards (react-grid-layout)
+- Phase 6: Culture hub, tools directory, Dapps
 - Connect all systems to Supabase
-- Figma screenshot comparison + pixel polish
 
 ---
 

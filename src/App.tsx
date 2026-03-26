@@ -18,6 +18,8 @@ import OSProfDev from './scrib3-os/pages/ProfDevPage';
 import OSClientHub from './scrib3-os/pages/ClientHubPage';
 import OSClientPortal from './scrib3-os/pages/ClientPortalPage';
 import OSWhatGoodLooksLike from './scrib3-os/pages/WhatGoodLooksLikePage';
+import OSProjectRegistry from './scrib3-os/pages/ProjectRegistryPage';
+import OSUnitDashboards from './scrib3-os/pages/UnitDashboardsPage';
 import { AuthGuard, RoleGuard } from './scrib3-os/components/AuthGuard';
 // DEVICE layer imports
 import DeviceDashboard from './scrib3-device/pages/DashboardPage';
@@ -172,6 +174,26 @@ export default function App() {
             <AuthGuard>
               <RoleGuard allowed={['admin', 'team', 'csuite']}>
                 <OSWhatGoodLooksLike />
+              </RoleGuard>
+            </AuthGuard>
+          }
+        />
+        <Route
+          path="/projects"
+          element={
+            <AuthGuard>
+              <RoleGuard allowed={['admin', 'team', 'csuite']}>
+                <OSProjectRegistry />
+              </RoleGuard>
+            </AuthGuard>
+          }
+        />
+        <Route
+          path="/units"
+          element={
+            <AuthGuard>
+              <RoleGuard allowed={['admin', 'team', 'csuite']}>
+                <OSUnitDashboards />
               </RoleGuard>
             </AuthGuard>
           }
