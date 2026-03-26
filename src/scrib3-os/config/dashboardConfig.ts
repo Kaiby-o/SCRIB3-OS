@@ -135,7 +135,6 @@ const adminConfig: DashboardConfig = {
     { label: 'CLIENTS', subItems: ['Client List', 'Onboarding'] },
     { label: 'PROJECTS', subItems: ['Active', 'Archived', 'Proposals'] },
     { label: 'SYSTEM', subItems: ['Users', 'Roles', 'Settings', 'Logs'] },
-    { label: 'DEVICE', subItems: ['Virtual Office', 'Avatar Creator'] },
   ],
   modules: [
     { id: 'active-projects', label: 'ACTIVE PROJECTS', gridArea: 'projects' },

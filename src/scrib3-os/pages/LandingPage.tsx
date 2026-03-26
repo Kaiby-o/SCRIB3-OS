@@ -44,7 +44,7 @@ const LetsTalkDialog: React.FC<{ isOpen: boolean; onClose: () => void }> = ({ is
   const [services, setServices] = useState('');
   const [message, setMessage] = useState('');
   const [submitted, setSubmitted] = useState(false);
-  const [sending, setSending] = useState(false);
+  const [sending] = useState(false);
 
   useEffect(() => {
     if (isOpen) document.body.style.overflow = 'hidden';

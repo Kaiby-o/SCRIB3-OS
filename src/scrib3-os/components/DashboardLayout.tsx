@@ -1,8 +1,5 @@
 import React from 'react';
-import { useNavigate } from 'react-router-dom';
 import PillNav from './PillNav';
-import UserProfileCard from './UserProfileCard';
-import ClockDisplay from './ClockDisplay';
 import ModulePanel from './ModulePanel';
 import LogoScrib3 from './LogoScrib3';
 import { NavOverlayProvider, useNavOverlay } from './NavOverlay';
@@ -16,8 +13,6 @@ import { moduleContentMap } from './modules/ModuleContent';
 
 const DashboardInner: React.FC<{ role: UserRole }> = ({ role }) => {
   const navOverlay = useNavOverlay();
-  const navigate = useNavigate();
-  const { profile, signOut, user } = useAuthStore();
   const config = dashboardConfigs[role];
   const [activeNav, setActiveNav] = React.useState(config.pillNavItems[0]);
 
@@ -97,43 +92,6 @@ const DashboardInner: React.FC<{ role: UserRole }> = ({ role }) => {
         })}
       </main>
 
-      {/* ---- Fixed Bottom-Left ---- */}
-      <div
-        className="fixed bottom-0 left-0 flex flex-col z-30"
-        style={{ padding: '40px', gap: '12px' }}
-      >
-        <UserProfileCard
-          name={profile?.display_name ?? 'OPERATOR'}
-          role={role.toUpperCase()}
-          avatarUrl={profile?.avatar_url ?? undefined}
-          xp={profile?.xp ?? 0}
-          maxXp={100}
-          onExpand={() => user?.id && navigate(`/profile/${user.id}`)}
-        />
-        <div className="flex items-center gap-4" style={{ paddingLeft: '20px' }}>
-          <ClockDisplay />
-          <button
-            onClick={() => signOut()}
-            style={{
-              fontFamily: "'Owners Wide', sans-serif",
-              fontSize: '11px',
-              letterSpacing: '1px',
-              textTransform: 'uppercase',
-              color: 'var(--text-primary)',
-              opacity: 0.4,
-              background: 'none',
-              border: 'none',
-              cursor: 'pointer',
-              padding: 0,
-              transition: 'opacity 0.2s',
-            }}
-            onMouseEnter={(e) => (e.currentTarget.style.opacity = '1')}
-            onMouseLeave={(e) => (e.currentTarget.style.opacity = '0.4')}
-          >
-            Sign Out
-          </button>
-        </div>
-      </div>
     </div>
   );
 };
