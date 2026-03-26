@@ -2,8 +2,9 @@ import React, { useEffect } from 'react';
 import { Navigate } from 'react-router-dom';
 import { useAuthStore } from '../hooks/useAuth';
 import type { UserRole } from '../config/dashboardConfig';
+import FloatingWidget from './FloatingWidget';
 
-/** Blocks unauthenticated users — redirects to /login */
+/** Blocks unauthenticated users — redirects to /login. Renders floating widget. */
 export const AuthGuard: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const { user, loading, initialised, init } = useAuthStore();
 
@@ -19,7 +20,12 @@ export const AuthGuard: React.FC<{ children: React.ReactNode }> = ({ children })
 
   if (!user) return <Navigate to="/" replace />;
 
-  return <>{children}</>;
+  return (
+    <>
+      {children}
+      <FloatingWidget />
+    </>
+  );
 };
 
 /** Blocks users without the required role(s) */

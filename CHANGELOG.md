@@ -238,12 +238,43 @@
 
 **Nav wiring**: Active/Archived → `/projects`, Business Units/Departments → `/units`, Status/Roadmap → `/projects`
 
+### Phase 2.5 — Floating Widget + XP System
+
+**XP Data Layer** (`xp.ts`)
+- 5 levels: Builder (🧱 0-99) → Creator (✏️ 100-299) → Contributor (⚡ 300-599) → Veteran (🔥 600-999) → Legend (⭐ 1000+)
+- 16 XP events with point values (task complete +5, stretch goal +50, team challenge +100, etc.)
+- Level progress calculator
+- 8 quick links for floating widget (Chat, Calendar, Office, Dapps, Bandwidth, Tasks, Feedback, Prof Dev)
+
+**Floating User Widget** (Plan v4 — Figma node 2019:10529)
+- Persistent across ALL authenticated pages (injected via AuthGuard)
+- Desktop: full-width horizontal pill at bottom of viewport
+- Left section: avatar, name (Kaio:Super), title, online dot, XP bar (level badge + progress), bandwidth bar
+- Right section: 8 icon quick links (💬📅👁🏆🚩📄↩️👑) — each navigates to relevant page
+- Collapse/expand toggle — collapsed shows avatar + name + online dot only
+- Black background (#000), off-white text (#EAF2D7), consistent with design system
+
+### Phase 6 — Culture, Tools & Dapps
+
+**`/culture` — Culture Hub** (Plan v4 §6)
+- 4 tabs: Operating Principles | XP Leaderboard | XP Guide | Culture Book
+- **Operating Principles**: 5 principles with daily translations + trait badges (Resilience, Conviction, Vulnerability, Passion, Curiosity)
+- **XP Leaderboard**: top 3 podium (🥇🥈🥉) with full team ranking table sorted by XP
+- **XP Guide**: visual level cards (5 levels) + full XP events table with point values
+- **Culture Book**: 5 POE modules rendered as rich cards (Get Lit, Communication, Effective Feedback, Managing Conflict, Trust/Accountability/Influence)
+
+**`/tools` — Tools Directory** (Plan v4 §6)
+- 13 tools across 8 categories: Linear, Figma, Adobe, Slack, Google Workspace, Notion, Culture Amp, Fathom, Mercury, Claude Code, Lovable, Fillout, Typeform
+- Filter by category
+- Status badges: Active (green), Planned (blue), Deprecated (orange)
+- Each card: name, category, description, "used by" field
+
+**Nav wiring**: Values/Events/Recognition → `/culture`, Resources → `/resources/what-good-looks-like`, Templates/Integrations → `/tools`
+
 **Next planned work (from Plan v4):**
 - Phase 3.5: Mobile accessibility pass (validate all pages at 375px)
-- Phase 2.5: Floating user widget, XP system
-- Phase 4C: Linear integration (API connection — needs key)
 - Phase 5: Modular drag-and-drop dashboards (react-grid-layout)
-- Phase 6: Culture hub, tools directory, Dapps
+- Phase 7: Virtual office fixes, Pokémon mechanics, SCRIB3r cards
 - Connect all systems to Supabase
 
 ---
