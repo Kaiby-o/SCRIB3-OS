@@ -58,22 +58,33 @@ const LetsTalkDialog: React.FC<{ isOpen: boolean; onClose: () => void }> = ({ is
     return () => window.removeEventListener('keydown', handler);
   }, [isOpen, onClose]);
 
-  const handleSubmit = () => {
+  const [emailError, setEmailError] = useState('');
+
+  const isValidEmail = (e: string) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e);
+
+  const handleSubmit = async () => {
     if (!name.trim() || !email.trim()) return;
+    if (!isValidEmail(email.trim())) {
+      setEmailError('Please enter a valid email address');
+      return;
+    }
+    setEmailError('');
     setSending(true);
 
-    // Fire-and-forget Supabase insert (don't block on it)
-    void supabase.from('support_requests').insert({
+    // Store in Supabase — this IS the submission (no mailto)
+    const { error } = await supabase.from('support_requests').insert({
       email: email.trim(),
       status: 'contact_form',
+      metadata: {
+        name: name.trim(),
+        heard_about: heardAbout.trim() || null,
+        services: services.trim() || null,
+        message: message.trim() || null,
+        submitted_at: new Date().toISOString(),
+      },
     });
 
-    // Send email
-    const subject = encodeURIComponent("SCRIB3 OS — Let's Talk Submission");
-    const body = encodeURIComponent(
-      `Name: ${name}\nEmail: ${email}\nHeard About Us: ${heardAbout || 'Not specified'}\nServices: ${services || 'Not specified'}\n\nMessage:\n${message || 'No message provided'}`
-    );
-    window.open(`mailto:ben.lydiat@scrib3.co?subject=${subject}&body=${body}`, '_blank');
+    if (error) console.warn('Contact form insert failed:', error.message);
 
     setSending(false);
     setSubmitted(true);
@@ -129,7 +140,10 @@ const LetsTalkDialog: React.FC<{ isOpen: boolean; onClose: () => void }> = ({ is
 
             <div className="flex flex-col gap-4">
               <FormField label="Name *" value={name} onChange={setName} placeholder="Your name" />
-              <FormField label="Email *" value={email} onChange={setEmail} placeholder="your@email.com" type="email" />
+              <div className="flex flex-col gap-1">
+                <FormField label="Email *" value={email} onChange={(v) => { setEmail(v); setEmailError(''); }} placeholder="your@email.com" type="email" />
+                {emailError && <span style={{ fontFamily: "'Owners Wide', sans-serif", fontSize: '11px', color: '#E74C3C', paddingLeft: '16px' }}>{emailError}</span>}
+              </div>
               <FormField label="Where did you hear about us?" value={heardAbout} onChange={setHeardAbout} placeholder="e.g. Twitter, referral, conference..." />
               <FormField label="What services got your attention?" value={services} onChange={setServices} placeholder="e.g. Brand, PR, Content, Strategy..." />
               <div className="flex flex-col gap-1">
