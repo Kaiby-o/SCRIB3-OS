@@ -31,15 +31,34 @@ admin > csuite > team > client | vendor
 
 ---
 
-## 3. Page Inventory
+## 3. Page Inventory (24 routes as of Session 3)
 
 | # | Route | Auth | Roles | Description |
 |---|-------|------|-------|-------------|
 | 1 | `/` | Public | All | Landing page — SCRIB3 branding, link to login |
-| 2 | `/login` | Public | All | Shared login — email/password via Supabase |
-| 3 | `/dashboard` | Auth | All roles | Role-gated dashboard — single layout, config-driven |
-| 4 | `/profile/:id` | Auth | team, csuite, admin | Team member profile view |
-| 5 | `/device` | Auth | admin only | Loads SCRIB3-DEVICE (existing gamified admin layer) |
+| 2 | `/login` | Public | All | Redirects to `/` |
+| 3 | `/dashboard` | Auth | All roles | Role-gated dashboard — single layout, 5 variants |
+| 4 | `/profile/:id` | Auth | All | Basic profile (Supabase-connected) |
+| 5 | `/team` | Auth | admin, team, csuite | Team directory — 29 members, filterable |
+| 6 | `/team/:id` | Auth | admin, team, csuite | Full team profile — bio, skills, clients, projects |
+| 7 | `/pd/:id` | Auth | admin, team, csuite | Professional development tracker — 4 tabs |
+| 8 | `/clients` | Auth | admin, team, csuite | Client list + management |
+| 9 | `/clients/onboard` | Auth | admin, team, csuite | Client onboarding wizard — 4 phases |
+| 10 | `/clients/:slug/hub` | Auth | admin, team, csuite | Internal client hub — 5 tabs |
+| 11 | `/portal/:slug` | Auth | All | Client-facing branded portal — 7 modules |
+| 12 | `/projects` | Auth | admin, team, csuite | Project registry — filterable |
+| 13 | `/units` | Auth | admin, team, csuite | Unit dashboards — 5 units |
+| 14 | `/finance` | Auth | admin, csuite | Engagement health overview — 6 clients |
+| 15 | `/finance/:slug` | Auth | admin, csuite | Per-client Gantt + SOW forecast simulator |
+| 16 | `/vendors` | Auth | admin, team, csuite | Vendor + invoice management |
+| 17 | `/vendors/onboard` | Auth | admin, team, csuite | Vendor onboarding form |
+| 18 | `/pre-alignment` | Auth | admin, team, csuite | Mandatory project alignment — 17 fields |
+| 19 | `/bandwidth` | Auth | admin, team, csuite | Bandwidth estimates — digest + submit |
+| 20 | `/scope-watch` | Auth | admin, team, csuite | Scope watch entries — per-client |
+| 21 | `/resources/what-good-looks-like` | Auth | admin, team, csuite | Quality standards library — 10 sections |
+| 22 | `/culture` | Auth | admin, team, csuite | Culture hub — principles, XP, culture book |
+| 23 | `/tools` | Auth | admin, team, csuite | Tools directory — 13 tools |
+| 24 | `/device` | Auth | admin only | SCRIB3-DEVICE (gamified admin layer) |
 
 ---
 

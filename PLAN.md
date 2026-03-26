@@ -1,8 +1,8 @@
 # SCRIB3-OS Build Plan
 
-> **Version:** 1.1 | **Date:** 2026-03-25 | **Author:** Ben Lydiatt + Claude
-> **Status:** ALL PHASES COMPLETE + SESSION 2 VISUAL REFINEMENT DONE
-> **Last session:** 2026-03-25 (Session 2). Landing page overhauled (laptop SVG, logo, login dialog with shape). Google OAuth working. Next: stakeholder journeys (client onboarding → portals), dashboard modules, visual polish.
+> **Version:** 2.0 | **Date:** 2026-03-26 | **Author:** Ben Lydiatt + Claude
+> **Status:** PHASES 1–6 SHELL COMPLETE. Plan v4 integrated. All 5 red priorities built.
+> **Last session:** 2026-03-26 (Session 3). Massive build sprint — 24 routes, 11 data layers, 29-person team roster, 6 priority clients, floating widget, XP system, all nav sub-items wired to real pages. Next: Supabase wiring, mobile pass, drag-and-drop dashboards.
 
 ---
 
@@ -244,16 +244,41 @@ Phases 2 and 4 can run in parallel after Phase 1. Phase 5 requires both.
 
 ---
 
+## Current Completion State (as of Session 3, 2026-03-26)
+
+### Fully Built (UI Shell — Mock Data)
+| Phase | Status | Routes |
+|-------|--------|--------|
+| Phase 1 — Foundation | ✅ Complete | `/`, `/dashboard` (5 roles), `/login` |
+| Phase 2 — Team | ✅ Complete | `/team`, `/team/:id`, `/pd/:id`, `/profile/:id` |
+| Phase 2.5 — Widget + XP | ✅ Complete | Floating widget on all auth pages, XP system |
+| Phase 3 — Clients (🔴 priorities) | ✅ Complete | `/clients`, `/clients/onboard`, `/clients/:slug/hub`, `/portal/:slug`, `/finance`, `/finance/:slug`, `/vendors`, `/vendors/onboard`, `/pre-alignment`, `/bandwidth`, `/scope-watch` |
+| Phase 4 — Projects + Work | ✅ Complete | `/projects`, `/units`, `/resources/what-good-looks-like` |
+| Phase 6 — Culture + Tools | ✅ Complete | `/culture`, `/tools` |
+
+### Not Yet Built
+| Phase | Status | Notes |
+|-------|--------|-------|
+| Phase 3.5 — Mobile | ⬜ Not started | CSS responsive pass at 375px |
+| Phase 5 — Drag-and-drop | ⬜ Not started | Needs `react-grid-layout` |
+| Phase 7 — Fun layer | ⬜ Not started | Virtual office fixes, Pokémon mechanics, SCRIB3r cards |
+| Supabase wiring | ⬜ Not started | All pages use mock data — no persistence |
+| Linear API | ⬜ Not started | Needs API key connection |
+| Vercel deployment | ⬜ Not started | Localhost only |
+
+### Data Layers Built (all mock)
+`engagementHealth.ts`, `bandwidth.ts`, `vendors.ts`, `scopeWatch.ts`, `team.ts` (29 members), `clients.ts` (6 priority), `projects.ts` (10 projects), `xp.ts`, `dashboardConfig.ts`
+
+---
+
 ## Out of Scope (Explicit)
 
-- Drag-and-drop dashboard grid (future Phase 2)
-- Character creator bugs (LimeZu frame extraction)
-- Walk cycle compositor
-- Save & Enter navigation bug
-- Custom SCRIB3 office layout
-- Gamification system (XP, badges, leaderboard) — preserved in DEVICE, not duplicated in OS
-- Real data modules (actual project data, file delivery, approvals) — placeholder content only
-- Mobile-first responsive design — desktop-first, flag mobile issues
+- Character creator bugs (LimeZu frame extraction) — DEVICE layer
+- Walk cycle compositor — DEVICE layer
+- Save & Enter navigation bug — DEVICE layer
+- Custom SCRIB3 office layout — Phase 7
+- Real data connections — Supabase wiring sprint needed
+- Mobile-first responsive design — desktop-first, Phase 3.5 for mobile pass
 - Vercel deployment — localhost first
 
 ---
@@ -262,7 +287,7 @@ Phases 2 and 4 can run in parallel after Phase 1. Phase 5 requires both.
 
 When starting a new session on this project:
 
-1. Read `PLAN.md` (this file)
+1. Read `PLAN.md` (this file) — check "Current Completion State" above
 2. Read `CLAUDE.md`
 3. Check `CHANGELOG.md` for the last completed entry
 4. Run `npm run build` to verify current state

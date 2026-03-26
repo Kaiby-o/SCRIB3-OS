@@ -64,51 +64,76 @@ npx tsx scripts/seed-users.ts
 
 ```
 src/
-  App.tsx                        # Root router: / → OS, /device → DEVICE
+  App.tsx                        # Root router — 24 routes
   main.tsx                       # Entry point, font imports
 
   scrib3-os/                     # Professional platform
     styles/
       fonts.css                  # @font-face declarations
       tokens.ts                  # Design tokens (colours, type, spacing)
-      os.css                     # CSS custom properties, utility classes
+      os.css                     # CSS custom properties, Tailwind v4, utility classes
     config/
-      dashboardConfig.ts         # Role → nav items, modules, header label
+      dashboardConfig.ts         # Role → nav items, modules, grid layout
     components/
-      DashboardLayout.tsx        # Single layout for all roles
-      NavOverlay.tsx             # Fullscreen navigation with clip-path animations
+      DashboardLayout.tsx        # Single layout for all 5 roles
+      NavOverlay.tsx             # 3-layer fullscreen nav with clip-path animations
+      FloatingWidget.tsx         # Persistent bottom pill (avatar, XP, quick links)
+      AuthGuard.tsx              # Auth + role guards, renders floating widget
       LoginDialog.tsx            # Auth dialog with custom shape SVG
       PillNav.tsx                # Top-centre pill navigation
       UserProfileCard.tsx        # User info card
       ClockDisplay.tsx           # Live local time
       ModulePanel.tsx            # Bento grid panel wrapper
       LogoScrib3.tsx             # SVG logo component
+      modules/
+        ModuleContent.tsx        # 19 module content components (all 5 roles)
     pages/
-      LandingPage.tsx            # / — laptop frame, enter button, burger menu
-      DashboardPage.tsx          # /dashboard — role-gated
+      LandingPage.tsx            # /
+      DashboardPage.tsx          # /dashboard
       ProfilePage.tsx            # /profile/:id
+      TeamDirectoryPage.tsx      # /team
+      TeamProfilePage.tsx        # /team/:id
+      ProfDevPage.tsx            # /pd/:id
+      ClientListPage.tsx         # /clients
+      ClientOnboardPage.tsx      # /clients/onboard
+      ClientHubPage.tsx          # /clients/:slug/hub
+      ClientPortalPage.tsx       # /portal/:slug
+      ProjectRegistryPage.tsx    # /projects
+      UnitDashboardsPage.tsx     # /units
+      FinanceOverviewPage.tsx    # /finance
+      FinanceDetailPage.tsx      # /finance/:slug
+      VendorManagementPage.tsx   # /vendors
+      VendorOnboardPage.tsx      # /vendors/onboard
+      PreAlignmentPage.tsx       # /pre-alignment
+      BandwidthPage.tsx          # /bandwidth
+      ScopeWatchPage.tsx         # /scope-watch
+      WhatGoodLooksLikePage.tsx  # /resources/what-good-looks-like
+      CultureHubPage.tsx         # /culture
+      ToolsDirectoryPage.tsx     # /tools
     hooks/
-      useAuth.ts                 # Zustand auth store (signIn, signOut, role)
+      useAuth.ts                 # Zustand auth store
+      useTheme.ts                # Dark/light mode (localStorage + data-theme)
     lib/
       supabase.ts                # Supabase client
+      engagementHealth.ts        # 6 clients, health tiers, SOW simulator
+      bandwidth.ts               # 7 estimates, digest builder
+      vendors.ts                 # 5 vendors, 5 invoices
+      scopeWatch.ts              # 9 entries, SOW clause refs
+      team.ts                    # 29-person roster
+      clients.ts                 # 6 priority clients, full MD schema
+      projects.ts                # 10 projects
+      xp.ts                      # 5 levels, 16 events
 
   scrib3-device/                 # Gamified admin layer (frozen)
-    pages/                       # Dashboard, login, avatar creator
+    pages/                       # Dashboard, avatar creator
     components/                  # CRT shell, systems map, virtual office
     store/                       # Zustand stores
     hooks/                       # Canvas navigation
-    lib/                         # Supabase client, sounds
+    lib/                         # Supabase client
 
 public/
-  assets/                        # SVGs (laptop frame, login shape, logo, icons)
+  assets/                        # SVGs, office layers, character PNGs
   fonts/                         # Kaio (.woff2), Owners Wide (.otf), NT Stardust (.otf)
-
-scripts/
-  seed-users.ts                  # Interactive CLI to create seed users
-  seed-now.ts                    # Direct seed with hardcoded users
-
-supabase/
-  migrations/                    # SQL migrations (profiles, RLS, support requests)
 ```
 
 ## Auth & Roles
