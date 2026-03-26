@@ -58,20 +58,17 @@ const LetsTalkDialog: React.FC<{ isOpen: boolean; onClose: () => void }> = ({ is
     return () => window.removeEventListener('keydown', handler);
   }, [isOpen, onClose]);
 
-  const handleSubmit = async () => {
+  const handleSubmit = () => {
     if (!name.trim() || !email.trim()) return;
     setSending(true);
 
-    // Try Supabase insert, fall back to mailto
-    try {
-      const { error } = await supabase.from('support_requests').insert({
-        email: email.trim(),
-        status: 'contact_form',
-      });
-      if (error) console.warn('Contact form insert failed:', error.message);
-    } catch { /* silent */ }
+    // Fire-and-forget Supabase insert (don't block on it)
+    supabase.from('support_requests').insert({
+      email: email.trim(),
+      status: 'contact_form',
+    }).then(() => {}).catch(() => {});
 
-    // Always send email
+    // Send email
     const subject = encodeURIComponent("SCRIB3 OS — Let's Talk Submission");
     const body = encodeURIComponent(
       `Name: ${name}\nEmail: ${email}\nHeard About Us: ${heardAbout || 'Not specified'}\nServices: ${services || 'Not specified'}\n\nMessage:\n${message || 'No message provided'}`
