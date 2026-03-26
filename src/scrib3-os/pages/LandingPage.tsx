@@ -269,7 +269,7 @@ const LandingNavOverlay: React.FC<{
           link.type === 'dialog' ? (
             <button
               key={link.label}
-              onClick={() => { onClose(); onLetsTalk(); }}
+              onClick={() => { onLetsTalk(); }}
               style={{
                 fontFamily: "'Kaio', sans-serif",
                 fontWeight: 800,
