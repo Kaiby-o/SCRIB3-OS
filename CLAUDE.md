@@ -83,6 +83,10 @@ SCRIB3-OS — **Phases 1–6 shell complete (Plan v4 integrated).** All 5 red pr
 - `.claude/SKILL-NAV-OVERLAY.md` — 3-layer navigation overlay system
 - `.claude/SKILL-FONT-SYSTEM.md` — Font loading, weight mapping, OpenType features
 - `.claude/SKILL-DARK-MODE.md` — CSS custom property theming
+- `.claude/SKILL-ENGAGEMENT-HEALTH.md` — Finance calculator, health tiers, SOW simulator
+- `.claude/SKILL-VENDOR-PORTAL.md` — Vendor onboarding, invoice flow, Camila routing
+- `.claude/SKILL-CLIENT-MD-GENERATION.md` — Client MD file schema, data source mapping
+- `.claude/SKILL-PD-SYSTEM.md` — PD tracker architecture, 3 layers, access controls
 
 ### Skill Files — DEVICE Layer (preserved)
 - `.claude/SCRIB3-OS-PRD.md` — Original DEVICE PRD (superseded by `PRD.md` for OS)

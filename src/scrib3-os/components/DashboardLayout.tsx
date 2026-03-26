@@ -75,7 +75,7 @@ const DashboardInner: React.FC<{ role: UserRole }> = ({ role }) => {
           paddingTop: 'calc(85px + 40px)',
           paddingLeft: '40px',
           paddingRight: '40px',
-          paddingBottom: '120px',
+          paddingBottom: '160px', /* space for floating widget (72px) + breathing room */
           display: 'grid',
           gridTemplateAreas: config.gridTemplate,
           gridTemplateColumns: config.gridColumns,
