@@ -184,10 +184,41 @@
 - **Instant Feedback**: Praise (green left border) and Development Points (orange left border) with context
 - Nav: Directory → `/team`, Profiles → `/team`
 
+### Phase 3 Remaining — Client Hubs, Portals & Data
+
+**Client Data Layer** (`clients.ts`)
+- Full profiles for 6 priority clients: Cardano, Franklin Templeton, Rootstock, Rome Protocol, Midnight, Canton
+- MD file schema implemented: overview, contacts, brand tokens (primary colour, secondary, font, tone, messaging, do's/don'ts), services active, active projects, macro strategy, sprint focus, "what we're NOT doing", upcoming dates
+
+**`/clients/:slug/hub` — Client Hub (internal team-facing)** (Plan v4 §3K)
+- 5 tabs: Overview | Brand | Projects | Contacts | Strategy
+- **Overview**: website/social links, services active, upcoming dates
+- **Brand**: primary + secondary colour swatches, font, tone of voice, key messaging pillars, content DO's (green ✓) and DON'Ts (red ✗)
+- **Projects**: active project table with code, title, status, lead, blockers
+- **Contacts**: client contact cards with role, email, comms preference, primary flag
+- **Strategy**: macro strategy, current sprint focus, "what we are NOT doing" (red text)
+- Quick info pills: account lead, creative, PR, Slack channel, contract type
+- Link to client portal view
+
+**`/portal/:slug` — Client Portal (client-facing)** (Plan v4 §3J)
+- Custom-themed per client (branded header using client's primary colour)
+- 7-module bento grid: Project Status, Recent Deliverables, Your SCRIB3 Team, Contract & Invoicing, Announcements, Asset Library, Content Calendar
+- "Powered by SCRIB3" branding
+- Link back to internal hub for team users
+
+### Phase 4 Partial — "What Good Looks Like"
+
+**`/resources/what-good-looks-like`** (Plan v4 §4D — Nick)
+- 10 expandable sections: Client Facilitation, Communication, Brief Writing, Content Strategy, Social Content (Crypto-Native), Animation/Motion, Brand Work, Campaign Concepting, PR Pitch, Account Management
+- Each section: description + Culture Book seed content + real example slots (5 per section)
+- Seed content from Culture Book POE modules: Get Lit, Communication, Effective Feedback, Managing Conflict, Trust/Accountability/Influence
+- 7 initial examples pre-populated from team achievements
+- Empty slots shown with dashed placeholder — "added by Ben / CSuite"
+
 **Next planned work (from Plan v4):**
-- Phase 3 remaining: Client MD files, Account Blueprints, Client portals
-- Phase 3.5: Mobile accessibility
-- Phase 4: Project registry, unit dashboards, Linear integration, "What Good Looks Like" library
+- Phase 3.5: Mobile accessibility pass (validate all pages at 375px)
+- Phase 4 remaining: Project registry (§4A), Unit dashboards (§4B), Linear integration (§4C)
+- Phase 2.5: Floating user widget, XP system
 - Connect all systems to Supabase
 - Figma screenshot comparison + pixel polish
 

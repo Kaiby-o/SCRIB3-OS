@@ -15,6 +15,9 @@ import OSScopeWatch from './scrib3-os/pages/ScopeWatchPage';
 import OSTeamDirectory from './scrib3-os/pages/TeamDirectoryPage';
 import OSTeamProfile from './scrib3-os/pages/TeamProfilePage';
 import OSProfDev from './scrib3-os/pages/ProfDevPage';
+import OSClientHub from './scrib3-os/pages/ClientHubPage';
+import OSClientPortal from './scrib3-os/pages/ClientPortalPage';
+import OSWhatGoodLooksLike from './scrib3-os/pages/WhatGoodLooksLikePage';
 import { AuthGuard, RoleGuard } from './scrib3-os/components/AuthGuard';
 // DEVICE layer imports
 import DeviceDashboard from './scrib3-device/pages/DashboardPage';
@@ -141,6 +144,34 @@ export default function App() {
             <AuthGuard>
               <RoleGuard allowed={['admin', 'team', 'csuite']}>
                 <OSProfDev />
+              </RoleGuard>
+            </AuthGuard>
+          }
+        />
+        <Route
+          path="/clients/:slug/hub"
+          element={
+            <AuthGuard>
+              <RoleGuard allowed={['admin', 'team', 'csuite']}>
+                <OSClientHub />
+              </RoleGuard>
+            </AuthGuard>
+          }
+        />
+        <Route
+          path="/portal/:slug"
+          element={
+            <AuthGuard>
+              <OSClientPortal />
+            </AuthGuard>
+          }
+        />
+        <Route
+          path="/resources/what-good-looks-like"
+          element={
+            <AuthGuard>
+              <RoleGuard allowed={['admin', 'team', 'csuite']}>
+                <OSWhatGoodLooksLike />
               </RoleGuard>
             </AuthGuard>
           }
