@@ -62,17 +62,16 @@ const LetsTalkDialog: React.FC<{ isOpen: boolean; onClose: () => void }> = ({ is
 
   const isValidEmail = (e: string) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e);
 
-  const handleSubmit = async () => {
+  const handleSubmit = () => {
     if (!name.trim() || !email.trim()) return;
     if (!isValidEmail(email.trim())) {
       setEmailError('Please enter a valid email address');
       return;
     }
     setEmailError('');
-    setSending(true);
 
-    // Store in Supabase — this IS the submission (no mailto)
-    const { error } = await supabase.from('support_requests').insert({
+    // Fire-and-forget — show success immediately, don't block on DB
+    supabase.from('support_requests').insert({
       email: email.trim(),
       status: 'contact_form',
       metadata: {
@@ -82,11 +81,10 @@ const LetsTalkDialog: React.FC<{ isOpen: boolean; onClose: () => void }> = ({ is
         message: message.trim() || null,
         submitted_at: new Date().toISOString(),
       },
+    }).then(({ error }) => {
+      if (error) console.warn('Contact form insert failed:', error.message);
     });
 
-    if (error) console.warn('Contact form insert failed:', error.message);
-
-    setSending(false);
     setSubmitted(true);
   };
 
