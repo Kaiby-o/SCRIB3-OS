@@ -1,8 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import LogoScrib3 from '../components/LogoScrib3';
-import { mockTeam, UNITS, LOCATIONS, availabilityColors, getInitials, type TeamMember } from '../lib/team';
+import { mockTeam, availabilityColors, getInitials, type TeamMember } from '../lib/team';
 import { getCapacityColor } from '../lib/bandwidth';
+import { useSupabaseQuery } from '../hooks/useSupabase';
 
 const easing = 'cubic-bezier(0.22, 0.61, 0.36, 1)';
 
@@ -19,7 +20,42 @@ const TeamDirectoryPage: React.FC = () => {
   const [availFilter, setAvailFilter] = useState('all');
   const [search, setSearch] = useState('');
 
-  const filtered = mockTeam.filter((m) => {
+  // Supabase query — falls back to mock if empty
+  const { data: dbProfiles } = useSupabaseQuery<Record<string, unknown>>(
+    'profiles', '*', undefined, { column: 'display_name', ascending: true }
+  );
+
+  // Map Supabase rows to TeamMember shape, fall back to mock data
+  const allMembers: TeamMember[] = useMemo(() => {
+    if (dbProfiles.length > 0) {
+      return dbProfiles.map((p) => ({
+        id: p.id as string,
+        name: (p.display_name ?? p.operator_handle ?? '') as string,
+        email: (p.email ?? '') as string,
+        role: (p.role ?? 'team') as TeamMember['role'],
+        title: (p.title ?? '—') as string,
+        unit: (p.unit ?? '—') as string,
+        location: (p.location ?? '—') as string,
+        timezone: (p.timezone ?? 'America/New_York') as string,
+        isOnline: (p.is_online ?? false) as boolean,
+        availability: (p.availability ?? 'offline') as TeamMember['availability'],
+        bio: (p.bio ?? '') as string,
+        skillsets: (p.skillsets ?? []) as string[],
+        socialLinks: (Array.isArray(p.social_links) ? p.social_links : []) as TeamMember['socialLinks'],
+        currentClients: [] as string[],
+        currentProjects: [] as string[],
+        joinedDate: (p.joined_date ?? '') as string,
+        xp: (p.xp ?? 0) as number,
+        bandwidthPct: (p.bandwidth ?? 0) as number,
+      }));
+    }
+    return mockTeam;
+  }, [dbProfiles]);
+
+  const UNITS = useMemo(() => [...new Set(allMembers.map((m) => m.unit))].filter(u => u !== '—').sort(), [allMembers]);
+  const LOCATIONS = useMemo(() => [...new Set(allMembers.map((m) => m.location))].filter(l => l !== '—').sort(), [allMembers]);
+
+  const filtered = allMembers.filter((m) => {
     if (unitFilter !== 'all' && m.unit !== unitFilter) return false;
     if (locationFilter !== 'all' && m.location !== locationFilter) return false;
     if (availFilter !== 'all' && m.availability !== availFilter) return false;
@@ -27,7 +63,7 @@ const TeamDirectoryPage: React.FC = () => {
     return true;
   });
 
-  const online = mockTeam.filter((m) => m.isOnline).length;
+  const online = allMembers.filter((m) => m.isOnline).length;
 
   return (
     <div className="os-root" style={{ minHeight: '100vh' }}>

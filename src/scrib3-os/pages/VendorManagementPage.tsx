@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import LogoScrib3 from '../components/LogoScrib3';
 import {
@@ -9,6 +9,7 @@ import {
   type Invoice,
   type InvoiceStatus,
 } from '../lib/vendors';
+import { useSupabaseQuery } from '../hooks/useSupabase';
 
 const easing = 'cubic-bezier(0.22, 0.61, 0.36, 1)';
 
@@ -94,14 +95,36 @@ const TH: React.FC<{ width: string; children: React.ReactNode }> = ({ width, chi
 /* ------------------------------------------------------------------ */
 
 const VendorsTab: React.FC<{ onOnboard: () => void }> = ({ onOnboard }) => {
-  const complete = mockVendors.filter((v) => v.onboardingComplete);
-  const pending = mockVendors.filter((v) => !v.onboardingComplete);
+  const { data: dbVendors } = useSupabaseQuery<Record<string, unknown>>('vendor_profiles', '*');
+  const vendors: VendorProfile[] = useMemo(() => {
+    if (dbVendors.length > 0) {
+      return dbVendors.map((v) => ({
+        id: v.id as string,
+        name: (v.name ?? '') as string,
+        email: (v.email ?? '') as string,
+        businessName: (v.business_name ?? '') as string,
+        mailingAddress: (v.mailing_address ?? '') as string,
+        scrib3Poc: '',
+        workType: (v.work_type ?? '') as string,
+        bankDetailsSubmitted: (v.bank_details_submitted ?? false) as boolean,
+        taxFormType: (v.tax_form_type ?? null) as VendorProfile['taxFormType'],
+        taxFormSubmitted: (v.tax_form_submitted ?? false) as boolean,
+        onboardingComplete: (v.onboarding_complete ?? false) as boolean,
+        activeProjects: [] as string[],
+        createdAt: (v.created_at ?? '') as string,
+      }));
+    }
+    return mockVendors;
+  }, [dbVendors]);
+
+  const complete = vendors.filter((v) => v.onboardingComplete);
+  const pending = vendors.filter((v) => !v.onboardingComplete);
 
   return (
     <>
       {/* Stats */}
       <div className="flex gap-6" style={{ marginBottom: '24px' }}>
-        <Stat value={mockVendors.length.toString()} label="total vendors" />
+        <Stat value={vendors.length.toString()} label="total vendors" />
         <Stat value={complete.length.toString()} label="onboarded" />
         <Stat value={pending.length.toString()} label="pending" accent={pending.length > 0} />
       </div>
@@ -134,7 +157,7 @@ const VendorsTab: React.FC<{ onOnboard: () => void }> = ({ onOnboard }) => {
           <TH width="10%">Tax Form</TH>
           <TH width="16%">Status</TH>
         </div>
-        {mockVendors.map((v) => (
+        {vendors.map((v) => (
           <VendorRow key={v.id} vendor={v} />
         ))}
       </div>
@@ -196,11 +219,32 @@ const VendorRow: React.FC<{ vendor: VendorProfile }> = ({ vendor: v }) => (
 
 const InvoicesTab: React.FC = () => {
   const [filter, setFilter] = useState<InvoiceStatus | 'all'>('all');
-  const filtered = filter === 'all' ? mockInvoices : mockInvoices.filter((i) => i.status === filter);
 
-  const totalPending = mockInvoices.filter((i) => i.status === 'submitted').reduce((a, i) => a + i.totalAmount, 0);
-  const totalProcessing = mockInvoices.filter((i) => i.status === 'processing' || i.status === 'validated').reduce((a, i) => a + i.totalAmount, 0);
-  const totalPaid = mockInvoices.filter((i) => i.status === 'paid').reduce((a, i) => a + i.totalAmount, 0);
+  const { data: dbInvoices } = useSupabaseQuery<Record<string, unknown>>('invoices', '*, vendor_profiles(name)');
+  const allInvoices: Invoice[] = useMemo(() => {
+    if (dbInvoices.length > 0) {
+      return dbInvoices.map((inv) => ({
+        id: inv.id as string,
+        vendorId: (inv.vendor_id ?? '') as string,
+        vendorName: ((inv.vendor_profiles as Record<string, unknown>)?.name ?? '') as string,
+        lineItems: (inv.line_items ?? []) as Invoice['lineItems'],
+        totalAmount: Number(inv.total_amount ?? 0),
+        currency: (inv.currency ?? 'USD') as string,
+        submittedAt: inv.submitted_at ? new Date(inv.submitted_at as string).toISOString().split('T')[0] : '',
+        status: (inv.status ?? 'submitted') as InvoiceStatus,
+        validatedBy: (inv.validated_by ?? null) as string | null,
+        validatedAt: inv.validated_at ? new Date(inv.validated_at as string).toISOString().split('T')[0] : null,
+        notes: (inv.notes ?? '') as string,
+      }));
+    }
+    return mockInvoices;
+  }, [dbInvoices]);
+
+  const filtered = filter === 'all' ? allInvoices : allInvoices.filter((i) => i.status === filter);
+
+  const totalPending = allInvoices.filter((i) => i.status === 'submitted').reduce((a, i) => a + i.totalAmount, 0);
+  const totalProcessing = allInvoices.filter((i) => i.status === 'processing' || i.status === 'validated').reduce((a, i) => a + i.totalAmount, 0);
+  const totalPaid = allInvoices.filter((i) => i.status === 'paid').reduce((a, i) => a + i.totalAmount, 0);
 
   return (
     <>
@@ -209,7 +253,7 @@ const InvoicesTab: React.FC = () => {
         <Stat value={`$${totalPending.toLocaleString()}`} label="awaiting review" accent={totalPending > 0} />
         <Stat value={`$${totalProcessing.toLocaleString()}`} label="in processing" />
         <Stat value={`$${totalPaid.toLocaleString()}`} label="paid" />
-        <Stat value={mockInvoices.length.toString()} label="total invoices" />
+        <Stat value={allInvoices.length.toString()} label="total invoices" />
       </div>
 
       {/* Filters */}

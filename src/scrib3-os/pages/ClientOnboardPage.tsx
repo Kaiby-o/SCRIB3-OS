@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import LogoScrib3 from '../components/LogoScrib3';
+import { supabaseInsert } from '../hooks/useSupabase';
 
 /* ------------------------------------------------------------------ */
 /*  Onboarding phases (mirrors DEVICE journey: Dating → Signing →     */
@@ -95,9 +96,18 @@ const ClientOnboardPage: React.FC = () => {
     }
   };
 
-  const handleSubmit = () => {
-    // In production: write to Supabase, trigger Fillout, create Notion hub, etc.
-    console.log('[client-onboard] Submitted:', form);
+  const handleSubmit = async () => {
+    const slug = form.companyName.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+    const { error } = await supabaseInsert('client_profiles', {
+      slug,
+      company_name: form.companyName,
+      industry: form.industry,
+      contract_type: form.engagementType === 'retainer' ? 'Monthly Remit' : form.engagementType === 'project' ? 'One Time' : 'As-Needed',
+      contract_start: form.kickoffDate || null,
+      onboarding_complete: false,
+      notes: form.projectBrief,
+    });
+    if (error) console.error('[client-onboard] Insert failed:', error);
     setSubmitted(true);
   };
 

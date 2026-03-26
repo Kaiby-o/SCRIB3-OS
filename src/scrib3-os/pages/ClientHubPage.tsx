@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import LogoScrib3 from '../components/LogoScrib3';
 import { priorityClients, type ClientProfile } from '../lib/clients';
+import { useSupabaseRow, useSupabaseQuery } from '../hooks/useSupabase';
 
 /* ------------------------------------------------------------------ */
 /*  Plan v4 §3K — Client Hub (internal team-facing)                    */
@@ -11,8 +12,50 @@ import { priorityClients, type ClientProfile } from '../lib/clients';
 const ClientHubPage: React.FC = () => {
   const { slug } = useParams<{ slug: string }>();
   const navigate = useNavigate();
-  const client = priorityClients.find((c) => c.slug === slug);
   const [tab, setTab] = useState<'overview' | 'brand' | 'projects' | 'contacts' | 'strategy'>('overview');
+
+  // Try Supabase first, fall back to mock
+  const { data: dbClient } = useSupabaseRow<Record<string, unknown>>('client_profiles', 'slug', slug ?? '');
+  const { data: dbContacts } = useSupabaseQuery<Record<string, unknown>>(
+    'client_contacts', '*', slug ? [{ column: 'client_id', value: dbClient?.id as string ?? '' }] : undefined
+  );
+
+  const client: ClientProfile | undefined = useMemo(() => {
+    if (dbClient) {
+      const social = (dbClient.social_links ?? {}) as Record<string, string>;
+      return {
+        id: dbClient.id as string,
+        slug: dbClient.slug as string,
+        companyName: (dbClient.company_name ?? '') as string,
+        industry: (dbClient.industry ?? '') as string,
+        website: (dbClient.website ?? '') as string,
+        twitter: social.twitter ?? '',
+        linkedin: social.linkedin ?? '',
+        discord: social.discord ?? '',
+        contractStart: (dbClient.contract_start ?? '') as string,
+        contractType: (dbClient.contract_type ?? 'Monthly Remit') as ClientProfile['contractType'],
+        accountHealth: (dbClient.account_health ?? '🟢') as ClientProfile['accountHealth'],
+        accountLead: '', creativeLead: '', prLead: '',
+        slackChannel: '',
+        primaryColour: '#000', secondaryColours: [], primaryFont: '',
+        toneOfVoice: '', keyMessaging: [], contentDos: [], contentDonts: [],
+        servicesActive: [],
+        macroStrategy: (dbClient.notes ?? '') as string,
+        currentSprintFocus: '', whatWeAreNotDoing: '',
+        contacts: dbContacts.map((c) => ({
+          name: (c.name ?? '') as string,
+          role: (c.role ?? '') as string,
+          email: (c.email ?? '') as string,
+          commsPreference: (c.comms_preference ?? '') as string,
+          isPrimary: (c.is_primary ?? false) as boolean,
+        })),
+        activeProjects: [],
+        upcomingDates: [],
+        scopeWatch: (dbClient.scope_watch ?? []) as ClientProfile['activeProjects'],
+      } as unknown as ClientProfile;
+    }
+    return priorityClients.find((c) => c.slug === slug);
+  }, [dbClient, dbContacts, slug]);
 
   if (!client) {
     return (

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import LogoScrib3 from '../components/LogoScrib3';
 import {
@@ -8,6 +8,7 @@ import {
   type EngagementHealth,
   type HealthTierConfig,
 } from '../lib/engagementHealth';
+import { useSupabaseQuery } from '../hooks/useSupabase';
 
 /* ------------------------------------------------------------------ */
 /*  Helpers                                                            */
@@ -260,8 +261,67 @@ const EngagementRow: React.FC<{
 const FinanceOverviewPage: React.FC = () => {
   const navigate = useNavigate();
 
+  // Try Supabase engagement_health — aggregate by client
+  const { data: dbHealth } = useSupabaseQuery<Record<string, unknown>>(
+    'engagement_health', '*, client_profiles(slug, company_name)',
+    undefined, { column: 'month', ascending: true }
+  );
+
+  // Build engagements from DB or fall back to mock
+  const engagements: EngagementHealth[] = useMemo(() => {
+    if (dbHealth.length > 0) {
+      // Group by client
+      const byClient = new Map<string, Record<string, unknown>[]>();
+      for (const row of dbHealth) {
+        const cp = row.client_profiles as Record<string, unknown> | null;
+        const slug = cp?.slug as string ?? 'unknown';
+        if (!byClient.has(slug)) byClient.set(slug, []);
+        byClient.get(slug)!.push(row);
+      }
+
+      return Array.from(byClient.entries()).map(([slug, rows]) => {
+        const cp = rows[0].client_profiles as Record<string, unknown>;
+        const monthlyRemit = Number(rows[0].monthly_remit ?? 0);
+        const months = rows.map((r) => ({
+          month: new Date(r.month as string).toLocaleDateString('en-US', { month: 'short', year: 'numeric' }),
+          budgeted: monthlyRemit,
+          teamCosts: Number(r.team_costs ?? 0),
+          vendorCosts: Number(r.vendor_costs ?? 0),
+          expenses: Number(r.expense_costs ?? 0),
+          totalCost: Number(r.team_costs ?? 0) + Number(r.vendor_costs ?? 0) + Number(r.expense_costs ?? 0),
+          difference: monthlyRemit - (Number(r.team_costs ?? 0) + Number(r.vendor_costs ?? 0) + Number(r.expense_costs ?? 0)),
+          marginPct: monthlyRemit > 0 ? ((monthlyRemit - (Number(r.team_costs ?? 0) + Number(r.vendor_costs ?? 0) + Number(r.expense_costs ?? 0))) / monthlyRemit) * 100 : 0,
+          cumulativeBudget: 0, cumulativeSpend: 0, cumulativeDifference: 0,
+        }));
+
+        const totalBudgeted = months.reduce((a, m) => a + m.budgeted, 0);
+        const totalSpend = months.reduce((a, m) => a + m.totalCost, 0);
+        const totalSurplus = totalBudgeted - totalSpend;
+        const currentMarginPct = totalBudgeted > 0 ? (totalSurplus / totalBudgeted) * 100 : 0;
+
+        return {
+          id: `eng-${slug}`,
+          clientName: (cp?.company_name ?? slug) as string,
+          clientSlug: slug,
+          accountLead: '',
+          startDate: '', contractEnd: '', contractEndType: 'auto-renew-mtm' as const,
+          monthlyRemit, targetMarginPct: Number(rows[0].target_margin_pct ?? 30),
+          safetyBufferPct: Number(rows[0].safety_buffer_pct ?? 10),
+          overheadPct: Number(rows[0].overhead_pct ?? 15),
+          workingDaysPerMonth: Number(rows[0].working_days ?? 22),
+          avgDailyRate: monthlyRemit / 22,
+          floorAmount: monthlyRemit * 0.1,
+          months, currentMarginPct,
+          currentHealth: getHealthTier(currentMarginPct).key,
+          totalBudgeted, totalSpend, totalSurplus,
+        } as EngagementHealth;
+      });
+    }
+    return mockEngagements;
+  }, [dbHealth]);
+
   // Sort by margin ascending (worst first)
-  const sorted = [...mockEngagements].sort((a, b) => a.currentMarginPct - b.currentMarginPct);
+  const sorted = [...engagements].sort((a, b) => a.currentMarginPct - b.currentMarginPct);
 
   return (
     <div className="os-root" style={{ minHeight: '100vh' }}>

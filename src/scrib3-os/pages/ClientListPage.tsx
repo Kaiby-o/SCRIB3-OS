@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import LogoScrib3 from '../components/LogoScrib3';
+import { useSupabaseQuery } from '../hooks/useSupabase';
 
 /* ------------------------------------------------------------------ */
 /*  Mock client data                                                   */
@@ -95,10 +96,31 @@ const ClientListPage: React.FC = () => {
   const navigate = useNavigate();
   const [filter, setFilter] = useState<string>('all');
 
+  // Supabase query
+  const { data: dbClients } = useSupabaseQuery<Record<string, unknown>>(
+    'client_profiles', '*', undefined, { column: 'company_name', ascending: true }
+  );
+
+  const allClients: ClientRecord[] = useMemo(() => {
+    if (dbClients.length > 0) {
+      return dbClients.map((c) => ({
+        id: c.id as string,
+        name: (c.company_name ?? '') as string,
+        contactName: '—',
+        contactEmail: '',
+        status: (c.onboarding_complete ? 'active' : 'onboarding') as ClientRecord['status'],
+        projectCount: 0,
+        revenue: c.contract_value ? `$${Number(c.contract_value).toLocaleString()}` : '—',
+        startDate: c.contract_start ? new Date(c.contract_start as string).toLocaleDateString('en-GB', { month: 'short', year: 'numeric' }) : '—',
+      }));
+    }
+    return mockClients;
+  }, [dbClients]);
+
   const filtered =
     filter === 'all'
-      ? mockClients
-      : mockClients.filter((c) => c.status === filter);
+      ? allClients
+      : allClients.filter((c) => c.status === filter);
 
   return (
     <div className="os-root" style={{ minHeight: '100vh' }}>

@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import LogoScrib3 from '../components/LogoScrib3';
+import { supabaseInsert } from '../hooks/useSupabase';
 
 const easing = 'cubic-bezier(0.22, 0.61, 0.36, 1)';
 
@@ -38,8 +39,19 @@ const VendorOnboardPage: React.FC = () => {
   const update = (field: keyof VendorForm, value: string | boolean) =>
     setForm((prev) => ({ ...prev, [field]: value }));
 
-  const handleSubmit = () => {
-    console.log('[vendor-onboard] Submitted:', form);
+  const handleSubmit = async () => {
+    const { error } = await supabaseInsert('vendor_profiles', {
+      name: form.name,
+      email: form.email,
+      business_name: form.businessName,
+      mailing_address: form.mailingAddress,
+      work_type: form.workType,
+      bank_details_submitted: form.bankDetailsSubmitted,
+      tax_form_type: form.taxFormType || null,
+      tax_form_submitted: form.taxFormSubmitted,
+      onboarding_complete: form.bankDetailsSubmitted && form.taxFormSubmitted,
+    });
+    if (error) console.error('[vendor-onboard] Insert failed:', error);
     setSubmitted(true);
   };
 
