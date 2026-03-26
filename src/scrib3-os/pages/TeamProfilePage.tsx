@@ -159,10 +159,14 @@ const ProfileHeader: React.FC<{ member: TeamMember }> = ({ member: m }) => (
   <div className="flex items-start gap-6" style={{ marginBottom: '32px' }}>
     {/* Avatar */}
     <div style={{ position: 'relative', flexShrink: 0 }}>
-      <div style={{ width: 100, height: 100, borderRadius: '50%', background: '#000', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-        <span style={{ color: '#EAF2D7', fontFamily: "'Kaio', sans-serif", fontWeight: 900, fontSize: '38px' }}>
-          {getInitials(m.name)}
-        </span>
+      <div style={{ width: 100, height: 100, borderRadius: '50%', background: '#000', display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden' }}>
+        {m.avatarUrl ? (
+          <img src={m.avatarUrl} alt={m.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+        ) : (
+          <span style={{ color: '#EAF2D7', fontFamily: "'Kaio', sans-serif", fontWeight: 900, fontSize: '38px' }}>
+            {getInitials(m.name)}
+          </span>
+        )}
       </div>
       {/* Online dot */}
       <div style={{

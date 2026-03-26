@@ -21,7 +21,10 @@ export interface TeamMember {
   joinedDate: string;
   xp: number;
   bandwidthPct: number;
+  avatarUrl?: string;
 }
+
+const AVATAR_BASE = 'https://dzufyjiczbgsvjyinpks.supabase.co/storage/v1/object/public/Avatars/';
 
 export const mockTeam: TeamMember[] = [
   {
@@ -34,6 +37,7 @@ export const mockTeam: TeamMember[] = [
     currentClients: ['Cardano', 'Rootstock', 'Franklin Templeton'],
     currentProjects: ['RSK-001', 'CDN-012', 'INT-001'],
     joinedDate: '2023-03-01', xp: 820, bandwidthPct: 85,
+    avatarUrl: AVATAR_BASE + 'Ben_Lydiat.jpg',
   },
   {
     id: 'tm-sixtyne', name: 'Sixtyne Perez', email: 'sixtyne@scrib3.co', role: 'csuite',
@@ -44,6 +48,7 @@ export const mockTeam: TeamMember[] = [
     socialLinks: [{ platform: 'LinkedIn', url: '#' }],
     currentClients: ['All — oversight'], currentProjects: ['All — oversight'],
     joinedDate: '2022-06-01', xp: 950, bandwidthPct: 95,
+    avatarUrl: AVATAR_BASE + 'Sixtyne.png',
   },
   {
     id: 'tm-nick', name: 'Nick Mitchell', email: 'nick@scrib3.co', role: 'csuite',
@@ -54,6 +59,7 @@ export const mockTeam: TeamMember[] = [
     socialLinks: [{ platform: 'Twitter', url: '#' }, { platform: 'LinkedIn', url: '#' }],
     currentClients: ['Franklin Templeton', 'Cardano'], currentProjects: ['FT-005', 'CDN-012'],
     joinedDate: '2022-04-01', xp: 780, bandwidthPct: 70,
+    avatarUrl: AVATAR_BASE + 'Nick_Mitchell.jpg',
   },
   {
     id: 'tm-jb', name: 'JB', email: 'jb@scrib3.co', role: 'csuite',
@@ -62,6 +68,7 @@ export const mockTeam: TeamMember[] = [
     bio: '', skillsets: ['Leadership', 'Business Development', 'Web3'],
     socialLinks: [], currentClients: [], currentProjects: [],
     joinedDate: '2021-01-01', xp: 500, bandwidthPct: 40,
+    avatarUrl: AVATAR_BASE + 'JB.png',
   },
   {
     id: 'tm-ross', name: 'Ross Booth', email: 'ross@scrib3.co', role: 'csuite',
@@ -70,6 +77,7 @@ export const mockTeam: TeamMember[] = [
     bio: '', skillsets: ['Business Development', 'Partnerships'],
     socialLinks: [], currentClients: [], currentProjects: [],
     joinedDate: '2021-01-01', xp: 400, bandwidthPct: 20,
+    avatarUrl: AVATAR_BASE + 'Ross_Booth.jpg',
   },
   {
     id: 'tm-arthur', name: 'Arthur Stern', email: 'arthur@scrib3.co', role: 'csuite',
@@ -78,6 +86,7 @@ export const mockTeam: TeamMember[] = [
     bio: '', skillsets: ['Operations', 'Finance', 'Partnerships'],
     socialLinks: [], currentClients: [], currentProjects: [],
     joinedDate: '2021-01-01', xp: 400, bandwidthPct: 25,
+    avatarUrl: AVATAR_BASE + 'Arthur_Stern.png',
   },
   {
     id: 'tm-ishan', name: 'Ishan', email: 'ishan@scrib3.co', role: 'csuite',
@@ -86,6 +95,7 @@ export const mockTeam: TeamMember[] = [
     bio: '', skillsets: ['Technology', 'Web3', 'Product'],
     socialLinks: [], currentClients: [], currentProjects: [],
     joinedDate: '2021-01-01', xp: 350, bandwidthPct: 15,
+    avatarUrl: AVATAR_BASE + 'Ishan_Bhaidani.png',
   },
   {
     id: 'tm-elena', name: 'Elena Zheng', email: 'elena@scrib3.co', role: 'team',
@@ -97,6 +107,7 @@ export const mockTeam: TeamMember[] = [
     currentClients: ['Cardano', 'Franklin Templeton', 'Canton', 'Rome Protocol'],
     currentProjects: ['CDN-012', 'FT-005', 'CTN-003', 'ROM-001'],
     joinedDate: '2023-06-01', xp: 620, bandwidthPct: 85,
+    avatarUrl: AVATAR_BASE + 'Elena_Zheng.jpg',
   },
   {
     id: 'tm-omar', name: 'Omar Anwar', email: 'omar@scrib3.co', role: 'team',
@@ -108,6 +119,7 @@ export const mockTeam: TeamMember[] = [
     currentClients: ['Rootstock', 'Midnight', 'Rootstock Collective'],
     currentProjects: ['RSK-001', 'MID-002', 'RSK-004'],
     joinedDate: '2024-01-15', xp: 480, bandwidthPct: 75,
+    avatarUrl: AVATAR_BASE + 'Omar_Anwar.jpg',
   },
   {
     id: 'tm-haley', name: 'Haley Stewart Torculas', email: 'haley@scrib3.co', role: 'team',
@@ -117,6 +129,7 @@ export const mockTeam: TeamMember[] = [
     skillsets: ['HR', 'Operations', 'Onboarding', 'Culture'],
     socialLinks: [], currentClients: [], currentProjects: [],
     joinedDate: '2023-09-01', xp: 310, bandwidthPct: 60,
+    avatarUrl: AVATAR_BASE + 'Haley_Stewart_Torculas.jpg',
   },
   {
     id: 'tm-camila', name: 'Camila', email: 'camila@scrib3.co', role: 'team',
@@ -126,6 +139,7 @@ export const mockTeam: TeamMember[] = [
     skillsets: ['Finance', 'Invoicing', 'Operations'],
     socialLinks: [], currentClients: [], currentProjects: [],
     joinedDate: '2024-06-01', xp: 180, bandwidthPct: 55,
+    avatarUrl: AVATAR_BASE + 'Camila.jpg',
   },
   {
     id: 'tm-matt', name: 'Matthew Brannon', email: 'matt@scrib3.co', role: 'team',
@@ -137,6 +151,7 @@ export const mockTeam: TeamMember[] = [
     currentClients: ['Cardano', 'Franklin Templeton', 'Rootstock'],
     currentProjects: ['CDN-012', 'FT-005', 'RSK-001'],
     joinedDate: '2023-04-01', xp: 540, bandwidthPct: 80,
+    avatarUrl: AVATAR_BASE + 'Matthew_Brannon.png',
   },
   {
     id: 'tm-jenny', name: 'Jenny', email: 'jenny@scrib3.co', role: 'team',
@@ -144,6 +159,7 @@ export const mockTeam: TeamMember[] = [
     isOnline: false, availability: 'away', bio: '', skillsets: ['PR', 'Broadcast', 'Media'],
     socialLinks: [], currentClients: ['Cardano'], currentProjects: ['CDN-012'],
     joinedDate: '2024-02-01', xp: 220, bandwidthPct: 65,
+    avatarUrl: AVATAR_BASE + 'Jenny.png',
   },
   {
     id: 'tm-destini', name: 'Destini', email: 'destini@scrib3.co', role: 'team',
@@ -151,6 +167,7 @@ export const mockTeam: TeamMember[] = [
     isOnline: false, availability: 'offline', bio: '', skillsets: ['PR', 'Media Relations'],
     socialLinks: [], currentClients: ['Midnight'], currentProjects: ['MID-002'],
     joinedDate: '2024-03-01', xp: 190, bandwidthPct: 50,
+    avatarUrl: AVATAR_BASE + 'Janelle.png',
   },
   {
     id: 'tm-janelle', name: 'Janelle', email: 'janelle@scrib3.co', role: 'team',
@@ -158,6 +175,7 @@ export const mockTeam: TeamMember[] = [
     isOnline: false, availability: 'offline', bio: '', skillsets: ['PR', 'Content'],
     socialLinks: [], currentClients: ['Canton'], currentProjects: ['CTN-003'],
     joinedDate: '2024-05-01', xp: 160, bandwidthPct: 45,
+    avatarUrl: AVATAR_BASE + 'Janelle.png',
   },
   {
     id: 'tm-hugh', name: 'Hugh', email: 'hugh@scrib3.co', role: 'team',
@@ -165,6 +183,7 @@ export const mockTeam: TeamMember[] = [
     isOnline: false, availability: 'away', bio: '', skillsets: ['PR', 'Podcasts', 'Audio'],
     socialLinks: [], currentClients: ['Cardano', 'Rootstock'], currentProjects: ['CDN-012', 'RSK-001'],
     joinedDate: '2024-01-01', xp: 280, bandwidthPct: 70,
+    avatarUrl: AVATAR_BASE + 'Hugh.png',
   },
   {
     id: 'tm-kevin', name: 'Kevin Moran', email: 'kevin@scrib3.co', role: 'team',
@@ -176,6 +195,7 @@ export const mockTeam: TeamMember[] = [
     currentClients: ['Rootstock', 'Cardano', 'SCRIB3'],
     currentProjects: ['RSK-001', 'CDN-012', 'INT-001'],
     joinedDate: '2023-07-01', xp: 580, bandwidthPct: 90,
+    avatarUrl: AVATAR_BASE + 'Kevin_Moran.jpg',
   },
   {
     id: 'tm-kevina', name: 'Kevin Arteaga', email: 'kevin.arteaga@scrib3.co', role: 'team',
@@ -183,6 +203,7 @@ export const mockTeam: TeamMember[] = [
     isOnline: true, availability: 'available', bio: '', skillsets: ['PR', 'Account Management'],
     socialLinks: [], currentClients: ['Franklin Templeton'], currentProjects: ['FT-005'],
     joinedDate: '2024-08-01', xp: 140, bandwidthPct: 60,
+    avatarUrl: AVATAR_BASE + 'Kevin_Arteaga.png',
   },
   {
     id: 'tm-sam', name: 'Samantha Kelly', email: 'sam@scrib3.co', role: 'team',
@@ -194,6 +215,7 @@ export const mockTeam: TeamMember[] = [
     currentClients: ['Franklin Templeton', 'Rootstock', 'Midnight'],
     currentProjects: ['FT-005', 'RSK-001', 'MID-002'],
     joinedDate: '2023-05-01', xp: 650, bandwidthPct: 95,
+    avatarUrl: AVATAR_BASE + 'Samantha_Kelly.jpg',
   },
   {
     id: 'tm-cynthia', name: 'Cynthia Gentry', email: 'cynthia@scrib3.co', role: 'team',
@@ -205,6 +227,7 @@ export const mockTeam: TeamMember[] = [
     currentClients: ['Cardano', 'Franklin Templeton', 'Canton'],
     currentProjects: ['CDN-014', 'FT-005', 'CTN-003'],
     joinedDate: '2023-11-01', xp: 420, bandwidthPct: 95,
+    avatarUrl: AVATAR_BASE + 'Cynthia_Gentry.jpg',
   },
   {
     id: 'tm-amanda', name: 'Amanda Eyer', email: 'amanda@scrib3.co', role: 'team',
@@ -212,6 +235,7 @@ export const mockTeam: TeamMember[] = [
     isOnline: false, availability: 'away', bio: '', skillsets: ['Design', 'Creative', 'Illustration'],
     socialLinks: [], currentClients: ['Rootstock'], currentProjects: ['RSK-001'],
     joinedDate: '2024-04-01', xp: 240, bandwidthPct: 55,
+    avatarUrl: AVATAR_BASE + 'Amanda_Eyer.jpg',
   },
   {
     id: 'tm-jake', name: 'Jake Embleton', email: 'jake@scrib3.co', role: 'team',
@@ -223,6 +247,7 @@ export const mockTeam: TeamMember[] = [
     currentClients: ['Franklin Templeton', 'Cardano'],
     currentProjects: ['FT-005', 'CDN-014'],
     joinedDate: '2024-02-15', xp: 340, bandwidthPct: 90,
+    avatarUrl: AVATAR_BASE + 'Jake_Embleton.png',
   },
   {
     id: 'tm-stef', name: 'Stef Luthin', email: 'stef@scrib3.co', role: 'team',
@@ -230,6 +255,7 @@ export const mockTeam: TeamMember[] = [
     isOnline: true, availability: 'available', bio: '', skillsets: ['Content', 'Writing', 'Research'],
     socialLinks: [], currentClients: ['Cardano'], currentProjects: ['CDN-014'],
     joinedDate: '2024-06-01', xp: 200, bandwidthPct: 50,
+    avatarUrl: AVATAR_BASE + 'Stefanie.png',
   },
   {
     id: 'tm-luke', name: 'Luke', email: 'luke@scrib3.co', role: 'team',
@@ -237,6 +263,7 @@ export const mockTeam: TeamMember[] = [
     isOnline: false, availability: 'offline', bio: '', skillsets: ['Content', 'Social Media'],
     socialLinks: [], currentClients: ['Canton'], currentProjects: ['CTN-003'],
     joinedDate: '2024-07-01', xp: 150, bandwidthPct: 45,
+    avatarUrl: AVATAR_BASE + 'Luke_Bateman.png',
   },
   {
     id: 'tm-tolani', name: 'Tolani Daniel', email: 'tolani@scrib3.co', role: 'team',
@@ -248,6 +275,7 @@ export const mockTeam: TeamMember[] = [
     currentClients: ['Cardano', 'Rootstock'],
     currentProjects: ['CDN-012', 'RSK-003'],
     joinedDate: '2023-08-01', xp: 510, bandwidthPct: 95,
+    avatarUrl: AVATAR_BASE + 'Tolani_Daniel.jpg',
   },
   {
     id: 'tm-taylor', name: 'Taylor Hadden', email: 'taylor@scrib3.co', role: 'team',
@@ -255,6 +283,7 @@ export const mockTeam: TeamMember[] = [
     isOnline: false, availability: 'offline', bio: '', skillsets: ['Brand'],
     socialLinks: [], currentClients: [], currentProjects: [],
     joinedDate: '2024-09-01', xp: 80, bandwidthPct: 30,
+    avatarUrl: AVATAR_BASE + 'Taylor_Hadden.png',
   },
   {
     id: 'tm-madisen', name: 'Madisen', email: 'madisen@scrib3.co', role: 'team',
@@ -262,6 +291,7 @@ export const mockTeam: TeamMember[] = [
     isOnline: true, availability: 'available', bio: '', skillsets: ['Account Management', 'Client Relations'],
     socialLinks: [], currentClients: ['Midnight'], currentProjects: ['MID-002'],
     joinedDate: '2024-10-01', xp: 120, bandwidthPct: 55,
+    avatarUrl: AVATAR_BASE + 'Madisen_Kopfer.jpg',
   },
   {
     id: 'tm-kim', name: 'Kim', email: 'kim@scrib3.co', role: 'team',
@@ -269,6 +299,7 @@ export const mockTeam: TeamMember[] = [
     isOnline: false, availability: 'away', bio: '', skillsets: ['Account Management', 'MENA Markets'],
     socialLinks: [], currentClients: ['Canton'], currentProjects: ['CTN-003'],
     joinedDate: '2024-11-01', xp: 100, bandwidthPct: 50,
+    avatarUrl: AVATAR_BASE + 'Kim.jpg',
   },
   {
     id: 'tm-ck', name: 'CK', email: 'ck@scrib3.co', role: 'team',
@@ -279,6 +310,7 @@ export const mockTeam: TeamMember[] = [
     socialLinks: [],
     currentClients: ['SCRIB3'], currentProjects: ['INT-001'],
     joinedDate: '2025-01-01', xp: 360, bandwidthPct: 40,
+    avatarUrl: AVATAR_BASE + 'CK.png',
   },
 ];
 

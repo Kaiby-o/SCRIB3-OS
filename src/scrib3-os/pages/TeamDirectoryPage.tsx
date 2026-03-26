@@ -163,11 +163,16 @@ const MemberCard: React.FC<{ member: TeamMember; onClick: () => void }> = ({ mem
         style={{
           width: 52, height: 52, borderRadius: '50%', background: '#000',
           display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0,
+          overflow: 'hidden',
         }}
       >
-        <span style={{ color: '#EAF2D7', fontFamily: "'Kaio', sans-serif", fontWeight: 900, fontSize: '18px' }}>
-          {getInitials(m.name)}
-        </span>
+        {m.avatarUrl ? (
+          <img src={m.avatarUrl} alt={m.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+        ) : (
+          <span style={{ color: '#EAF2D7', fontFamily: "'Kaio', sans-serif", fontWeight: 900, fontSize: '18px' }}>
+            {getInitials(m.name)}
+          </span>
+        )}
       </div>
       <div className="flex flex-col">
         <span style={{ fontFamily: "'Kaio', sans-serif", fontWeight: 800, fontSize: '15px', textTransform: 'uppercase' }}>
