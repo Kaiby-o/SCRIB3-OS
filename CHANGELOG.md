@@ -149,10 +149,45 @@
 - ✅ Pre-Alignment Framework (§3G — Nick)
 - ✅ Scope Watch (§3H — Sixtyne + Elena)
 
+### Phase 2 — Team Accounts, Profiles & Directory
+
+**Team Data Layer** (`team.ts`)
+- Full 29-person roster from Plan v4 confirmed team table
+- All fields: name, email, role, title, unit, location, timezone, availability, bio, skillsets, social links, current clients/projects, join date, XP, bandwidth %
+- Units: C-Suite, Brand, PR, Accounts, Ops
+- Availability states: available (green), busy (orange), away (yellow), offline (grey)
+
+**`/team` — Team Directory** (Plan v4 §2E)
+- Filterable gallery of all 29 active members
+- Filter by: Unit (dropdown), Location (dropdown), Availability (dropdown)
+- Search by name or title
+- Card per member: avatar initials, name, title, unit badge, location, bandwidth bar, online dot
+- Stats: total members, online count
+- Click card → team profile
+
+**`/team/:id` — Team Profile** (Plan v4 §2B)
+- Header: avatar + name + title + role badge + location + local time + online dot + bandwidth bar
+- Social icons row (platform link pills)
+- Bio section (freetext)
+- Skillsets (pink tag pills)
+- Current Clients (avatar circles with client initial)
+- Current Projects (project code pills)
+- Info grid: email, unit, location, timezone, joined date, XP
+- Link to Professional Development tracker
+
+**`/pd/:id` — Professional Development Tracker** (Plan v4 §2D Layer 1)
+- Tabbed: Goals & Courses | Proof of Excellence | Operating Principles | Instant Feedback
+- **Goals**: SMART-enforced goals with type badges (Course/Stretch/SMART), target dates, status
+- **Proof of Excellence**: Evidence cards with type (Client Recognition/Internal Win/Skill Milestone), description, client, date
+- **Operating Principles**: Five SCRIB3 principles with self-rating dots (1-5), evidence text
+  - Keep Externalities in Perspective / If It Doesn't Make Sense Don't Do It / Tackle Problems Head On / Set Teammates Up for Success / Develop or Die
+- **Instant Feedback**: Praise (green left border) and Development Points (orange left border) with context
+- Nav: Directory → `/team`, Profiles → `/team`
+
 **Next planned work (from Plan v4):**
-- Phase 2: Team seed (29 members), profiles, PD system, team directory
 - Phase 3 remaining: Client MD files, Account Blueprints, Client portals
 - Phase 3.5: Mobile accessibility
+- Phase 4: Project registry, unit dashboards, Linear integration, "What Good Looks Like" library
 - Connect all systems to Supabase
 - Figma screenshot comparison + pixel polish
 

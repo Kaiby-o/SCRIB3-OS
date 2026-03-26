@@ -12,6 +12,9 @@ import OSVendorOnboard from './scrib3-os/pages/VendorOnboardPage';
 import OSPreAlignment from './scrib3-os/pages/PreAlignmentPage';
 import OSBandwidth from './scrib3-os/pages/BandwidthPage';
 import OSScopeWatch from './scrib3-os/pages/ScopeWatchPage';
+import OSTeamDirectory from './scrib3-os/pages/TeamDirectoryPage';
+import OSTeamProfile from './scrib3-os/pages/TeamProfilePage';
+import OSProfDev from './scrib3-os/pages/ProfDevPage';
 import { AuthGuard, RoleGuard } from './scrib3-os/components/AuthGuard';
 // DEVICE layer imports
 import DeviceDashboard from './scrib3-device/pages/DashboardPage';
@@ -108,6 +111,36 @@ export default function App() {
             <AuthGuard>
               <RoleGuard allowed={['admin', 'team', 'csuite']}>
                 <OSPreAlignment />
+              </RoleGuard>
+            </AuthGuard>
+          }
+        />
+        <Route
+          path="/team"
+          element={
+            <AuthGuard>
+              <RoleGuard allowed={['admin', 'team', 'csuite']}>
+                <OSTeamDirectory />
+              </RoleGuard>
+            </AuthGuard>
+          }
+        />
+        <Route
+          path="/team/:id"
+          element={
+            <AuthGuard>
+              <RoleGuard allowed={['admin', 'team', 'csuite']}>
+                <OSTeamProfile />
+              </RoleGuard>
+            </AuthGuard>
+          }
+        />
+        <Route
+          path="/pd/:id"
+          element={
+            <AuthGuard>
+              <RoleGuard allowed={['admin', 'team', 'csuite']}>
+                <OSProfDev />
               </RoleGuard>
             </AuthGuard>
           }

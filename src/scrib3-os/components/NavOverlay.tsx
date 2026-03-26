@@ -47,8 +47,8 @@ export const useNavOverlay = () => useContext(NavOverlayContext);
 
 const subItemRoutes: Record<string, string> = {
   // Team nav
-  'Directory': '/dashboard',
-  'Profiles': '/dashboard',
+  'Directory': '/team',
+  'Profiles': '/team',
   'Activity': '/dashboard',
   'Business Units': '/dashboard',
   'Departments': '/dashboard',
