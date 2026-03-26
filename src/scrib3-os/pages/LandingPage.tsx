@@ -63,10 +63,10 @@ const LetsTalkDialog: React.FC<{ isOpen: boolean; onClose: () => void }> = ({ is
     setSending(true);
 
     // Fire-and-forget Supabase insert (don't block on it)
-    supabase.from('support_requests').insert({
+    void supabase.from('support_requests').insert({
       email: email.trim(),
       status: 'contact_form',
-    }).then(() => {}).catch(() => {});
+    });
 
     // Send email
     const subject = encodeURIComponent("SCRIB3 OS — Let's Talk Submission");
