@@ -111,13 +111,49 @@
 - Route gated to admin/team/csuite
 - Nav "Proposals" sub-item → `/pre-alignment`
 
-### ✅ SESSION 3 COMPLETE
+### 🔴 Bandwidth Estimates (Plan v4 §3E — Sixtyne)
+- **`/bandwidth`** — Tabbed page (Digest | Submit Estimate)
+  - **Digest tab** (manager view — Ben + Elena):
+    - Monday morning auto-digest with team avg capacity, ≥80% alerts, missing submissions
+    - Team breakdown table: name, hours, capacity bar (colour-coded), labour cost, project codes
+    - Project cost attribution table: aggregated hours + cost per project across all team members
+    - 7 mock team member estimates for week of 2026-03-23
+    - High capacity alert banner for members ≥80%
+    - Missing submissions list (12 team members not yet submitted)
+  - **Submit tab** (team member form):
+    - Name dropdown (full 19-person team roster from Plan v4)
+    - Dynamic project rows: code, name, client, hours, hourly rate → auto-calculated labour cost
+    - Add/remove project rows
+    - Live summary: total hours, capacity %, total labour cost
+    - Submit blocked without name selection
+  - Intelligence layer flags: ≥80% capacity highlighted for manager review
+- **Data layer**: `bandwidth.ts` — types, 7 mock estimates, digest builder, capacity colour coding
+
+### 🔴 Scope Watch (Plan v4 §3H — Sixtyne + Elena)
+- **`/scope-watch`** — Expandable card list
+  - Persistent black banner: "Client questions go to the account lead — never DM a client directly."
+  - 9 mock entries across 5 clients (Cardano, Franklin Templeton, Rootstock, Midnight, Canton)
+  - Each entry: scope status (in/out), frequency dot (rare/occasional/frequent), client, request type
+  - Expand for: SOW clause reference, approved response language (pink highlight), added by, date, frequency
+  - Filter by client with pill buttons
+  - Stats: total entries, out of scope count, frequent count, clients covered
+- **Data layer**: `scopeWatch.ts` — types, 9 mock entries with real SOW clause references and approved response language
+- Nav wiring: Capacity → `/bandwidth`, Risk → `/scope-watch`
+
+### ✅ SESSION 3 COMPLETE — ALL PLAN V4 §3 RED PRIORITIES DONE
+
+**Plan v4 🔴 priority status:**
+- ✅ Engagement Health Calculator (§3D — Sixtyne)
+- ✅ Bandwidth Estimates (§3E — Sixtyne)
+- ✅ Vendor & Invoice System (§3F — Sixtyne, Montana gap)
+- ✅ Pre-Alignment Framework (§3G — Nick)
+- ✅ Scope Watch (§3H — Sixtyne + Elena)
 
 **Next planned work (from Plan v4):**
-- 🔴 Bandwidth Estimates (Sixtyne) — native form replacing Fillout, Friday auto-send, Monday digest
-- 🔴 Scope Watch (Sixtyne + Elena) — per-client out-of-scope request tracking
-- Phase 2: Team profiles, PD system, team directory (full team seed)
-- Connect all systems to Supabase (finance, vendors, invoices, pre-alignment)
+- Phase 2: Team seed (29 members), profiles, PD system, team directory
+- Phase 3 remaining: Client MD files, Account Blueprints, Client portals
+- Phase 3.5: Mobile accessibility
+- Connect all systems to Supabase
 - Figma screenshot comparison + pixel polish
 
 ---
