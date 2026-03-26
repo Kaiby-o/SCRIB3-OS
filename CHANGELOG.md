@@ -48,11 +48,28 @@
 - Category heading label shown at top-centre of Layer 2
 - All other sub-items currently route to `/dashboard` (ready for future page expansion)
 
+### Client Onboarding Flow
+- **`/clients`** — Client list page (team/admin/csuite gated)
+  - 6 mock clients with status, contact, revenue, project counts
+  - Filter pills: all, active, onboarding, completed, paused
+  - Stats row: active count, onboarding count, total revenue, total projects
+  - Table with hover states, status dots, company details
+  - "+ New Client" button → `/clients/onboard`
+- **`/clients/onboard`** — 4-step onboarding wizard
+  - Phase stepper: Discovery → Agreement → Setup → Kickoff (mirrors DEVICE journey)
+  - Discovery: company name, contact, industry, project brief, referral source
+  - Agreement: engagement type, budget, MSA/SOW status
+  - Setup: Slack channel, Notion hub, Drive folder, account lead
+  - Kickoff: date, first deliverable, milestones, notes
+  - Success screen with navigation pills
+- Routes gated behind `AuthGuard` + `RoleGuard(['admin', 'team', 'csuite'])`
+- Nav overlay "Client List" and "Onboarding" sub-items now route to `/clients` and `/clients/onboard`
+
 ### ✅ SESSION 3 COMPLETE
 
 **Next planned work:**
 - Figma screenshot comparison + pixel polish
-- Client onboarding flow
+- Connect onboarding form to Supabase (create client records)
 - Consider: real-time data modules, notification system
 - Sub-item routes: expand as new pages are built
 

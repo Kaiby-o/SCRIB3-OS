@@ -3,6 +3,8 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import OSLanding from './scrib3-os/pages/LandingPage';
 import OSDashboard from './scrib3-os/pages/DashboardPage';
 import OSProfile from './scrib3-os/pages/ProfilePage';
+import OSClientList from './scrib3-os/pages/ClientListPage';
+import OSClientOnboard from './scrib3-os/pages/ClientOnboardPage';
 import { AuthGuard, RoleGuard } from './scrib3-os/components/AuthGuard';
 // DEVICE layer imports
 import DeviceDashboard from './scrib3-device/pages/DashboardPage';
@@ -28,6 +30,26 @@ export default function App() {
           element={
             <AuthGuard>
               <OSProfile />
+            </AuthGuard>
+          }
+        />
+        <Route
+          path="/clients"
+          element={
+            <AuthGuard>
+              <RoleGuard allowed={['admin', 'team', 'csuite']}>
+                <OSClientList />
+              </RoleGuard>
+            </AuthGuard>
+          }
+        />
+        <Route
+          path="/clients/onboard"
+          element={
+            <AuthGuard>
+              <RoleGuard allowed={['admin', 'team', 'csuite']}>
+                <OSClientOnboard />
+              </RoleGuard>
             </AuthGuard>
           }
         />
