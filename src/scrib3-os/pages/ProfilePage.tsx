@@ -4,6 +4,7 @@ import LogoScrib3 from '../components/LogoScrib3';
 import BurgerButton from '../components/BurgerButton';
 import { supabase } from '../lib/supabase';
 import { useAuthStore } from '../hooks/useAuth';
+import { mockTeam } from '../lib/team';
 
 interface ProfileData {
   id: string;
@@ -22,14 +23,6 @@ interface ProfileData {
   social_links?: { platform: string; url: string }[];
 }
 
-const roleTitles: Record<string, string> = {
-  admin: 'Administrator',
-  team: 'Team Member',
-  csuite: 'Executive',
-  client: 'Client Partner',
-  vendor: 'Vendor Partner',
-};
-
 const ProfilePage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
@@ -40,14 +33,20 @@ const ProfilePage: React.FC = () => {
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
 
-  // Edit form state
   const [editBio, setEditBio] = useState('');
   const [editTitle, setEditTitle] = useState('');
   const [editLocation, setEditLocation] = useState('');
   const [editSkillsets, setEditSkillsets] = useState('');
+  const [editSocials, setEditSocials] = useState<{ platform: string; url: string }[]>([]);
+  const [addingSocial, setAddingSocial] = useState(false);
+  const [newPlatform, setNewPlatform] = useState('');
+  const [newUrl, setNewUrl] = useState('');
 
   const profileId = id ?? user?.id;
   const isOwnProfile = user?.id === profileId;
+
+  // Also try to get mock data for enrichment
+  const mockMember = mockTeam.find((m) => m.email === profile?.email);
 
   useEffect(() => {
     if (!profileId) { setLoading(false); return; }
@@ -64,10 +63,9 @@ const ProfilePage: React.FC = () => {
           setEditTitle(p.title ?? '');
           setEditLocation(p.location ?? '');
           setEditSkillsets((p.skillsets ?? []).join(', '));
+          setEditSocials(p.social_links ?? []);
         }
-      } catch (e) {
-        console.warn('[profile] Error:', e);
-      }
+      } catch (e) { console.warn('[profile] Error:', e); }
       if (!cancelled) setLoading(false);
     })();
     return () => { cancelled = true; };
@@ -76,15 +74,14 @@ const ProfilePage: React.FC = () => {
   const handleSave = async () => {
     if (!profile || !isOwnProfile) return;
     setSaving(true);
-    const { error } = await supabase.from('profiles').update({
-      bio: editBio,
-      title: editTitle,
-      location: editLocation,
+    const updates = {
+      bio: editBio, title: editTitle, location: editLocation,
       skillsets: editSkillsets.split(',').map((s) => s.trim()).filter(Boolean),
-    }).eq('id', profile.id);
-
+      social_links: editSocials,
+    };
+    const { error } = await supabase.from('profiles').update(updates).eq('id', profile.id);
     if (!error) {
-      setProfile({ ...profile, bio: editBio, title: editTitle, location: editLocation, skillsets: editSkillsets.split(',').map((s) => s.trim()).filter(Boolean) });
+      setProfile({ ...profile, ...updates });
       setEditing(false);
       setSaved(true);
       setTimeout(() => setSaved(false), 2000);
@@ -92,25 +89,29 @@ const ProfilePage: React.FC = () => {
     setSaving(false);
   };
 
+  const addSocial = () => {
+    if (!newPlatform || !newUrl) return;
+    setEditSocials([...editSocials, { platform: newPlatform, url: newUrl }]);
+    setNewPlatform(''); setNewUrl(''); setAddingSocial(false);
+  };
+
+  const currentClients = mockMember?.currentClients ?? [];
+  const currentProjects = mockMember?.currentProjects ?? [];
+
   return (
     <div className="os-root" style={{ minHeight: '100vh' }}>
       <header className="flex items-center justify-between" style={{ position: 'fixed' as const, top: 0, left: 0, right: 0, zIndex: 40, background: 'var(--bg-primary)', height: '85px', padding: '0 40px', borderBottom: '1px solid #000' }}>
         <button onClick={() => navigate('/dashboard')} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}>
           <LogoScrib3 height={18} color="var(--text-primary)" />
         </button>
-        <span style={{ fontFamily: "'Owners Wide', sans-serif", fontSize: '12px', letterSpacing: '1px', textTransform: 'uppercase', opacity: 0.5 }}>
-          {profile?.display_name ?? 'Profile'}
-        </span>
-        <button onClick={() => navigate(-1 as number)} style={{ fontFamily: "'Owners Wide', sans-serif", fontSize: '12px', letterSpacing: '1px', textTransform: 'uppercase', color: 'var(--text-primary)', opacity: 0.5, background: 'none', border: 'none', cursor: 'pointer' }}>
-          ← Back
-        </button>
-      <BurgerButton />
+        <span style={{ fontFamily: "'Owners Wide', sans-serif", fontSize: '12px', letterSpacing: '1px', textTransform: 'uppercase', opacity: 0.5 }}>{profile?.display_name ?? 'Profile'}</span>
+        <BurgerButton />
       </header>
 
       <div style={{ padding: '40px', maxWidth: '640px', margin: '0 auto' }}>
         {loading ? (
           <div className="flex items-center justify-center" style={{ marginTop: '120px' }}>
-            <span style={{ fontFamily: "'Owners Wide', sans-serif", fontSize: '14px', opacity: 0.4, textTransform: 'uppercase', letterSpacing: '1px' }}>Loading...</span>
+            <span style={{ fontFamily: "'Owners Wide', sans-serif", fontSize: '14px', opacity: 0.4, textTransform: 'uppercase' }}>Loading...</span>
           </div>
         ) : !profile ? (
           <div className="flex flex-col items-center justify-center" style={{ marginTop: '120px' }}>
@@ -118,109 +119,132 @@ const ProfilePage: React.FC = () => {
           </div>
         ) : (
           <>
-            {/* Header section */}
-            <div className="flex items-start gap-6" style={{ marginBottom: '32px' }}>
+            {/* Avatar + Name + Title */}
+            <div className="flex items-start gap-6" style={{ marginBottom: '16px' }}>
               <div style={{ width: 100, height: 100, borderRadius: '50%', background: '#000', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, overflow: 'hidden' }}>
-                {profile.avatar_url ? (
-                  <img src={profile.avatar_url} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                ) : (
-                  <span style={{ color: '#EAF2D7', fontFamily: "'Kaio', sans-serif", fontWeight: 900, fontSize: '40px' }}>
-                    {profile.display_name?.charAt(0) ?? '?'}
-                  </span>
-                )}
+                {profile.avatar_url ? <img src={profile.avatar_url} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} /> :
+                  <span style={{ color: '#EAF2D7', fontFamily: "'Kaio', sans-serif", fontWeight: 900, fontSize: '40px' }}>{profile.display_name?.charAt(0) ?? '?'}</span>}
               </div>
               <div className="flex flex-col gap-2" style={{ paddingTop: '8px', flex: 1 }}>
-                <h1 style={{ fontFamily: "'Kaio', sans-serif", fontWeight: 800, fontSize: '32px', lineHeight: 0.9, textTransform: 'uppercase', fontFeatureSettings: "'ordn' 1, 'dlig' 1", margin: 0 }}>
-                  {profile.display_name}
-                </h1>
+                <h1 style={{ fontFamily: "'Kaio', sans-serif", fontWeight: 800, fontSize: '32px', lineHeight: 0.9, textTransform: 'uppercase', margin: 0 }}>{profile.display_name}</h1>
                 {editing ? (
-                  <input value={editTitle} onChange={(e) => setEditTitle(e.target.value)} placeholder="Title / role"
+                  <input value={editTitle} onChange={(e) => setEditTitle(e.target.value)} placeholder="Title"
                     style={{ fontFamily: "'Owners Wide', sans-serif", fontSize: '14px', background: '#EAF2D7', border: '0.733px solid var(--border-default)', borderRadius: '75.641px', padding: '6px 14px', outline: 'none' }} />
                 ) : (
-                  <span style={{ fontFamily: "'Owners Wide', sans-serif", fontSize: '14px', letterSpacing: '0.8px', opacity: 0.6 }}>
-                    {profile.title || (roleTitles[profile.role] ?? profile.role)}
-                  </span>
+                  <span style={{ fontFamily: "'Owners Wide', sans-serif", fontSize: '14px', opacity: 0.6 }}>{profile.title || profile.role}</span>
                 )}
                 <div className="flex items-center gap-2">
-                  <span style={{ display: 'inline-block', width: 'fit-content', fontFamily: "'Owners Wide', sans-serif", fontSize: '11px', letterSpacing: '1px', textTransform: 'uppercase', background: '#000', color: '#EAF2D7', padding: '5px 14px', borderRadius: '75.641px' }}>
-                    {profile.role}
-                  </span>
-                  {isOwnProfile && !editing && (
-                    <button onClick={() => setEditing(true)} style={{ fontFamily: "'Owners Wide', sans-serif", fontSize: '11px', letterSpacing: '1px', textTransform: 'uppercase', padding: '5px 14px', borderRadius: '75.641px', border: '1px solid var(--border-default)', background: 'transparent', cursor: 'pointer', opacity: 0.5 }}>
-                      Edit Profile
-                    </button>
-                  )}
+                  <span style={{ fontFamily: "'Owners Wide', sans-serif", fontSize: '11px', letterSpacing: '1px', textTransform: 'uppercase', background: '#000', color: '#EAF2D7', padding: '5px 14px', borderRadius: '75.641px' }}>{profile.role}</span>
+                  {isOwnProfile && !editing && <button onClick={() => setEditing(true)} style={{ fontFamily: "'Owners Wide', sans-serif", fontSize: '11px', letterSpacing: '1px', textTransform: 'uppercase', padding: '5px 14px', borderRadius: '75.641px', border: '1px solid var(--border-default)', background: 'transparent', cursor: 'pointer', opacity: 0.5 }}>Edit</button>}
                   {saved && <span style={{ fontFamily: "'Owners Wide', sans-serif", fontSize: '11px', color: '#27AE60' }}>Saved</span>}
                 </div>
               </div>
             </div>
 
+            {/* Social links as capsules — email + socials + add button */}
+            <div className="flex gap-2 flex-wrap" style={{ marginBottom: '24px' }}>
+              <LinkCapsule platform="Email" url={`mailto:${profile.email}`} label={profile.email} />
+              {(editing ? editSocials : (profile.social_links ?? [])).map((link, i) => (
+                <LinkCapsule key={i} platform={link.platform} url={link.url} label={link.platform} />
+              ))}
+              {isOwnProfile && editing && (
+                addingSocial ? (
+                  <div className="flex gap-2 items-center">
+                    <input value={newPlatform} onChange={(e) => setNewPlatform(e.target.value)} placeholder="Platform" style={{ fontFamily: "'Owners Wide', sans-serif", fontSize: '11px', width: '80px', background: '#EAF2D7', border: '0.733px solid var(--border-default)', borderRadius: '75.641px', padding: '5px 10px', outline: 'none' }} />
+                    <input value={newUrl} onChange={(e) => setNewUrl(e.target.value)} placeholder="URL" style={{ fontFamily: "'Owners Wide', sans-serif", fontSize: '11px', width: '150px', background: '#EAF2D7', border: '0.733px solid var(--border-default)', borderRadius: '75.641px', padding: '5px 10px', outline: 'none' }} />
+                    <button onClick={addSocial} style={{ fontFamily: "'Owners Wide', sans-serif", fontSize: '11px', padding: '5px 10px', borderRadius: '75.641px', border: 'none', background: '#D7ABC5', cursor: 'pointer' }}>Add</button>
+                  </div>
+                ) : (
+                  <button onClick={() => setAddingSocial(true)} style={{ fontFamily: "'Owners Wide', sans-serif", fontSize: '11px', letterSpacing: '1px', padding: '5px 14px', borderRadius: '75.641px', border: '1px dashed var(--border-default)', background: 'transparent', cursor: 'pointer', opacity: 0.4 }}>+ Add</button>
+                )
+              )}
+            </div>
+
             {/* Bio */}
-            <Section title="Bio">
+            <Sec title="Bio">
               {editing ? (
                 <textarea value={editBio} onChange={(e) => setEditBio(e.target.value)} placeholder="Tell the team about yourself..." rows={4}
                   style={{ fontFamily: "'Owners Wide', sans-serif", fontSize: '14px', width: '100%', background: '#EAF2D7', border: '0.733px solid var(--border-default)', borderRadius: '10.258px', padding: '12px 16px', outline: 'none', resize: 'vertical' }} />
               ) : (
                 <p style={{ fontFamily: "'Owners Wide', sans-serif", fontSize: '14px', lineHeight: 1.6, opacity: profile.bio ? 0.8 : 0.3, margin: 0 }}>
-                  {profile.bio || (isOwnProfile ? 'Click "Edit Profile" to add a bio' : 'No bio yet')}
+                  {profile.bio || (isOwnProfile ? 'Click Edit to add a bio' : 'No bio yet')}
                 </p>
               )}
-            </Section>
+            </Sec>
 
             {/* Skillsets */}
-            <Section title="Skillsets">
+            <Sec title="Skillsets">
               {editing ? (
-                <input value={editSkillsets} onChange={(e) => setEditSkillsets(e.target.value)} placeholder="Comma-separated skills"
+                <input value={editSkillsets} onChange={(e) => setEditSkillsets(e.target.value)} placeholder="Comma-separated"
                   style={{ fontFamily: "'Owners Wide', sans-serif", fontSize: '14px', width: '100%', background: '#EAF2D7', border: '0.733px solid var(--border-default)', borderRadius: '75.641px', padding: '10px 16px', outline: 'none' }} />
               ) : (
                 <div className="flex gap-2 flex-wrap">
                   {(profile.skillsets ?? []).length > 0 ? (profile.skillsets ?? []).map((s) => (
                     <span key={s} style={{ fontFamily: "'Owners Wide', sans-serif", fontSize: '11px', letterSpacing: '1px', textTransform: 'uppercase', padding: '4px 12px', borderRadius: '75.641px', background: 'rgba(215,171,197,0.15)', border: '1px solid rgba(215,171,197,0.3)' }}>{s}</span>
-                  )) : (
-                    <span style={{ fontFamily: "'Owners Wide', sans-serif", fontSize: '12px', opacity: 0.3 }}>{isOwnProfile ? 'Add your skills' : 'No skills listed'}</span>
-                  )}
+                  )) : <span style={{ fontFamily: "'Owners Wide', sans-serif", fontSize: '12px', opacity: 0.3 }}>No skills listed</span>}
                 </div>
               )}
-            </Section>
+            </Sec>
+
+            {/* Current Clients — clickable */}
+            {currentClients.length > 0 && (
+              <Sec title="Current Clients">
+                <div className="flex gap-2 flex-wrap">
+                  {currentClients.map((c) => (
+                    <button key={c} onClick={() => navigate(`/clients/${c.toLowerCase().replace(/\s+/g, '-')}/hub`)}
+                      style={{ fontFamily: "'Owners Wide', sans-serif", fontSize: '12px', padding: '6px 14px', borderRadius: '75.641px', border: '0.733px solid var(--border-default)', background: 'transparent', cursor: 'pointer' }}>
+                      {c}
+                    </button>
+                  ))}
+                </div>
+              </Sec>
+            )}
+
+            {/* Current Projects — clickable */}
+            {currentProjects.length > 0 && (
+              <Sec title="Current Projects">
+                <div className="flex gap-2 flex-wrap">
+                  {currentProjects.map((p) => (
+                    <button key={p} onClick={() => navigate(`/projects/${p}`)}
+                      style={{ fontFamily: "'Kaio', sans-serif", fontWeight: 800, fontSize: '12px', textTransform: 'uppercase', padding: '6px 14px', borderRadius: '75.641px', border: '0.733px solid var(--border-default)', background: 'transparent', cursor: 'pointer' }}>
+                      {p}
+                    </button>
+                  ))}
+                </div>
+              </Sec>
+            )}
 
             {/* Info grid */}
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginBottom: '24px' }}>
-              <InfoCard label="Email" value={profile.email ?? '—'} />
-              <InfoCard label="Unit" value={profile.unit ?? '—'} />
+              <Card label="Unit" value={profile.unit ?? '—'} />
               {editing ? (
-                <div style={{ background: 'var(--bg-surface)', border: '0.733px solid var(--border-default)', borderRadius: '10.258px', padding: '16px 20px' }}>
-                  <span style={{ fontFamily: "'Owners Wide', sans-serif", fontSize: '10px', letterSpacing: '1px', textTransform: 'uppercase', opacity: 0.45, display: 'block', marginBottom: '6px' }}>Location</span>
-                  <input value={editLocation} onChange={(e) => setEditLocation(e.target.value)}
-                    style={{ fontFamily: "'Owners Wide', sans-serif", fontSize: '14px', width: '100%', background: 'transparent', border: 'none', outline: 'none' }} />
+                <div style={{ background: 'var(--bg-surface)', border: '0.733px solid var(--border-default)', borderRadius: '10.258px', padding: '14px 18px' }}>
+                  <span style={{ fontFamily: "'Owners Wide', sans-serif", fontSize: '10px', letterSpacing: '1px', textTransform: 'uppercase', opacity: 0.4, display: 'block', marginBottom: '4px' }}>Location</span>
+                  <input value={editLocation} onChange={(e) => setEditLocation(e.target.value)} style={{ fontFamily: "'Owners Wide', sans-serif", fontSize: '13px', width: '100%', background: 'transparent', border: 'none', outline: 'none' }} />
                 </div>
-              ) : (
-                <InfoCard label="Location" value={profile.location ?? '—'} />
-              )}
-              <InfoCard label="Joined" value={profile.created_at ? new Date(profile.created_at).toLocaleDateString('en-GB', { month: 'short', year: 'numeric' }) : '—'} />
-              <InfoCard label="Experience" value={`${profile.xp ?? 0} XP`} />
-              <InfoCard label="Role" value={profile.role?.toUpperCase() ?? '—'} />
+              ) : <Card label="Location" value={profile.location ?? '—'} />}
+              <Card label="Joined" value={profile.created_at ? new Date(profile.created_at).toLocaleDateString('en-GB', { month: 'short', year: 'numeric' }) : '—'} />
+              <Card label="Experience" value={`${profile.xp ?? 0} XP`} />
             </div>
 
             {/* XP bar */}
-            <div style={{ background: 'var(--bg-surface)', border: '0.733px solid var(--border-default)', borderRadius: '10.258px', padding: '24px', marginBottom: '24px' }}>
-              <div className="flex items-center justify-between" style={{ marginBottom: '12px' }}>
-                <span style={{ fontFamily: "'Owners Wide', sans-serif", fontSize: '11px', letterSpacing: '1px', textTransform: 'uppercase', opacity: 0.5 }}>Experience Progress</span>
-                <span style={{ fontFamily: "'Kaio', sans-serif", fontWeight: 800, fontSize: '18px' }}>{profile.xp ?? 0} / 100</span>
+            <div style={{ background: 'var(--bg-surface)', border: '0.733px solid var(--border-default)', borderRadius: '10.258px', padding: '20px', marginBottom: '24px' }}>
+              <div className="flex items-center justify-between" style={{ marginBottom: '8px' }}>
+                <span style={{ fontFamily: "'Owners Wide', sans-serif", fontSize: '11px', letterSpacing: '1px', textTransform: 'uppercase', opacity: 0.5 }}>XP</span>
+                <span style={{ fontFamily: "'Kaio', sans-serif", fontWeight: 800, fontSize: '16px' }}>{profile.xp ?? 0} / 100</span>
               </div>
-              <div style={{ height: '6px', background: 'rgba(0,0,0,0.08)', borderRadius: '3px', overflow: 'hidden' }}>
+              <div style={{ height: '5px', background: 'rgba(0,0,0,0.08)', borderRadius: '3px', overflow: 'hidden' }}>
                 <div style={{ width: `${Math.min(((profile.xp ?? 0) / 100) * 100, 100)}%`, height: '100%', background: '#D7ABC5', borderRadius: '3px' }} />
               </div>
             </div>
 
-            {/* Save / Cancel buttons */}
+            {/* Save / Cancel */}
             {editing && (
               <div className="flex gap-3" style={{ marginBottom: '24px' }}>
-                <button onClick={handleSave} disabled={saving}
-                  style={{ fontFamily: "'Owners Wide', sans-serif", fontSize: '12px', letterSpacing: '1px', textTransform: 'uppercase', padding: '10px 24px', borderRadius: '75.641px', border: 'none', background: '#000', color: '#EAF2D7', cursor: 'pointer' }}>
+                <button onClick={handleSave} disabled={saving} style={{ fontFamily: "'Owners Wide', sans-serif", fontSize: '12px', letterSpacing: '1px', textTransform: 'uppercase', padding: '10px 24px', borderRadius: '75.641px', border: 'none', background: '#000', color: '#EAF2D7', cursor: 'pointer' }}>
                   {saving ? 'Saving...' : 'Save Changes'}
                 </button>
-                <button onClick={() => { setEditing(false); setEditBio(profile.bio ?? ''); setEditTitle(profile.title ?? ''); setEditLocation(profile.location ?? ''); setEditSkillsets((profile.skillsets ?? []).join(', ')); }}
-                  style={{ fontFamily: "'Owners Wide', sans-serif", fontSize: '12px', letterSpacing: '1px', textTransform: 'uppercase', padding: '10px 24px', borderRadius: '75.641px', border: '1px solid var(--border-default)', background: 'transparent', cursor: 'pointer' }}>
+                <button onClick={() => setEditing(false)} style={{ fontFamily: "'Owners Wide', sans-serif", fontSize: '12px', letterSpacing: '1px', textTransform: 'uppercase', padding: '10px 24px', borderRadius: '75.641px', border: '1px solid var(--border-default)', background: 'transparent', cursor: 'pointer' }}>
                   Cancel
                 </button>
               </div>
@@ -236,18 +260,25 @@ const ProfilePage: React.FC = () => {
   );
 };
 
-const Section: React.FC<{ title: string; children: React.ReactNode }> = ({ title, children }) => (
+const Sec: React.FC<{ title: string; children: React.ReactNode }> = ({ title, children }) => (
   <div style={{ marginBottom: '24px' }}>
-    <h2 style={{ fontFamily: "'Kaio', sans-serif", fontWeight: 800, fontSize: '16px', textTransform: 'uppercase', margin: '0 0 12px 0' }}>{title}</h2>
+    <h2 style={{ fontFamily: "'Kaio', sans-serif", fontWeight: 800, fontSize: '14px', textTransform: 'uppercase', margin: '0 0 10px 0' }}>{title}</h2>
     {children}
   </div>
 );
 
-const InfoCard: React.FC<{ label: string; value: string }> = ({ label, value }) => (
-  <div style={{ background: 'var(--bg-surface)', border: '0.733px solid var(--border-default)', borderRadius: '10.258px', padding: '16px 20px' }}>
-    <span style={{ fontFamily: "'Owners Wide', sans-serif", fontSize: '10px', letterSpacing: '1px', textTransform: 'uppercase', opacity: 0.45, display: 'block', marginBottom: '6px' }}>{label}</span>
-    <span style={{ fontFamily: "'Owners Wide', sans-serif", fontSize: '14px' }}>{value}</span>
+const Card: React.FC<{ label: string; value: string }> = ({ label, value }) => (
+  <div style={{ background: 'var(--bg-surface)', border: '0.733px solid var(--border-default)', borderRadius: '10.258px', padding: '14px 18px' }}>
+    <span style={{ fontFamily: "'Owners Wide', sans-serif", fontSize: '10px', letterSpacing: '1px', textTransform: 'uppercase', opacity: 0.4, display: 'block', marginBottom: '4px' }}>{label}</span>
+    <span style={{ fontFamily: "'Owners Wide', sans-serif", fontSize: '13px' }}>{value}</span>
   </div>
+);
+
+const LinkCapsule: React.FC<{ platform: string; url: string; label: string }> = ({ url, label }) => (
+  <a href={url} target="_blank" rel="noopener noreferrer"
+    style={{ fontFamily: "'Owners Wide', sans-serif", fontSize: '11px', letterSpacing: '1px', textTransform: 'uppercase', padding: '5px 14px', borderRadius: '75.641px', border: '0.733px solid var(--border-default)', color: 'var(--text-primary)', textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
+    {label}
+  </a>
 );
 
 export default ProfilePage;
