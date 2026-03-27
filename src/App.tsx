@@ -24,13 +24,22 @@ import OSCultureHub from './scrib3-os/pages/CultureHubPage';
 import OSToolsDirectory from './scrib3-os/pages/ToolsDirectoryPage';
 import OSSettings from './scrib3-os/pages/SettingsPage';
 import { AuthGuard, RoleGuard } from './scrib3-os/components/AuthGuard';
+import FloatingWidget from './scrib3-os/components/FloatingWidget';
+import { useAuthStore } from './scrib3-os/hooks/useAuth';
 // DEVICE layer imports
 import DeviceDashboard from './scrib3-device/pages/DashboardPage';
 import AvatarCreatorPage from './scrib3-device/pages/AvatarCreatorPage';
 
+function GlobalWidget() {
+  const { user } = useAuthStore();
+  if (!user) return null;
+  return <FloatingWidget />;
+}
+
 export default function App() {
   return (
     <BrowserRouter>
+      <GlobalWidget />
       <Routes>
         {/* ===== SCRIB3-OS routes ===== */}
         <Route path="/" element={<OSLanding />} />
