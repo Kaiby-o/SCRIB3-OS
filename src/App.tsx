@@ -25,6 +25,7 @@ import OSToolsDirectory from './scrib3-os/pages/ToolsDirectoryPage';
 import OSSettings from './scrib3-os/pages/SettingsPage';
 import OSTasks from './scrib3-os/pages/TasksPage';
 import OSApprovals from './scrib3-os/pages/ApprovalsPage';
+import OSProjectDetail from './scrib3-os/pages/ProjectDetailPage';
 import { AuthGuard, RoleGuard } from './scrib3-os/components/AuthGuard';
 import FloatingWidget from './scrib3-os/components/FloatingWidget';
 import { NavOverlayProvider } from './scrib3-os/components/NavOverlay';
@@ -268,6 +269,16 @@ export default function App() {
           }
         />
 
+        <Route
+          path="/projects/:code"
+          element={
+            <AuthGuard>
+              <RoleGuard allowed={['admin', 'team', 'csuite']}>
+                <OSProjectDetail />
+              </RoleGuard>
+            </AuthGuard>
+          }
+        />
         <Route
           path="/approvals"
           element={
