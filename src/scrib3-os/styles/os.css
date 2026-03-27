@@ -146,6 +146,11 @@
   border-bottom: 1px solid #000000;
 }
 
+/* Push content below fixed header */
+.os-root > header + * {
+  margin-top: 86px !important;
+}
+
 /* Reset all DEVICE global styles when on OS routes */
 html:has(.os-root),
 body:has(.os-root) {

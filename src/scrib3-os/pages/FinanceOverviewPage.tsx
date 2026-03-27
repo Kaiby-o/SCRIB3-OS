@@ -329,7 +329,7 @@ const FinanceOverviewPage: React.FC = () => {
       <header
         className="flex items-center justify-between"
         style={{
-          height: '85px',
+          position: 'fixed' as const, top: 0, left: 0, right: 0, zIndex: 40, background: 'var(--bg-primary)', height: '85px',
           padding: '0 40px',
           borderBottom: '0.733px solid var(--border-default)',
         }}
