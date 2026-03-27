@@ -386,28 +386,29 @@ export const NavOverlayProvider: React.FC<NavOverlayProviderProps> = ({
           pointerEvents: layer === 2 ? 'auto' : 'none',
         }}
       >
-        {/* Top-left: Back arrow */}
-        <button
-          onClick={() => {
-            setLayer(1);
-            setSelectedCategory(null);
-          }}
-          className="absolute top-8 left-10 font-kaio"
-          style={{ color: '#000000', fontSize: '24px', lineHeight: 1, background: 'none', border: 'none', cursor: 'pointer' }}
-          aria-label="Back to categories"
-        >
-          &larr;
-        </button>
-
-        {/* Top-right: Close button */}
-        <button
-          onClick={closeOverlay}
-          className="absolute top-8 right-10 font-kaio"
-          style={{ color: '#000000', fontSize: '24px', lineHeight: 1, background: 'none', border: 'none', cursor: 'pointer' }}
-          aria-label="Close navigation"
-        >
-          &times;
-        </button>
+        {/* Top-right: Back arrow + Close button */}
+        <div className="absolute top-8 right-10 flex items-center gap-4">
+          <button
+            onClick={() => {
+              setLayer(1);
+              setSelectedCategory(null);
+              setSearchQuery('');
+            }}
+            className="font-kaio"
+            style={{ color: '#000000', fontSize: '24px', lineHeight: 1, background: 'none', border: 'none', cursor: 'pointer' }}
+            aria-label="Back to categories"
+          >
+            &larr;
+          </button>
+          <button
+            onClick={closeOverlay}
+            className="font-kaio"
+            style={{ color: '#000000', fontSize: '24px', lineHeight: 1, background: 'none', border: 'none', cursor: 'pointer' }}
+            aria-label="Close navigation"
+          >
+            &times;
+          </button>
+        </div>
 
         {/* Category heading */}
         <div

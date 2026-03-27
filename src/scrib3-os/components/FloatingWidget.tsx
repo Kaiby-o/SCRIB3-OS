@@ -117,7 +117,7 @@ const FloatingWidget: React.FC = () => {
         onClick={handleUndock}
         style={{
           position: 'fixed', top: 22,
-          ...(dockSide === 'left' ? { left: 180 } : { right: 120 }),
+          ...(dockSide === 'left' ? { left: 180 } : { right: 180 }),
           zIndex: 45, background: '#000', borderRadius: '75.641px',
           padding: '8px 18px', display: 'flex', alignItems: 'center', gap: '8px',
           border: 'none', cursor: 'pointer', transition: `all 300ms ${easing}`,

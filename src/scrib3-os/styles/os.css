@@ -136,6 +136,14 @@
   overflow: auto !important;
 }
 
+/* All OS page headers should stick to the top when scrolling */
+.os-root > header {
+  position: sticky;
+  top: 0;
+  z-index: 40;
+  background: var(--bg-primary, #EAF2D7);
+}
+
 /* Reset all DEVICE global styles when on OS routes */
 html:has(.os-root),
 body:has(.os-root) {
