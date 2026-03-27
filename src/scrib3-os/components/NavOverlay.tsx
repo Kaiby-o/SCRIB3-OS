@@ -7,6 +7,9 @@ import React, {
   useRef,
 } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { mockTeam } from '../lib/team';
+import { priorityClients } from '../lib/clients';
+import { mockProjects } from '../lib/projects';
 
 /* ------------------------------------------------------------------ */
 /*  Types                                                              */
@@ -47,22 +50,22 @@ export const useNavOverlay = () => useContext(NavOverlayContext);
 const subItemRoutes: Record<string, string> = {
   // Team nav
   'Directory': '/team',
-  'Profiles': '/team',
-  'Activity': '/team',
-  'Business Units': '/units',
-  'Departments': '/units',
-  'Client List': '/clients',
-  'Onboarding': '/clients/onboard',
-  'Active': '/projects',
-  'Archived': '/projects',
-  'Proposals': '/pre-alignment',
-  'Values': '/culture',
-  'Events': '/culture',
-  'Recognition': '/culture',
-  'Resources': '/resources/what-good-looks-like',
-  'Templates': '/tools',
-  'Integrations': '/tools',
-  // Client nav
+  // Units nav
+  'Accounts': '/units',
+  'C-Suite': '/units',
+  'Brand': '/units',
+  'Media': '/units',
+  'Ops': '/units',
+  'PR': '/units',
+  // Clients nav
+  'Directory ': '/clients', // trailing space to differentiate from team Directory
+  // Projects nav
+  'All Projects': '/projects',
+  // Culture nav
+  'Proof of Excellence': '/culture',
+  'Operating Principles': '/culture',
+  'Culture Book': '/culture',
+  // Client portal nav
   'Completed': '/projects',
   'Pending': '/projects',
   'Approved': '/projects',
@@ -100,14 +103,17 @@ const subItemRoutes: Record<string, string> = {
   'OKRs': '/culture',
   'Initiatives': '/projects',
   'Board': '/culture',
-  // Admin nav
-  'Users': '/team',
-  'Roles': '/team',
-  'Settings': '/tools',
-  'Logs': '/finance',
-  'Virtual Office': '/device',
-  'Avatar Creator': '/device/avatar-creator',
 };
+
+// Items that show "Coming Soon" instead of navigating
+const comingSoonItems = new Set([
+  'Feedback', 'Prof Dev', 'Office', 'Dapps',
+  'Accounts', 'C-Suite', 'Brand', 'Media', 'Ops', 'PR',
+  'Proof of Excellence', 'Operating Principles', 'Culture Book',
+]);
+
+// Items that render as search fields
+const searchItems = new Set(['Search Team', 'Search Clients', 'Search Projects']);
 
 /* ------------------------------------------------------------------ */
 /*  Theme Toggle Pill                                                  */
@@ -194,8 +200,12 @@ export const NavOverlayProvider: React.FC<NavOverlayProviderProps> = ({
     null,
   );
   const [categoryOrigin, setCategoryOrigin] = useState({ x: '100%', y: '0%' });
+  const [searchQuery, setSearchQuery] = useState('');
+  const [comingSoonToast, setComingSoonToast] = useState(false);
   const issuesInputRef = useRef<HTMLInputElement>(null);
   const navigate = useNavigate();
+
+  const showComingSoon = () => { setComingSoonToast(true); setTimeout(() => setComingSoonToast(false), 1500); };
 
   /* helpers */
   const openOverlay = useCallback(() => setLayer(1), []);
@@ -416,28 +426,85 @@ export const NavOverlayProvider: React.FC<NavOverlayProviderProps> = ({
           {selectedCategory?.label}
         </div>
 
+        {/* Coming soon toast */}
+        {comingSoonToast && (
+          <div style={{ position: 'absolute', top: 70, left: '50%', transform: 'translateX(-50%)', background: '#000', color: '#EAF2D7', fontFamily: "'Owners Wide', sans-serif", fontSize: '11px', letterSpacing: '1px', textTransform: 'uppercase', padding: '6px 16px', borderRadius: '75.641px', zIndex: 70 }}>
+            Coming Soon
+          </div>
+        )}
+
         {/* Centre: Sub-items */}
-        <div className="flex flex-col items-center justify-center h-full gap-4">
-          {selectedCategory?.subItems.map((item) => (
-            <button
-              key={item}
-              onClick={() => handleSubItemClick(item)}
-              className="font-kaio uppercase"
-              style={{
-                fontWeight: 800,
-                fontSize: 'clamp(20px, 3.5vw, 40px)',
-                color: '#000000',
-                background: 'none',
-                border: 'none',
-                cursor: 'pointer',
-                transition: `opacity 200ms ${easing}`,
-              }}
-              onMouseEnter={(e) => (e.currentTarget.style.opacity = '0.6')}
-              onMouseLeave={(e) => (e.currentTarget.style.opacity = '1')}
-            >
-              {item}
-            </button>
-          ))}
+        <div className="flex flex-col items-center justify-center h-full gap-4" style={{ maxWidth: '500px', margin: '0 auto', width: '100%' }}>
+          {selectedCategory?.subItems.length === 0 && (
+            <span style={{ fontFamily: "'Owners Wide', sans-serif", fontSize: '14px', color: '#000', opacity: 0.4 }}>Coming Soon</span>
+          )}
+          {selectedCategory?.subItems.map((item) => {
+            // Search fields
+            if (searchItems.has(item)) {
+              const searchType = item.replace('Search ', '').toLowerCase();
+              const getResults = (): { name: string; id: string; slug?: string; code?: string }[] => {
+                if (!searchQuery.trim()) return [];
+                const q = searchQuery.toLowerCase();
+                if (searchType === 'team') return mockTeam.filter((m) => m.name.toLowerCase().includes(q)).slice(0, 5).map((m) => ({ name: m.name, id: m.id }));
+                if (searchType === 'clients') return priorityClients.filter((c) => c.companyName.toLowerCase().includes(q)).slice(0, 5).map((c) => ({ name: c.companyName, id: c.id, slug: c.slug }));
+                if (searchType === 'projects') return mockProjects.filter((p) => p.code.toLowerCase().includes(q) || p.title.toLowerCase().includes(q)).slice(0, 5).map((p) => ({ name: p.title, id: p.id, code: p.code }));
+                return [];
+              };
+              const results = getResults();
+              return (
+                <div key={item} style={{ width: '100%', position: 'relative' }}>
+                  <input
+                    type="text"
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    placeholder={`Search ${searchType}...`}
+                    style={{
+                      fontFamily: "'Owners Wide', sans-serif", fontSize: '16px', width: '100%',
+                      background: 'rgba(0,0,0,0.08)', border: '2px solid #000', borderRadius: '75.641px',
+                      padding: '12px 24px', color: '#000', outline: 'none', letterSpacing: '0.5px',
+                    }}
+                  />
+                  {results.length > 0 && (
+                    <div style={{ position: 'absolute', top: '100%', left: 0, right: 0, background: '#fff', borderRadius: '10.258px', marginTop: '4px', border: '1px solid rgba(0,0,0,0.1)', overflow: 'hidden', zIndex: 10 }}>
+                      {results.map((r) => {
+                        const route = searchType === 'team' ? `/team/${r.id}` : searchType === 'clients' ? `/clients/${r.slug ?? r.id}/hub` : `/projects`;
+                        return (
+                          <button key={r.id} onClick={() => { closeOverlay(); setSearchQuery(''); navigate(route); }}
+                            style={{ display: 'block', width: '100%', textAlign: 'left', padding: '10px 24px', fontFamily: "'Owners Wide', sans-serif", fontSize: '14px', background: 'transparent', border: 'none', borderBottom: '1px solid rgba(0,0,0,0.05)', cursor: 'pointer', color: '#000' }}
+                            onMouseEnter={(e) => (e.currentTarget.style.background = 'rgba(0,0,0,0.04)')}
+                            onMouseLeave={(e) => (e.currentTarget.style.background = 'transparent')}>
+                            {r.code ? `${r.code} — ${r.name}` : r.name}
+                          </button>
+                        );
+                      })}
+                    </div>
+                  )}
+                </div>
+              );
+            }
+
+            // Coming soon items
+            if (comingSoonItems.has(item)) {
+              return (
+                <button key={item} onClick={showComingSoon} className="font-kaio uppercase"
+                  style={{ fontWeight: 800, fontSize: 'clamp(20px, 3.5vw, 40px)', color: '#000000', background: 'none', border: 'none', cursor: 'pointer', transition: `opacity 200ms ${easing}`, opacity: 0.4 }}
+                  onMouseEnter={(e) => (e.currentTarget.style.opacity = '0.6')}
+                  onMouseLeave={(e) => (e.currentTarget.style.opacity = '0.4')}>
+                  {item}
+                </button>
+              );
+            }
+
+            // Normal navigation items
+            return (
+              <button key={item} onClick={() => handleSubItemClick(item)} className="font-kaio uppercase"
+                style={{ fontWeight: 800, fontSize: 'clamp(20px, 3.5vw, 40px)', color: '#000000', background: 'none', border: 'none', cursor: 'pointer', transition: `opacity 200ms ${easing}` }}
+                onMouseEnter={(e) => (e.currentTarget.style.opacity = '0.6')}
+                onMouseLeave={(e) => (e.currentTarget.style.opacity = '1')}>
+                {item}
+              </button>
+            );
+          })}
         </div>
       </div>
     </NavOverlayContext.Provider>

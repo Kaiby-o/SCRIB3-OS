@@ -29,12 +29,12 @@ const teamConfig: DashboardConfig = {
   headerLabel: 'TEAM DASHBOARD',
   pillNavItems: ['Overview', 'Projects', 'Tasks', 'Comms'],
   categories: [
-    { label: 'TEAM', subItems: ['Directory', 'Profiles', 'Activity'] },
-    { label: 'UNITS', subItems: ['Business Units', 'Departments'] },
-    { label: 'CLIENTS', subItems: ['Client List', 'Onboarding'] },
-    { label: 'PROJECTS', subItems: ['Active', 'Archived', 'Proposals'] },
-    { label: 'CULTURE', subItems: ['Values', 'Events', 'Recognition'] },
-    { label: 'TOOLS', subItems: ['Resources', 'Templates', 'Integrations'] },
+    { label: 'TEAM', subItems: ['Search Team', 'Directory', 'Feedback', 'Prof Dev', 'Office', 'Dapps'] },
+    { label: 'UNITS', subItems: ['Accounts', 'C-Suite', 'Brand', 'Media', 'Ops', 'PR'] },
+    { label: 'CLIENTS', subItems: ['Search Clients', 'Directory'] },
+    { label: 'PROJECTS', subItems: ['Search Projects', 'All Projects'] },
+    { label: 'CULTURE', subItems: ['Proof of Excellence', 'Operating Principles', 'Culture Book'] },
+    { label: 'TOOLS', subItems: [] },
   ],
   modules: [
     { id: 'active-projects', label: 'ACTIVE PROJECTS', gridArea: 'projects', pillFilter: ['Overview', 'Projects'] },
@@ -127,13 +127,14 @@ const csuiteConfig: DashboardConfig = {
 
 const adminConfig: DashboardConfig = {
   headerLabel: 'ADMIN DASHBOARD',
-  pillNavItems: ['Overview', 'Projects', 'Team', 'System'],
+  pillNavItems: ['Overview', 'Projects', 'Team', 'Tools'],
   categories: [
-    { label: 'TEAM', subItems: ['Directory', 'Profiles', 'Activity'] },
-    { label: 'UNITS', subItems: ['Business Units', 'Departments'] },
-    { label: 'CLIENTS', subItems: ['Client List', 'Onboarding'] },
-    { label: 'PROJECTS', subItems: ['Active', 'Archived', 'Proposals'] },
-    { label: 'SYSTEM', subItems: ['Users', 'Roles', 'Settings', 'Logs'] },
+    { label: 'TEAM', subItems: ['Search Team', 'Directory', 'Feedback', 'Prof Dev', 'Office', 'Dapps'] },
+    { label: 'UNITS', subItems: ['Accounts', 'C-Suite', 'Brand', 'Media', 'Ops', 'PR'] },
+    { label: 'CLIENTS', subItems: ['Search Clients', 'Directory'] },
+    { label: 'PROJECTS', subItems: ['Search Projects', 'All Projects'] },
+    { label: 'CULTURE', subItems: ['Proof of Excellence', 'Operating Principles', 'Culture Book'] },
+    { label: 'TOOLS', subItems: [] },
   ],
   modules: [
     { id: 'active-projects', label: 'ACTIVE PROJECTS', gridArea: 'projects', pillFilter: ['Overview', 'Projects'] },

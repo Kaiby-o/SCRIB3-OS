@@ -14,15 +14,15 @@ const STATUS_OPTIONS: { key: StatusOption; label: string; color: string }[] = [
   { key: 'busy', label: 'Busy', color: '#E67E22' },
 ];
 
-const QUICK_LINKS: { label: string; icon: string; route: string }[] = [
-  { label: 'Chat', icon: 'chat.svg', route: '/dashboard' },
-  { label: 'Calendar', icon: 'calendar.svg', route: '/dashboard' },
-  { label: 'Office', icon: 'office.svg', route: '/device' },
-  { label: 'Dapps', icon: 'dapps.svg', route: '/tools' },
+const QUICK_LINKS: { label: string; icon: string; route: string; comingSoon?: boolean }[] = [
+  { label: 'Chat', icon: 'chat.svg', route: '/dashboard', comingSoon: true },
+  { label: 'Calendar', icon: 'calendar.svg', route: '/dashboard', comingSoon: true },
+  { label: 'Office', icon: 'office.svg', route: '/device', comingSoon: true },
+  { label: 'Dapps', icon: 'dapps.svg', route: '/tools', comingSoon: true },
   { label: 'Bandwidth', icon: 'bandwidth.svg', route: '/bandwidth' },
   { label: 'Tasks', icon: 'tasks.svg', route: '/projects' },
-  { label: 'Feedback', icon: 'feedback.svg', route: '/dashboard' },
-  { label: 'Prof Dev', icon: 'prof-dev.svg', route: '/culture' },
+  { label: 'Feedback', icon: 'feedback.svg', route: '/dashboard', comingSoon: true },
+  { label: 'Prof Dev', icon: 'prof-dev.svg', route: '/culture', comingSoon: true },
 ];
 
 const FloatingWidget: React.FC = () => {
@@ -33,6 +33,8 @@ const FloatingWidget: React.FC = () => {
   const [status, setStatus] = useState<StatusOption>('active');
   const [statusDropdown, setStatusDropdown] = useState(false);
   const [now, setNow] = useState(new Date());
+  const [comingSoonToast, setComingSoonToast] = useState(false);
+  const showComingSoon = () => { setComingSoonToast(true); setTimeout(() => setComingSoonToast(false), 1500); };
 
   // Drag state
   const [isDragging, setIsDragging] = useState(false);
@@ -226,11 +228,18 @@ const FloatingWidget: React.FC = () => {
       {/* Divider */}
       <div style={{ width: '1px', height: '40px', background: 'rgba(234,242,215,0.12)', flexShrink: 0 }} />
 
-      {/* Quick links — 20% larger icons */}
+      {/* Coming soon toast */}
+      {comingSoonToast && (
+        <div style={{ position: 'absolute', top: -30, left: '50%', transform: 'translateX(-50%)', background: '#EAF2D7', color: '#000', fontFamily: "'Owners Wide', sans-serif", fontSize: '10px', letterSpacing: '1px', textTransform: 'uppercase', padding: '4px 12px', borderRadius: '75.641px', whiteSpace: 'nowrap', zIndex: 50 }}>
+          Coming Soon
+        </div>
+      )}
+
+      {/* Quick links — SVG icons */}
       <div className="flex items-center gap-1" style={{ flex: 1, justifyContent: 'space-around' }}>
         {QUICK_LINKS.map((link) => (
-          <button key={link.label} onClick={() => navigate(link.route)} className="flex flex-col items-center gap-1"
-            style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '4px 6px', borderRadius: '8px', transition: `background 150ms ${easing}` }}
+          <button key={link.label} onClick={() => { if (link.comingSoon) showComingSoon(); else navigate(link.route); }} className="flex flex-col items-center gap-1"
+            style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '4px 6px', borderRadius: '8px', transition: `background 150ms ${easing}`, opacity: link.comingSoon ? 0.4 : 1 }}
             onMouseEnter={(e) => (e.currentTarget.style.background = 'rgba(234,242,215,0.08)')}
             onMouseLeave={(e) => (e.currentTarget.style.background = 'transparent')}>
             <img src={ICON_BASE + link.icon} alt={link.label} style={{ width: 26, height: 26 }} />
