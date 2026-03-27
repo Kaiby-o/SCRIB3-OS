@@ -488,7 +488,7 @@ export const NavOverlayProvider: React.FC<NavOverlayProviderProps> = ({
             if (comingSoonItems.has(item)) {
               return (
                 <button key={item} onClick={showComingSoon} className="font-kaio uppercase"
-                  style={{ fontWeight: 800, fontSize: 'clamp(20px, 3.5vw, 40px)', color: '#000000', background: 'none', border: 'none', cursor: 'pointer', transition: `opacity 200ms ${easing}`, opacity: 0.4 }}
+                  style={{ fontWeight: 800, fontSize: 'clamp(20px, 3.5vw, 40px)', lineHeight: 1.05, color: '#000000', background: 'none', border: 'none', cursor: 'pointer', transition: `opacity 200ms ${easing}`, opacity: 0.4 }}
                   onMouseEnter={(e) => (e.currentTarget.style.opacity = '0.6')}
                   onMouseLeave={(e) => (e.currentTarget.style.opacity = '0.4')}>
                   {item}
@@ -499,7 +499,7 @@ export const NavOverlayProvider: React.FC<NavOverlayProviderProps> = ({
             // Normal navigation items
             return (
               <button key={item} onClick={() => handleSubItemClick(item)} className="font-kaio uppercase"
-                style={{ fontWeight: 800, fontSize: 'clamp(20px, 3.5vw, 40px)', color: '#000000', background: 'none', border: 'none', cursor: 'pointer', transition: `opacity 200ms ${easing}` }}
+                style={{ fontWeight: 800, fontSize: 'clamp(20px, 3.5vw, 40px)', lineHeight: 1.05, color: '#000000', background: 'none', border: 'none', cursor: 'pointer', transition: `opacity 200ms ${easing}` }}
                 onMouseEnter={(e) => (e.currentTarget.style.opacity = '0.6')}
                 onMouseLeave={(e) => (e.currentTarget.style.opacity = '1')}>
                 {item}
