@@ -311,3 +311,4 @@ ALTER TABLE profiles ADD COLUMN IF NOT EXISTS role TEXT DEFAULT 'team'
 7. Non-admin users are blocked from `/device`
 8. `npm run build` passes with zero errors
 9. Single `DashboardLayout.tsx` serves all roles
+| 27 | `/approvals` | Auth | admin, team, csuite | Approval inbox — pre-alignment, handoffs, deliverables |
