@@ -475,3 +475,103 @@ Merged SCRIB3-OS dashboard and SCRIB3 systems map into a single unified repo. Ad
 3. Ensure Save & Enter reliably saves + navigates to office
 4. Design a custom SCRIB3 office layout (not just LimeZu defaults)
 5. Consider using the Character Generator 2.0 desktop app to export proper walk-cycle-only spritesheets per layer
+
+---
+
+## 2026-03-27 — SCRIB3-OS Session 4 (Massive Build Sprint)
+
+### Linear Integration
+- `/tasks` — Live issue tracking from Linear workspace via GraphQL API
+- Issues grouped by workflow state, collapsible headers
+- Sub-issues nested under parents with collapsible tree
+- Issue detail panel: editable status, priority, assignee, due date
+- Comments with individual bordered boxes, chronological order
+- Add comments → pushes to Linear immediately
+- 30s auto-refresh (visibility-aware — pauses in background tabs)
+- Priority indicators as flat colour circles (no emojis)
+- Supabase avatars matched to Linear users by email
+
+### Approvals System
+- `/approvals` — Approval inbox with filter pills
+- 5 approval types: pre-alignment, project handoff, deliverable, scope change
+- Approve / Reject / Request Changes buttons
+- Detail panel with properties and notes
+
+### Project Detail
+- `/projects/:code` — Full project detail view
+- 3 tabs: Overview (properties + team), Workflow (template steps), Alignment (pre-alignment status)
+- "Why This Matters" strategic context section on every project
+- Workflow templates: 5 types (Podcast, Social, Brand, Event, PR) with phased steps
+
+### Dashboard Widget Grid
+- react-grid-layout integration with drag-and-drop
+- Widget visibility synced with Settings page toggles
+- Layout persists to localStorage per role
+- "Show Default Widgets" button when dashboard empty
+- Reset button restores all widgets
+
+### Floating Widget Overhaul
+- Draggable, dockable (left or right of navbar)
+- Circle avatar with 2px offwhite stroke
+- Status dropdown (Active / Away / Busy)
+- SVG icons from Supabase Storage (9 quick links)
+- Mobile bottom sheet layout (< 768px)
+- Coming Soon updated — only Chat, Office, Feedback remain
+
+### Navigation & Menu
+- Burger menu accessible from ALL pages (21 pages)
+- NavOverlayProvider at App level — role-aware categories
+- Coming Soon items cleaned up — Dapps, Prof Dev, Units, Culture now navigate to real pages
+- Back arrow + close X in top-right of Layer 2
+
+### Login & Auth
+- Rewritten auth flow with timeout protection
+- No more infinite loading
+- Show/Hide password icons from Supabase Storage
+- Profile load failure doesn't block login
+
+### Editable Profile
+- Own profile shows "Edit Profile" button
+- Editable: bio, title, location, skillsets
+- Saves to Supabase profiles table
+
+### Bandwidth
+- "Forecast" tab: 4-week rolling capacity projection
+- Conflict alerts for team members at ≥90%
+- All labor cost references removed
+- Submit form writes to Supabase bandwidth_estimates
+
+### Dark Mode
+- Toggle in Settings → Appearance
+- CSS variables swap: bg-primary, text-primary, border-default
+- ThemeToggle removed from burger menu overlay
+
+### Mobile Responsive
+- CSS breakpoints at 768px and 480px
+- Header shrinks, content padding reduced
+- Typography scales down
+- Grid layouts collapse to single column
+- Floating widget: mobile bottom sheet with 3-column icon grid
+
+### Security Audit
+- Hardcoded service_role key scrubbed from seed scripts
+- Hardcoded passwords removed from all committed files
+- .env added to .gitignore with .env.example created
+- XSS vector (dangerouslySetInnerHTML) fixed
+- Linear API key exposure flagged (needs backend proxy before public)
+
+### Global Fixes
+- Fixed navbar on ALL 22 pages (position: fixed inline)
+- 1px solid black bottom border on all headers
+- Favicon from Supabase Icons bucket
+- Page title: "SCRIB3 OS"
+- Team data corrections (CK→csuite, Kim→PR, etc.)
+- Avatar case-sensitivity fixes
+
+### Data & Infrastructure
+- Supabase schema: 27 tables
+- Seed data: 29 team profiles, 6 clients, 5 vendors, 31 engagement health rows
+- RLS policy fix: authenticated users can read all profiles
+- Workflow templates: 5 project types with phased steps
+- Approvals data layer with Supabase write helpers
+
