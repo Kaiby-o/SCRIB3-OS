@@ -20,36 +20,40 @@ const TeamDirectoryPage: React.FC = () => {
   const [availFilter, setAvailFilter] = useState('all');
   const [search, setSearch] = useState('');
 
-  // Supabase query — falls back to mock if empty
+  // Supabase query — used to enrich mock data with live DB values
   const { data: dbProfiles } = useSupabaseQuery<Record<string, unknown>>(
     'profiles', '*', undefined, { column: 'display_name', ascending: true }
   );
 
-  // Map Supabase rows to TeamMember shape, fall back to mock data
+  // Start with mock data (has complete info + avatars), enrich with Supabase where available
   const allMembers: TeamMember[] = useMemo(() => {
-    if (dbProfiles.length > 0) {
-      return dbProfiles.map((p) => ({
-        id: p.id as string,
-        name: (p.display_name ?? p.operator_handle ?? '') as string,
-        email: (p.email ?? '') as string,
-        role: (p.role ?? 'team') as TeamMember['role'],
-        title: (p.title ?? '—') as string,
-        unit: (p.unit ?? '—') as string,
-        location: (p.location ?? '—') as string,
-        timezone: (p.timezone ?? 'America/New_York') as string,
-        isOnline: (p.is_online ?? false) as boolean,
-        availability: (p.availability ?? 'offline') as TeamMember['availability'],
-        bio: (p.bio ?? '') as string,
-        skillsets: (p.skillsets ?? []) as string[],
-        socialLinks: (Array.isArray(p.social_links) ? p.social_links : []) as TeamMember['socialLinks'],
-        currentClients: [] as string[],
-        currentProjects: [] as string[],
-        joinedDate: (p.joined_date ?? '') as string,
-        xp: (p.xp ?? 0) as number,
-        bandwidthPct: (p.bandwidth ?? 0) as number,
-      }));
+    if (dbProfiles.length === 0) return mockTeam;
+
+    // Build a lookup by email from Supabase
+    const dbByEmail = new Map<string, Record<string, unknown>>();
+    for (const p of dbProfiles) {
+      if (p.email) dbByEmail.set(p.email as string, p);
     }
-    return mockTeam;
+
+    // Merge: mock data is the base, Supabase overrides specific fields
+    return mockTeam.map((m) => {
+      const db = dbByEmail.get(m.email);
+      if (!db) return m;
+      return {
+        ...m,
+        // Override with DB values where they exist and are non-empty
+        name: (db.display_name as string) || m.name,
+        title: (db.title as string) || m.title,
+        unit: (db.unit as string) || m.unit,
+        location: (db.location as string) || m.location,
+        bio: (db.bio as string) || m.bio,
+        xp: (db.xp as number) ?? m.xp,
+        bandwidthPct: (db.bandwidth as number) ?? m.bandwidthPct,
+        avatarUrl: (db.avatar_url as string) || m.avatarUrl,
+        availability: (db.availability as TeamMember['availability']) || m.availability,
+        isOnline: (db.is_online as boolean) ?? m.isOnline,
+      };
+    });
   }, [dbProfiles]);
 
   const UNITS = useMemo(() => [...new Set(allMembers.map((m) => m.unit))].filter(u => u !== '—').sort(), [allMembers]);
