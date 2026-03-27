@@ -64,7 +64,7 @@ const subItemRoutes: Record<string, string> = {
   'All Projects': '/projects',
   'Tasks': '/tasks',
   // Team nav extra
-  'Dapps': '/shoutouts',
+  'Dapps': '/dapps',
   // Tools nav
   'Tools Directory': '/tools',
   'Systems Map': '/tools', // TODO: build /systems-map route

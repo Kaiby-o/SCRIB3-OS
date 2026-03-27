@@ -281,7 +281,7 @@ export default function App() {
           }
         />
         <Route
-          path="/shoutouts"
+          path="/dapps"
           element={
             <AuthGuard>
               <OSShoutouts />
