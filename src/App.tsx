@@ -26,13 +26,16 @@ import OSSettings from './scrib3-os/pages/SettingsPage';
 import { AuthGuard, RoleGuard } from './scrib3-os/components/AuthGuard';
 import FloatingWidget from './scrib3-os/components/FloatingWidget';
 import { useAuthStore } from './scrib3-os/hooks/useAuth';
+import { useLocation } from 'react-router-dom';
 // DEVICE layer imports
 import DeviceDashboard from './scrib3-device/pages/DashboardPage';
 import AvatarCreatorPage from './scrib3-device/pages/AvatarCreatorPage';
 
 function GlobalWidget() {
   const { user } = useAuthStore();
-  if (!user) return null;
+  const location = useLocation();
+  // Don't show on landing page or login
+  if (!user || location.pathname === '/' || location.pathname === '/login') return null;
   return <FloatingWidget />;
 }
 

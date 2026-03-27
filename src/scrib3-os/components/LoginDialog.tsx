@@ -314,7 +314,7 @@ const LoginDialog: React.FC<LoginDialogProps> = ({ isOpen, onClose }) => {
                     <img
                       src={ICON_BASE + (showPassword ? 'Hide.svg' : 'Show.svg')}
                       alt={showPassword ? 'Hide' : 'Show'}
-                      style={{ width: 20, height: 20 }}
+                      style={{ width: 20, height: 20, filter: 'invert(1)' }}
                     />
                   </button>
                 </div>

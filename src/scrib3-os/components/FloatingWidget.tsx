@@ -76,7 +76,12 @@ const FloatingWidget: React.FC = () => {
   useEffect(() => {
     if (!isDragging) return;
     const handleMove = (e: MouseEvent) => {
-      setPosition({ x: e.clientX - dragOffset.current.x, y: e.clientY - dragOffset.current.y });
+      const el = widgetRef.current;
+      const w = el?.offsetWidth ?? 300;
+      const h = el?.offsetHeight ?? 60;
+      const x = Math.max(0, Math.min(e.clientX - dragOffset.current.x, window.innerWidth - w));
+      const y = Math.max(0, Math.min(e.clientY - dragOffset.current.y, window.innerHeight - h));
+      setPosition({ x, y });
     };
     const handleUp = (e: MouseEvent) => {
       setIsDragging(false);
@@ -133,12 +138,13 @@ const FloatingWidget: React.FC = () => {
     return (
       <div
         ref={widgetRef}
+        onMouseDown={handleDragStart}
         style={{
           position: 'fixed',
           ...(position ? { left: position.x, top: position.y } : { bottom: 24, left: '50%', transform: 'translateX(-50%)' }),
           zIndex: 45, background: '#000', borderRadius: '75.641px',
           padding: '10px 20px', display: 'flex', alignItems: 'center', gap: '12px',
-          cursor: isDragging ? 'grabbing' : 'pointer',
+          cursor: isDragging ? 'grabbing' : 'grab',
           transition: isDragging ? 'none' : `all 300ms ${easing}`,
           userSelect: 'none',
         }}
@@ -147,7 +153,7 @@ const FloatingWidget: React.FC = () => {
         <CircleAvatar name={displayName} size={32} avatarUrl={profile?.avatar_url} />
         <span style={{ fontFamily: "'Kaio', sans-serif", fontWeight: 900, fontSize: '13px', color: '#EAF2D7', textTransform: 'uppercase' }}>{displayName}</span>
         <div style={{ width: 6, height: 6, borderRadius: '50%', background: statusColor, flexShrink: 0 }} />
-        <div onMouseDown={handleDragStart} onClick={(e) => e.stopPropagation()} style={{ padding: '4px', cursor: 'grab', display: 'flex', alignItems: 'center', gap: '4px' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
           <BurgerHandle />
           <svg width="8" height="10" viewBox="0 0 8 10" fill="rgba(234,242,215,0.5)"><polygon points="0,0 8,5 0,10" /></svg>
         </div>
