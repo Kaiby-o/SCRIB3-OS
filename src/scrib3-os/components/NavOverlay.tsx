@@ -68,7 +68,7 @@ const subItemRoutes: Record<string, string> = {
   'Dapps': '/dapps',
   // Tools nav
   'Tools Directory': '/tools',
-  'Systems Map': '/tools', // TODO: build /systems-map route
+  'Systems Map': '/systems-map',
   // Culture nav
   'Proof of Excellence': '/culture',
   'Operating Principles': '/culture',
