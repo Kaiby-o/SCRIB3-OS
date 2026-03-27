@@ -31,7 +31,7 @@ const QUICK_LINKS: { label: string; icon: string; route: string; comingSoon?: bo
   { label: 'Dapps', icon: 'dapps.svg', route: '/dapps' },
   { label: 'Bandwidth', icon: 'bandwidth.svg', route: '/bandwidth' },
   { label: 'Tasks', icon: 'tasks.svg', route: '/tasks' },
-  { label: 'Feedback', icon: 'feedback.svg', route: '/dashboard', comingSoon: true },
+  { label: 'Feedback', icon: 'feedback.svg', route: '/feedback' },
   { label: 'Prof Dev', icon: 'profdev.svg', route: '/dashboard', comingSoon: true },
   { label: 'Settings', icon: 'settings.svg', route: '/settings' },
 ];

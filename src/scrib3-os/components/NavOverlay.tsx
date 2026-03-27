@@ -64,6 +64,7 @@ const subItemRoutes: Record<string, string> = {
   'All Projects': '/projects',
   'Tasks': '/tasks',
   // Team nav extra
+  'Feedback': '/feedback',
   'Dapps': '/dapps',
   // Tools nav
   'Tools Directory': '/tools',
@@ -114,7 +115,7 @@ const subItemRoutes: Record<string, string> = {
 
 // Items that show "Coming Soon" — only truly unbuilt features
 const comingSoonItems = new Set([
-  'Feedback', 'Office', 'Prof Dev',
+  'Office', 'Prof Dev',
 ]);
 
 // Items that render as search fields
