@@ -25,18 +25,12 @@ interface AuthState {
 
 async function loadProfile(userId: string): Promise<OSProfile | null> {
   try {
-    // Race the query against a 5-second timeout
-    const queryPromise = supabase
+    // Simple query — no timeout race. If RLS blocks, it returns an error, not a hang.
+    const { data, error } = await supabase
       .from('profiles')
       .select('*')
       .eq('id', userId)
       .single();
-
-    const timeoutPromise = new Promise<{ data: null; error: { message: string } }>((resolve) =>
-      setTimeout(() => resolve({ data: null, error: { message: 'Profile load timeout' } }), 5000)
-    );
-
-    const { data, error } = await Promise.race([queryPromise, timeoutPromise]);
 
     if (error || !data) {
       console.warn('[os-auth] Profile fetch failed:', error?.message);
@@ -128,7 +122,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
         console.warn('[os-auth] Sign-in timeout — forcing loading:false');
         set({ loading: false });
       }
-    }, 8000);
+    }, 15000);
   },
 
   signOut: async () => {
