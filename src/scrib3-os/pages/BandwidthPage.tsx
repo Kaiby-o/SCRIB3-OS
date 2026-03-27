@@ -235,6 +235,64 @@ const SmField: React.FC<{ label: string; value: string; onChange: (v: string) =>
 /*  Shared                                                             */
 /* ------------------------------------------------------------------ */
 
+/* Forecast Tab — 4-week capacity projection */
+const ForecastTab: React.FC = () => {
+  const digest = buildDigest(mockEstimates, '2026-03-23');
+  const weeks = ['Mar 24', 'Mar 31', 'Apr 7', 'Apr 14'];
+
+  return (
+    <>
+      <div style={{ background: 'rgba(110,147,195,0.1)', border: '1px solid rgba(110,147,195,0.3)', borderRadius: '10.258px', padding: '16px 24px', marginBottom: '24px' }}>
+        <span style={{ fontFamily: "'Owners Wide', sans-serif", fontSize: '12px' }}>
+          4-week rolling capacity forecast based on current bandwidth estimates. Highlights team members at risk of over-allocation.
+        </span>
+      </div>
+
+      <div style={{ border: '0.733px solid var(--border-default)', borderRadius: '10.258px', overflow: 'hidden' }}>
+        <div className="flex items-center" style={{ padding: '12px 24px', borderBottom: '0.733px solid var(--border-default)', opacity: 0.5 }}>
+          <TH width="25%">Team Member</TH>
+          {weeks.map((w) => <TH key={w} width={`${75 / weeks.length}%`}>{w}</TH>)}
+        </div>
+        {digest.submissions.sort((a, b) => b.capacityPct - a.capacityPct).map((est) => {
+          // Project forward with slight variance
+          const projections = weeks.map((_, i) => {
+            const variance = Math.round((Math.random() - 0.5) * 15);
+            return Math.max(0, Math.min(120, est.capacityPct + variance * (i + 1) / 2));
+          });
+          return (
+            <div key={est.id} className="flex items-center" style={{ padding: '12px 24px', borderBottom: '0.5px solid rgba(0,0,0,0.06)' }}>
+              <div style={{ width: '25%' }}>
+                <span style={{ fontFamily: "'Kaio', sans-serif", fontWeight: 800, fontSize: '12px', textTransform: 'uppercase' }}>{est.teamMemberName}</span>
+              </div>
+              {projections.map((pct, i) => (
+                <div key={i} style={{ width: `${75 / weeks.length}%` }}>
+                  <div className="flex items-center gap-2">
+                    <CapacityBar pct={pct} width={60} />
+                    <span style={{ fontFamily: "'Owners Wide', sans-serif", fontSize: '11px', color: getCapacityColor(pct) }}>{pct}%</span>
+                    {pct >= 90 && <span style={{ fontSize: '10px' }} title="At risk">!</span>}
+                  </div>
+                </div>
+              ))}
+            </div>
+          );
+        })}
+      </div>
+
+      {/* Conflict alerts */}
+      {digest.highCapacity.length > 0 && (
+        <div style={{ marginTop: '24px', background: 'rgba(230,126,34,0.08)', border: '1px solid rgba(230,126,34,0.3)', borderRadius: '10.258px', padding: '16px 24px' }}>
+          <span style={{ fontFamily: "'Kaio', sans-serif", fontWeight: 800, fontSize: '13px', textTransform: 'uppercase', display: 'block', marginBottom: '8px' }}>Capacity Conflicts</span>
+          {digest.highCapacity.map((e) => (
+            <div key={e.id} style={{ fontFamily: "'Owners Wide', sans-serif", fontSize: '12px', padding: '4px 0' }}>
+              <strong>{e.teamMemberName}</strong> is at {e.capacityPct}% — assigned to {e.entries.length} projects
+            </div>
+          ))}
+        </div>
+      )}
+    </>
+  );
+};
+
 const TH: React.FC<{ width: string; children: React.ReactNode }> = ({ width, children }) => (
   <span style={{ width, fontFamily: "'Owners Wide', sans-serif", fontSize: '10px', letterSpacing: '1px', textTransform: 'uppercase' }}>{children}</span>
 );
@@ -252,7 +310,7 @@ const Stat: React.FC<{ value: string; label: string; accent?: boolean }> = ({ va
 
 const BandwidthPage: React.FC = () => {
   const navigate = useNavigate();
-  const [tab, setTab] = useState<'digest' | 'submit'>('digest');
+  const [tab, setTab] = useState<'digest' | 'submit' | 'forecast'>('digest');
 
   return (
     <div className="os-root" style={{ minHeight: '100vh' }}>
@@ -276,9 +334,12 @@ const BandwidthPage: React.FC = () => {
         <div className="flex gap-2" style={{ marginBottom: '32px' }}>
           <Pill label="Digest" active={tab === 'digest'} onClick={() => setTab('digest')} />
           <Pill label="Submit Estimate" active={tab === 'submit'} onClick={() => setTab('submit')} />
+          <Pill label="Forecast" active={tab === 'forecast'} onClick={() => setTab('forecast')} />
         </div>
 
-        {tab === 'digest' ? <DigestTab /> : <SubmitTab />}
+        {tab === 'digest' && <DigestTab />}
+        {tab === 'submit' && <SubmitTab />}
+        {tab === 'forecast' && <ForecastTab />}
       </div>
     </div>
   );

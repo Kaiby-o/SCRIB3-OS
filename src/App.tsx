@@ -24,6 +24,7 @@ import OSCultureHub from './scrib3-os/pages/CultureHubPage';
 import OSToolsDirectory from './scrib3-os/pages/ToolsDirectoryPage';
 import OSSettings from './scrib3-os/pages/SettingsPage';
 import OSTasks from './scrib3-os/pages/TasksPage';
+import OSApprovals from './scrib3-os/pages/ApprovalsPage';
 import { AuthGuard, RoleGuard } from './scrib3-os/components/AuthGuard';
 import FloatingWidget from './scrib3-os/components/FloatingWidget';
 import { NavOverlayProvider } from './scrib3-os/components/NavOverlay';
@@ -267,6 +268,16 @@ export default function App() {
           }
         />
 
+        <Route
+          path="/approvals"
+          element={
+            <AuthGuard>
+              <RoleGuard allowed={['admin', 'team', 'csuite']}>
+                <OSApprovals />
+              </RoleGuard>
+            </AuthGuard>
+          }
+        />
         <Route
           path="/tasks"
           element={
