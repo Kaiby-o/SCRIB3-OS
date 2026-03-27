@@ -1,81 +1,109 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo, useCallback, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import LogoScrib3 from '../components/LogoScrib3';
 import BurgerButton from '../components/BurgerButton';
+import { NODES } from '../../scrib3-device/components/systems-map/data/nodes';
+import { FLOWS } from '../../scrib3-device/components/systems-map/data/flows';
+import { LAYERS } from '../../scrib3-device/components/systems-map/data/layers';
+import { JOURNEYS } from '../../scrib3-device/components/systems-map/data/journeys';
+import type { SystemNode, Layer, JourneyKey } from '../../scrib3-device/components/systems-map/data/types';
 
 /* ------------------------------------------------------------------ */
 /*  Systems Map — OS Aesthetic                                         */
-/*  Simplified view of SCRIB3 tool ecosystem with right-angle lines    */
+/*  Full port from DEVICE layer with right-angle connectors            */
 /* ------------------------------------------------------------------ */
 
-interface MapNode {
-  id: string;
-  label: string;
-  category: 'structure' | 'visibility' | 'quality' | 'development';
-  x: number;
-  y: number;
-  desc: string;
-  connections: string[];
-}
-
-const CATEGORIES = {
-  structure: { label: 'Structure', color: '#6E93C3' },
-  visibility: { label: 'Visibility', color: '#D7ABC5' },
-  quality: { label: 'Quality', color: '#27AE60' },
-  development: { label: 'Development', color: '#E67E22' },
+// OS colour mapping for layers (replaces DEVICE CRT colours)
+const OS_LAYER_COLORS: Record<Layer, string> = {
+  visibility: '#D7ABC5',
+  structure: '#6E93C3',
+  quality: '#27AE60',
+  development: '#E67E22',
 };
-
-const nodes: MapNode[] = [
-  // Core Structure
-  { id: 'client-hub', label: 'Client Hub', category: 'structure', x: 400, y: 100, desc: 'Central client profile. MSA/SOW, contacts, brand assets, strategy.', connections: ['md-files', 'task-tracker', 'projects-db'] },
-  { id: 'projects-db', label: 'Projects DB', category: 'structure', x: 600, y: 100, desc: 'All active and historical projects. Codes, SOW refs, team assignments.', connections: ['task-tracker', 'engagement-health'] },
-  { id: 'task-tracker', label: 'Task Tracker', category: 'structure', x: 200, y: 200, desc: 'Linear integration. Central task database for all deliverables.', connections: ['bandwidth'] },
-  { id: 'md-files', label: 'MD Files', category: 'structure', x: 400, y: 200, desc: 'Per-client knowledge: tone, guidelines, pillars, strategy.', connections: ['content-prompts'] },
-  { id: 'team-profiles', label: 'Team Profiles', category: 'structure', x: 200, y: 300, desc: '29 team members. Skills, PD notes, bandwidth, XP.', connections: ['bandwidth', 'pd-system'] },
-  { id: 'vendor-profiles', label: 'Vendor Profiles', category: 'structure', x: 600, y: 300, desc: 'Vendor onboarding, invoices, ACH, tax forms.', connections: ['invoices'] },
-
-  // Visibility
-  { id: 'bandwidth', label: 'Bandwidth', category: 'visibility', x: 100, y: 400, desc: 'Weekly capacity estimates. Digest + submit form. Auto-alerts at 80%.', connections: ['engagement-health'] },
-  { id: 'engagement-health', label: 'Engagement Health', category: 'visibility', x: 400, y: 400, desc: 'Per-client financial health. Margin %, health tiers, SOW simulator.', connections: ['sow-forecasts'] },
-  { id: 'scope-watch', label: 'Scope Watch', category: 'visibility', x: 600, y: 400, desc: 'Out-of-scope requests. SOW clauses, approved responses.', connections: [] },
-  { id: 'sow-forecasts', label: 'SOW Forecasts', category: 'visibility', x: 400, y: 500, desc: '"What if" revenue simulator. Projected margin and health.', connections: [] },
-  { id: 'invoices', label: 'Invoices', category: 'visibility', x: 700, y: 500, desc: 'Vendor invoice tracking. Submit → validate → process → paid.', connections: [] },
-
-  // Quality
-  { id: 'pre-alignment', label: 'Pre-Alignment', category: 'quality', x: 100, y: 550, desc: '17-field mandatory checklist. Five-Bullet Brief. Comprehension Loop.', connections: ['approvals'] },
-  { id: 'approvals', label: 'Approvals', category: 'quality', x: 250, y: 550, desc: 'Sign-off workflows. Pre-alignment, handoff, deliverable approvals.', connections: [] },
-  { id: 'content-prompts', label: 'Quality Standards', category: 'quality', x: 400, y: 550, desc: 'What Good Looks Like. 10 sections with team examples.', connections: [] },
-
-  // Development
-  { id: 'pd-system', label: 'Prof Dev', category: 'development', x: 100, y: 650, desc: 'Goals, POE, Operating Principles, feedback, 1:1 notes.', connections: ['feedback'] },
-  { id: 'feedback', label: 'Feedback Hub', category: 'development', x: 300, y: 650, desc: 'Peer reviews, self-assessment, instant feedback, action items.', connections: [] },
-  { id: 'culture', label: 'Culture', category: 'development', x: 500, y: 650, desc: 'Operating Principles, XP leaderboard, Culture Book.', connections: [] },
-  { id: 'dapps', label: 'Dapps', category: 'development', x: 650, y: 650, desc: 'Shoutouts + XP recognition between teammates.', connections: [] },
-];
 
 const SystemsMapPage: React.FC = () => {
   const navigate = useNavigate();
-  const [selectedNode, setSelectedNode] = useState<MapNode | null>(null);
+  const [selectedNode, setSelectedNode] = useState<SystemNode | null>(null);
   const [hoveredNode, setHoveredNode] = useState<string | null>(null);
+  const [activeLayer, setActiveLayer] = useState<Layer | 'all'>('all');
+  const [activeJourney, setActiveJourney] = useState<JourneyKey | null>(null);
+  const [zoom, setZoom] = useState(0.75);
+  const [pan, setPan] = useState({ x: 0, y: 0 });
+  const [isPanning, setIsPanning] = useState(false);
+  const panStart = useRef({ x: 0, y: 0 });
+  const panOrigin = useRef({ x: 0, y: 0 });
 
-  // Draw right-angle connector between two points
-  const drawConnector = (from: MapNode, toId: string) => {
-    const to = nodes.find((n) => n.id === toId);
-    if (!to) return null;
-    const x1 = from.x + 60; const y1 = from.y + 20;
-    const x2 = to.x + 60; const y2 = to.y + 20;
-    const midY = (y1 + y2) / 2;
-    const isHighlighted = hoveredNode === from.id || hoveredNode === toId;
+  // Filter nodes by active layer
+  const visibleNodes = useMemo(() => {
+    if (activeLayer === 'all') return NODES.filter((n) => !n.deprecated);
+    return NODES.filter((n) => n.layer === activeLayer && !n.deprecated);
+  }, [activeLayer]);
+
+  const visibleIds = new Set(visibleNodes.map((n) => n.id));
+
+  // Journey highlight
+  const journeyNodeIds = useMemo(() => {
+    if (!activeJourney || !JOURNEYS[activeJourney]) return new Set<string>();
+    return new Set(JOURNEYS[activeJourney].nodes);
+  }, [activeJourney]);
+
+  const journeyFlows = useMemo(() => {
+    if (!activeJourney || !JOURNEYS[activeJourney]) return [];
+    return JOURNEYS[activeJourney].flows;
+  }, [activeJourney]);
+
+  // Filter flows
+  const visibleFlows = useMemo(() => {
+    if (activeJourney) return journeyFlows;
+    return FLOWS.filter((f) => visibleIds.has(f.from) && visibleIds.has(f.to));
+  }, [activeJourney, journeyFlows, visibleIds]);
+
+  // Connected nodes for hover highlight
+  const connectedIds = useMemo(() => {
+    if (!hoveredNode) return new Set<string>();
+    const ids = new Set<string>([hoveredNode]);
+    FLOWS.forEach((f) => {
+      if (f.from === hoveredNode) ids.add(f.to);
+      if (f.to === hoveredNode) ids.add(f.from);
+    });
+    return ids;
+  }, [hoveredNode]);
+
+  // Pan handlers
+  const handlePanStart = useCallback((e: React.MouseEvent) => {
+    if (e.target !== e.currentTarget) return;
+    setIsPanning(true);
+    panStart.current = { x: e.clientX, y: e.clientY };
+    panOrigin.current = { ...pan };
+  }, [pan]);
+
+  const handlePanMove = useCallback((e: React.MouseEvent) => {
+    if (!isPanning) return;
+    setPan({
+      x: panOrigin.current.x + (e.clientX - panStart.current.x),
+      y: panOrigin.current.y + (e.clientY - panStart.current.y),
+    });
+  }, [isPanning]);
+
+  const handlePanEnd = useCallback(() => setIsPanning(false), []);
+
+  // Draw right-angle connector
+  const drawConnector = (fromNode: SystemNode, toNode: SystemNode, color: string, dashed?: boolean) => {
+    const x1 = fromNode.x + 60; const y1 = fromNode.y + 25;
+    const x2 = toNode.x + 60; const y2 = toNode.y + 25;
+    const midX = (x1 + x2) / 2;
     return (
-      <path key={`${from.id}-${toId}`}
-        d={`M ${x1} ${y1} L ${x1} ${midY} L ${x2} ${midY} L ${x2} ${y2}`}
-        fill="none" stroke={isHighlighted ? '#D7ABC5' : 'rgba(0,0,0,0.1)'} strokeWidth={isHighlighted ? 2 : 1}
-        style={{ transition: 'stroke 200ms, stroke-width 200ms' }} />
+      <path key={`${fromNode.id}-${toNode.id}`}
+        d={`M ${x1} ${y1} L ${midX} ${y1} L ${midX} ${y2} L ${x2} ${y2}`}
+        fill="none" stroke={color} strokeWidth={1.5}
+        strokeDasharray={dashed ? '4 4' : 'none'}
+        opacity={0.6}
+        style={{ transition: 'stroke 200ms, opacity 200ms' }} />
     );
   };
 
   return (
-    <div className="os-root" style={{ minHeight: '100vh' }}>
+    <div className="os-root" style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
       <header className="flex items-center justify-between" style={{ position: 'fixed' as const, top: 0, left: 0, right: 0, zIndex: 40, background: 'var(--bg-primary)', height: '85px', padding: '0 40px', borderBottom: '1px solid #000' }}>
         <button onClick={() => navigate('/tools')} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}>
           <LogoScrib3 height={18} color="var(--text-primary)" />
@@ -84,70 +112,135 @@ const SystemsMapPage: React.FC = () => {
         <BurgerButton />
       </header>
 
-      <div style={{ padding: '24px', overflow: 'auto' }}>
-        {/* Legend */}
-        <div className="flex gap-4 flex-wrap" style={{ marginBottom: '16px' }}>
-          {Object.entries(CATEGORIES).map(([key, cat]) => (
-            <div key={key} className="flex items-center gap-2">
-              <div style={{ width: 10, height: 10, borderRadius: '50%', background: cat.color }} />
-              <span style={{ fontFamily: "'Owners Wide', sans-serif", fontSize: '10px', letterSpacing: '1px', textTransform: 'uppercase', opacity: 0.5 }}>{cat.label}</span>
-            </div>
-          ))}
-        </div>
+      {/* Controls bar */}
+      <div style={{ position: 'fixed', top: 86, left: 0, right: 0, zIndex: 35, background: 'var(--bg-primary)', padding: '8px 24px', borderBottom: '0.5px solid rgba(0,0,0,0.1)', display: 'flex', gap: '12px', alignItems: 'center', flexWrap: 'wrap' }}>
+        {/* Layer filters */}
+        <span style={{ fontFamily: "'Owners Wide', sans-serif", fontSize: '9px', letterSpacing: '1px', textTransform: 'uppercase', opacity: 0.4 }}>Layers:</span>
+        <FilterPill label="All" active={activeLayer === 'all'} onClick={() => setActiveLayer('all')} color="#000" />
+        {(Object.entries(LAYERS) as [Layer, { label: string; color: string }][]).map(([key, info]) => (
+          <FilterPill key={key} label={info.label} active={activeLayer === key} onClick={() => setActiveLayer(key === activeLayer ? 'all' : key)} color={OS_LAYER_COLORS[key]} />
+        ))}
 
-        {/* Map SVG */}
-        <div style={{ position: 'relative', width: '100%', minHeight: '750px' }}>
+        <div style={{ width: 1, height: 20, background: 'rgba(0,0,0,0.1)', margin: '0 4px' }} />
+
+        {/* Journey overlays */}
+        <span style={{ fontFamily: "'Owners Wide', sans-serif", fontSize: '9px', letterSpacing: '1px', textTransform: 'uppercase', opacity: 0.4 }}>Journeys:</span>
+        {(Object.entries(JOURNEYS) as [JourneyKey, { label: string; color: string }][]).slice(0, 5).map(([key, journey]) => (
+          <FilterPill key={key} label={journey.label} active={activeJourney === key} onClick={() => setActiveJourney(activeJourney === key ? null : key)} color={journey.color} />
+        ))}
+
+        <div style={{ marginLeft: 'auto', display: 'flex', gap: '8px', alignItems: 'center' }}>
+          <button onClick={() => setZoom((z) => Math.max(0.3, z - 0.1))} style={{ background: 'none', border: '1px solid var(--border-default)', borderRadius: '4px', width: 28, height: 28, cursor: 'pointer', fontFamily: "'Owners Wide', sans-serif", fontSize: '14px' }}>-</button>
+          <span style={{ fontFamily: "'Owners Wide', sans-serif", fontSize: '10px', opacity: 0.4, minWidth: '30px', textAlign: 'center' }}>{Math.round(zoom * 100)}%</span>
+          <button onClick={() => setZoom((z) => Math.min(2, z + 0.1))} style={{ background: 'none', border: '1px solid var(--border-default)', borderRadius: '4px', width: 28, height: 28, cursor: 'pointer', fontFamily: "'Owners Wide', sans-serif", fontSize: '14px' }}>+</button>
+          <button onClick={() => { setZoom(0.75); setPan({ x: 0, y: 0 }); }} style={{ fontFamily: "'Owners Wide', sans-serif", fontSize: '9px', letterSpacing: '1px', textTransform: 'uppercase', opacity: 0.3, background: 'none', border: 'none', cursor: 'pointer' }}>Reset</button>
+        </div>
+      </div>
+
+      {/* Map canvas */}
+      <div
+        style={{ flex: 1, overflow: 'hidden', marginTop: '130px', cursor: isPanning ? 'grabbing' : 'grab', userSelect: 'none' }}
+        onMouseDown={handlePanStart}
+        onMouseMove={handlePanMove}
+        onMouseUp={handlePanEnd}
+        onMouseLeave={handlePanEnd}
+      >
+        <div style={{ transform: `translate(${pan.x}px, ${pan.y}px) scale(${zoom})`, transformOrigin: '0 0', position: 'relative', width: '1600px', height: '1000px' }}>
+          {/* Connectors */}
           <svg style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', pointerEvents: 'none' }}>
-            {nodes.flatMap((node) => node.connections.map((c) => drawConnector(node, c)))}
+            {visibleFlows.map((flow) => {
+              const from = NODES.find((n) => n.id === flow.from);
+              const to = NODES.find((n) => n.id === flow.to);
+              if (!from || !to) return null;
+              const isHighlighted = connectedIds.has(flow.from) && connectedIds.has(flow.to);
+              const journeyColor = activeJourney ? JOURNEYS[activeJourney]?.color ?? '#D7ABC5' : OS_LAYER_COLORS[from.layer];
+              return drawConnector(from, to, isHighlighted ? '#D7ABC5' : journeyColor, flow.dashed);
+            })}
           </svg>
 
-          {nodes.map((node) => {
-            const cat = CATEGORIES[node.category];
+          {/* Nodes */}
+          {visibleNodes.map((node) => {
+            const color = OS_LAYER_COLORS[node.layer];
             const isSelected = selectedNode?.id === node.id;
             const isHovered = hoveredNode === node.id;
+            const isInJourney = activeJourney ? journeyNodeIds.has(node.id) : true;
+            const dimmed = activeJourney && !isInJourney;
+
             return (
               <div key={node.id}
-                onClick={() => setSelectedNode(isSelected ? null : node)}
+                onClick={(e) => { e.stopPropagation(); setSelectedNode(isSelected ? null : node); }}
                 onMouseEnter={() => setHoveredNode(node.id)}
                 onMouseLeave={() => setHoveredNode(null)}
                 style={{
                   position: 'absolute', left: node.x, top: node.y,
-                  width: 120, padding: '10px 12px',
-                  background: isSelected ? cat.color : 'var(--bg-primary)',
-                  border: `1.5px solid ${isHovered || isSelected ? cat.color : 'var(--border-default)'}`,
-                  borderRadius: '10.258px', cursor: 'pointer',
+                  width: 120, padding: '8px 10px',
+                  background: isSelected ? color : 'var(--bg-primary)',
+                  border: `1.5px solid ${isHovered || isSelected ? color : 'rgba(0,0,0,0.15)'}`,
+                  borderRadius: '8px', cursor: 'pointer',
                   transition: 'all 150ms',
+                  opacity: dimmed ? 0.2 : (node.building ? 0.6 : 1),
                   zIndex: isSelected ? 10 : 1,
-                  boxShadow: isSelected ? `0 4px 16px ${cat.color}30` : 'none',
                 }}>
-                <div style={{ width: 8, height: 8, borderRadius: '50%', background: cat.color, marginBottom: '6px' }} />
-                <span style={{ fontFamily: "'Kaio', sans-serif", fontWeight: 800, fontSize: '10px', textTransform: 'uppercase', lineHeight: 1.2, display: 'block', color: isSelected ? '#000' : 'var(--text-primary)' }}>
+                <div className="flex items-center gap-1" style={{ marginBottom: '4px' }}>
+                  <div style={{ width: 6, height: 6, borderRadius: '50%', background: color, flexShrink: 0 }} />
+                  {node.building && <span style={{ fontFamily: "'Owners Wide', sans-serif", fontSize: '7px', opacity: 0.5, textTransform: 'uppercase' }}>Building</span>}
+                </div>
+                <span style={{ fontFamily: "'Kaio', sans-serif", fontWeight: 800, fontSize: '9px', textTransform: 'uppercase', lineHeight: 1.2, display: 'block', color: isSelected ? '#000' : 'var(--text-primary)', whiteSpace: 'pre-line' }}>
                   {node.label}
                 </span>
               </div>
             );
           })}
         </div>
+      </div>
 
-        {/* Selected node detail */}
-        {selectedNode && (
-          <div style={{ position: 'fixed', bottom: 100, left: '50%', transform: 'translateX(-50%)', background: '#000', color: '#EAF2D7', borderRadius: '10.258px', padding: '20px 24px', maxWidth: '500px', width: 'calc(100% - 48px)', zIndex: 30 }}>
-            <div className="flex items-center justify-between" style={{ marginBottom: '8px' }}>
-              <span style={{ fontFamily: "'Kaio', sans-serif", fontWeight: 800, fontSize: '14px', textTransform: 'uppercase' }}>{selectedNode.label}</span>
-              <button onClick={() => setSelectedNode(null)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#EAF2D7', fontSize: '16px', opacity: 0.5 }}>&times;</button>
+      {/* Selected node detail */}
+      {selectedNode && (
+        <div style={{ position: 'fixed', bottom: 100, left: '50%', transform: 'translateX(-50%)', background: '#000', color: '#EAF2D7', borderRadius: '10.258px', padding: '20px 24px', maxWidth: '600px', width: 'calc(100% - 48px)', zIndex: 30 }}>
+          <div className="flex items-center justify-between" style={{ marginBottom: '8px' }}>
+            <div className="flex items-center gap-2">
+              <div style={{ width: 8, height: 8, borderRadius: '50%', background: OS_LAYER_COLORS[selectedNode.layer] }} />
+              <span style={{ fontFamily: "'Kaio', sans-serif", fontWeight: 800, fontSize: '14px', textTransform: 'uppercase' }}>{selectedNode.label.replace('\n', ' ')}</span>
             </div>
-            <span style={{ fontFamily: "'Owners Wide', sans-serif", fontSize: '10px', letterSpacing: '1px', textTransform: 'uppercase', opacity: 0.4, display: 'block', marginBottom: '8px' }}>{CATEGORIES[selectedNode.category].label}</span>
-            <p style={{ fontFamily: "'Owners Wide', sans-serif", fontSize: '12px', lineHeight: 1.5, margin: 0, opacity: 0.7 }}>{selectedNode.desc}</p>
-            {selectedNode.connections.length > 0 && (
-              <div style={{ marginTop: '8px' }}>
-                <span style={{ fontFamily: "'Owners Wide', sans-serif", fontSize: '9px', opacity: 0.4 }}>Connects to: {selectedNode.connections.map((c) => nodes.find((n) => n.id === c)?.label).join(', ')}</span>
+            <button onClick={() => setSelectedNode(null)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#EAF2D7', fontSize: '16px', opacity: 0.5 }}>&times;</button>
+          </div>
+          <span style={{ fontFamily: "'Owners Wide', sans-serif", fontSize: '9px', letterSpacing: '1px', textTransform: 'uppercase', opacity: 0.4, display: 'block', marginBottom: '8px' }}>
+            {LAYERS[selectedNode.layer].label} · {selectedNode.type}
+          </span>
+          <p style={{ fontFamily: "'Owners Wide', sans-serif", fontSize: '12px', lineHeight: 1.6, margin: '0 0 12px 0', opacity: 0.7 }}>{selectedNode.desc}</p>
+          <div className="flex gap-4">
+            {selectedNode.feeds.length > 0 && (
+              <div>
+                <span style={{ fontFamily: "'Owners Wide', sans-serif", fontSize: '9px', letterSpacing: '1px', textTransform: 'uppercase', opacity: 0.4 }}>Feeds →</span>
+                <span style={{ fontFamily: "'Owners Wide', sans-serif", fontSize: '10px', display: 'block', marginTop: '2px', opacity: 0.5 }}>
+                  {selectedNode.feeds.map((id) => NODES.find((n) => n.id === id)?.label.replace('\n', ' ')).filter(Boolean).join(', ')}
+                </span>
+              </div>
+            )}
+            {selectedNode.fedBy.length > 0 && (
+              <div>
+                <span style={{ fontFamily: "'Owners Wide', sans-serif", fontSize: '9px', letterSpacing: '1px', textTransform: 'uppercase', opacity: 0.4 }}>← Fed by</span>
+                <span style={{ fontFamily: "'Owners Wide', sans-serif", fontSize: '10px', display: 'block', marginTop: '2px', opacity: 0.5 }}>
+                  {selectedNode.fedBy.map((id) => NODES.find((n) => n.id === id)?.label.replace('\n', ' ')).filter(Boolean).join(', ')}
+                </span>
               </div>
             )}
           </div>
-        )}
-      </div>
+        </div>
+      )}
     </div>
   );
 };
+
+const FilterPill: React.FC<{ label: string; active: boolean; onClick: () => void; color: string }> = ({ label, active, onClick, color }) => (
+  <button onClick={onClick} style={{
+    fontFamily: "'Owners Wide', sans-serif", fontSize: '9px', letterSpacing: '0.5px', textTransform: 'uppercase',
+    padding: '3px 10px', borderRadius: '75.641px', cursor: 'pointer',
+    border: active ? `1.5px solid ${color}` : '1px solid rgba(0,0,0,0.1)',
+    background: active ? `${color}20` : 'transparent',
+    color: active ? color : 'var(--text-primary)',
+    opacity: active ? 1 : 0.5,
+  }}>{label}</button>
+);
 
 export default SystemsMapPage;
