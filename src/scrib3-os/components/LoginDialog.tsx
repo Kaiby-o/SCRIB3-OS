@@ -121,7 +121,7 @@ const LoginDialog: React.FC<LoginDialogProps> = ({ isOpen, onClose }) => {
     <div
       className="fixed inset-0 flex items-center justify-center"
       style={{
-        zIndex: 45,
+        zIndex: 55,
         pointerEvents: isOpen ? 'auto' : 'none',
         background: isOpen ? 'rgba(0,0,0,0.4)' : 'transparent',
         transition: `background 300ms ${easing}`,

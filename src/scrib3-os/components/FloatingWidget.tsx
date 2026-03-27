@@ -22,7 +22,7 @@ const QUICK_LINKS: { label: string; icon: string; route: string; comingSoon?: bo
   { label: 'Bandwidth', icon: 'bandwidth.svg', route: '/bandwidth' },
   { label: 'Tasks', icon: 'tasks.svg', route: '/projects' },
   { label: 'Feedback', icon: 'feedback.svg', route: '/dashboard', comingSoon: true },
-  { label: 'Prof Dev', icon: 'prof-dev.svg', route: '/culture', comingSoon: true },
+  { label: 'Prof Dev', icon: 'profdev.svg', route: '/culture', comingSoon: true },
   { label: 'Settings', icon: 'settings.svg', route: '/settings' },
 ];
 
@@ -31,6 +31,7 @@ const FloatingWidget: React.FC = () => {
   const { profile, role } = useAuthStore();
   const [expanded, setExpanded] = useState(false);
   const [docked, setDocked] = useState(false);
+  const [dockSide, setDockSide] = useState<'left' | 'right'>('right');
   const [status, setStatus] = useState<StatusOption>('active');
   const [statusDropdown, setStatusDropdown] = useState(false);
   const [now, setNow] = useState(new Date());
@@ -81,6 +82,7 @@ const FloatingWidget: React.FC = () => {
       setIsDragging(false);
       if (e.clientY < 80) {
         setDocked(true);
+        setDockSide(e.clientX < window.innerWidth / 2 ? 'left' : 'right');
         setExpanded(false);
         setPosition(null);
       }
@@ -109,7 +111,8 @@ const FloatingWidget: React.FC = () => {
       <button
         onClick={handleUndock}
         style={{
-          position: 'fixed', top: 22, right: 80,
+          position: 'fixed', top: 22,
+          ...(dockSide === 'left' ? { left: 120 } : { right: 80 }),
           zIndex: 45, background: '#000', borderRadius: '75.641px',
           padding: '8px 18px', display: 'flex', alignItems: 'center', gap: '8px',
           border: 'none', cursor: 'pointer', transition: `all 300ms ${easing}`,
@@ -146,7 +149,7 @@ const FloatingWidget: React.FC = () => {
         <div style={{ width: 6, height: 6, borderRadius: '50%', background: statusColor, flexShrink: 0 }} />
         <div onMouseDown={handleDragStart} onClick={(e) => e.stopPropagation()} style={{ padding: '4px', cursor: 'grab', display: 'flex', alignItems: 'center', gap: '4px' }}>
           <BurgerHandle />
-          <span style={{ color: 'rgba(234,242,215,0.4)', fontSize: '12px' }}>›</span>
+          <svg width="8" height="10" viewBox="0 0 8 10" fill="rgba(234,242,215,0.5)"><polygon points="0,0 8,5 0,10" /></svg>
         </div>
       </div>
     );
@@ -167,8 +170,10 @@ const FloatingWidget: React.FC = () => {
         userSelect: 'none',
       }}
     >
-      {/* Circle avatar */}
-      <CircleAvatar name={displayName} size={56} avatarUrl={profile?.avatar_url} />
+      {/* Circle avatar — click to go to profile */}
+      <div onClick={() => navigate('/profile/' + (profile?.id ?? ''))} style={{ cursor: 'pointer' }}>
+        <CircleAvatar name={displayName} size={56} avatarUrl={profile?.avatar_url} />
+      </div>
 
       {/* User info */}
       <div className="flex flex-col" style={{ minWidth: 0, gap: '1px' }}>
@@ -176,7 +181,7 @@ const FloatingWidget: React.FC = () => {
         <div className="flex items-start gap-3">
           <div className="flex flex-col" style={{ minWidth: 0 }}>
             <div className="flex items-center gap-2">
-              <span style={{ fontFamily: "'Kaio', sans-serif", fontWeight: 900, fontSize: '14px', color: '#EAF2D7', textTransform: 'uppercase', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', lineHeight: 1.1 }}>
+              <span onClick={() => navigate('/profile/' + (profile?.id ?? ''))} style={{ fontFamily: "'Kaio', sans-serif", fontWeight: 900, fontSize: '14px', color: '#EAF2D7', textTransform: 'uppercase', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', lineHeight: 1.1, cursor: 'pointer' }}>
                 {displayName}
               </span>
               <div style={{ position: 'relative' }}>
@@ -200,10 +205,10 @@ const FloatingWidget: React.FC = () => {
             </div>
           </div>
 
-          {/* Time + Date — top-aligned with name */}
-          <div className="flex flex-col items-end" style={{ flexShrink: 0, lineHeight: 1.1 }}>
-            <span style={{ fontFamily: "'Owners Wide', sans-serif", fontSize: '14px', color: '#EAF2D7', fontWeight: 600 }}>{timeStr}</span>
-            <span style={{ fontFamily: "'Owners Wide', sans-serif", fontSize: '10px', color: 'rgba(234,242,215,0.4)' }}>{dateStr}</span>
+          {/* Time + Date — top edge aligned with username, right edge aligned with bandwidth % */}
+          <div className="flex flex-col items-end" style={{ flexShrink: 0, marginLeft: 'auto' }}>
+            <span style={{ fontFamily: "'Owners Wide', sans-serif", fontSize: '14px', color: '#EAF2D7', fontWeight: 600, lineHeight: '15px' }}>{timeStr}</span>
+            <span style={{ fontFamily: "'Owners Wide', sans-serif", fontSize: '10px', color: 'rgba(234,242,215,0.4)', lineHeight: '12px' }}>{dateStr}</span>
           </div>
         </div>
 
@@ -258,7 +263,7 @@ const FloatingWidget: React.FC = () => {
           onMouseEnter={(e) => (e.currentTarget.style.color = '#EAF2D7')}
           onMouseLeave={(e) => (e.currentTarget.style.color = 'rgba(234,242,215,0.4)')}
         >
-          ‹
+          <svg width="8" height="10" viewBox="0 0 8 10" fill="rgba(234,242,215,0.5)"><polygon points="8,0 0,5 8,10" /></svg>
         </button>
       </div>
     </div>
