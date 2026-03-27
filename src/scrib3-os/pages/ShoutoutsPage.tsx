@@ -6,7 +6,7 @@ import { useAuthStore } from '../hooks/useAuth';
 import { mockTeam } from '../lib/team';
 
 /* ------------------------------------------------------------------ */
-/*  Shoutouts / Dapps — Give XP + Recognition to teammates             */
+/*  Dapps / Dapps — Give XP + Recognition to teammates             */
 /* ------------------------------------------------------------------ */
 
 interface Shoutout {
@@ -21,14 +21,14 @@ interface Shoutout {
   createdAt: string;
 }
 
-const mockShoutouts: Shoutout[] = [
+const mockDapps: Shoutout[] = [
   { id: 'so-1', fromName: 'Ben Lydiat', toName: 'Kevin Moran', message: 'Incredible work on the Rootstock brand refresh. The attention to typographic detail was exceptional.', xpAwarded: 20, anonymous: false, createdAt: '2026-03-27T10:00:00Z' },
   { id: 'so-2', fromName: 'Elena Zheng', toName: 'Samantha Kelly', message: 'Thanks for stepping up on the Franklin Templeton BENJI series. Client loved the strategy deck.', xpAwarded: 15, anonymous: false, createdAt: '2026-03-26T14:00:00Z' },
   { id: 'so-3', fromName: 'Anonymous', toName: 'Tolani Daniel', message: 'Your motion work consistently elevates every project. Keep it up!', xpAwarded: 10, anonymous: true, createdAt: '2026-03-25T09:00:00Z' },
   { id: 'so-4', fromName: 'Omar Anwar', toName: 'Cynthia Gentry', message: 'Saved the day on the Canton case study copy. Turned it around in record time.', xpAwarded: 15, anonymous: false, createdAt: '2026-03-24T16:00:00Z' },
 ];
 
-const ShoutoutsPage: React.FC = () => {
+const DappsPage: React.FC = () => {
   const navigate = useNavigate();
   const { profile } = useAuthStore();
   const [recipient, setRecipient] = useState('');
@@ -40,7 +40,7 @@ const ShoutoutsPage: React.FC = () => {
   const handleSubmit = () => {
     if (!recipient || !message.trim()) return;
     // In production: write to Supabase + award XP
-    console.log('[shoutouts] Submitted:', { from: profile?.display_name, to: recipient, message, xpAmount, anonymous });
+    console.log('[dapps] Submitted:', { from: profile?.display_name, to: recipient, message, xpAmount, anonymous });
     setSubmitted(true);
     setTimeout(() => { setSubmitted(false); setRecipient(''); setMessage(''); }, 3000);
   };
@@ -51,7 +51,7 @@ const ShoutoutsPage: React.FC = () => {
         <button onClick={() => navigate('/dashboard')} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}>
           <LogoScrib3 height={18} color="var(--text-primary)" />
         </button>
-        <span style={{ fontFamily: "'Kaio', sans-serif", fontWeight: 800, fontSize: '16px', textTransform: 'uppercase' }}>Shoutouts</span>
+        <span style={{ fontFamily: "'Kaio', sans-serif", fontWeight: 800, fontSize: '16px', textTransform: 'uppercase' }}>Dapps</span>
         <BurgerButton />
       </header>
 
@@ -109,10 +109,10 @@ const ShoutoutsPage: React.FC = () => {
           </div>
         </div>
 
-        {/* Recent shoutouts feed */}
-        <h2 style={{ fontFamily: "'Kaio', sans-serif", fontWeight: 800, fontSize: '16px', textTransform: 'uppercase', margin: '0 0 16px 0' }}>Recent Shoutouts</h2>
+        {/* Recent dapps feed */}
+        <h2 style={{ fontFamily: "'Kaio', sans-serif", fontWeight: 800, fontSize: '16px', textTransform: 'uppercase', margin: '0 0 16px 0' }}>Recent Dapps</h2>
         <div className="flex flex-col gap-3">
-          {mockShoutouts.map((so) => (
+          {mockDapps.map((so) => (
             <div key={so.id} style={{ border: '0.733px solid var(--border-default)', borderRadius: '10.258px', padding: '20px' }}>
               <div className="flex items-center justify-between" style={{ marginBottom: '8px' }}>
                 <div className="flex items-center gap-2">
@@ -140,4 +140,4 @@ const ShoutoutsPage: React.FC = () => {
   );
 };
 
-export default ShoutoutsPage;
+export default DappsPage;
