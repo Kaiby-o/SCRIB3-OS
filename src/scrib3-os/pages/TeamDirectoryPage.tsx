@@ -39,19 +39,20 @@ const TeamDirectoryPage: React.FC = () => {
     return mockTeam.map((m) => {
       const db = dbByEmail.get(m.email);
       if (!db) return m;
+      const dbAvatar = db.avatar_url as string | null | undefined;
       return {
         ...m,
-        // Override with DB values where they exist and are non-empty
-        name: (db.display_name as string) || m.name,
-        title: (db.title as string) || m.title,
-        unit: (db.unit as string) || m.unit,
-        location: (db.location as string) || m.location,
-        bio: (db.bio as string) || m.bio,
-        xp: (db.xp as number) ?? m.xp,
-        bandwidthPct: (db.bandwidth as number) ?? m.bandwidthPct,
-        avatarUrl: (db.avatar_url as string) || m.avatarUrl,
-        availability: (db.availability as TeamMember['availability']) || m.availability,
-        isOnline: (db.is_online as boolean) ?? m.isOnline,
+        // Override with DB values ONLY when they are non-empty strings
+        name: (db.display_name && typeof db.display_name === 'string' && db.display_name.length > 0) ? db.display_name as string : m.name,
+        title: (db.title && typeof db.title === 'string' && db.title.length > 0) ? db.title as string : m.title,
+        unit: (db.unit && typeof db.unit === 'string' && db.unit.length > 0) ? db.unit as string : m.unit,
+        location: (db.location && typeof db.location === 'string' && db.location.length > 0) ? db.location as string : m.location,
+        bio: (db.bio && typeof db.bio === 'string' && db.bio.length > 0) ? db.bio as string : m.bio,
+        xp: typeof db.xp === 'number' ? db.xp : m.xp,
+        bandwidthPct: typeof db.bandwidth === 'number' ? db.bandwidth : m.bandwidthPct,
+        avatarUrl: (dbAvatar && dbAvatar.startsWith('http')) ? dbAvatar : m.avatarUrl,
+        availability: (db.availability && typeof db.availability === 'string') ? db.availability as TeamMember['availability'] : m.availability,
+        isOnline: typeof db.is_online === 'boolean' ? db.is_online : m.isOnline,
       };
     });
   }, [dbProfiles]);
