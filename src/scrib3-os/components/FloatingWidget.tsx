@@ -4,6 +4,16 @@ import { useAuthStore } from '../hooks/useAuth';
 import { getLevel, getLevelProgress } from '../lib/xp';
 import { getCapacityColor } from '../lib/bandwidth';
 
+function useIsMobile() {
+  const [isMobile, setIsMobile] = useState(typeof window !== 'undefined' && window.innerWidth < 768);
+  useEffect(() => {
+    const handler = () => setIsMobile(window.innerWidth < 768);
+    window.addEventListener('resize', handler);
+    return () => window.removeEventListener('resize', handler);
+  }, []);
+  return isMobile;
+}
+
 const easing = 'cubic-bezier(0.22, 0.61, 0.36, 1)';
 const ICON_BASE = 'https://dzufyjiczbgsvjyinpks.supabase.co/storage/v1/object/public/Icons/';
 
@@ -27,6 +37,7 @@ const QUICK_LINKS: { label: string; icon: string; route: string; comingSoon?: bo
 ];
 
 const FloatingWidget: React.FC = () => {
+  const isMobile = useIsMobile();
   const navigate = useNavigate();
   const { profile, role } = useAuthStore();
   const [expanded, setExpanded] = useState(false);
@@ -161,7 +172,69 @@ const FloatingWidget: React.FC = () => {
     );
   }
 
-  /* ---- EXPANDED ---- */
+  /* ---- MOBILE EXPANDED: bottom sheet with links grid above ---- */
+  if (isMobile && expanded) {
+    return (
+      <>
+        {/* Backdrop */}
+        <div onClick={() => setExpanded(false)} style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.3)', zIndex: 44 }} />
+
+        {/* Bottom sheet */}
+        <div style={{ position: 'fixed', bottom: 0, left: 0, right: 0, zIndex: 45, background: '#000', borderRadius: '20px 20px 0 0', padding: '20px 16px', maxHeight: '70vh', overflow: 'auto' }}>
+          {/* User info row */}
+          <div className="flex items-center gap-3" style={{ marginBottom: '20px', paddingBottom: '16px', borderBottom: '1px solid rgba(234,242,215,0.1)' }}>
+            <CircleAvatar name={displayName} size={44} avatarUrl={profile?.avatar_url} />
+            <div className="flex flex-col" style={{ flex: 1 }}>
+              <span style={{ fontFamily: "'Kaio', sans-serif", fontWeight: 900, fontSize: '14px', color: '#EAF2D7', textTransform: 'uppercase' }}>{displayName}</span>
+              <span style={{ fontFamily: "'Owners Wide', sans-serif", fontSize: '10px', color: 'rgba(234,242,215,0.5)' }}>{title}</span>
+            </div>
+            <div className="flex flex-col items-end">
+              <span style={{ fontFamily: "'Owners Wide', sans-serif", fontSize: '14px', color: '#EAF2D7', fontWeight: 600 }}>{timeStr}</span>
+              <span style={{ fontFamily: "'Owners Wide', sans-serif", fontSize: '10px', color: 'rgba(234,242,215,0.4)' }}>{dateStr}</span>
+            </div>
+          </div>
+
+          {/* Quick links grid — 3 columns */}
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '12px' }}>
+            {QUICK_LINKS.map((link) => (
+              <button key={link.label}
+                onClick={() => { if (link.comingSoon) showComingSoon(); else { setExpanded(false); navigate(link.route); } }}
+                className="flex flex-col items-center gap-2"
+                style={{ background: 'rgba(234,242,215,0.06)', border: 'none', borderRadius: '12px', padding: '16px 8px', cursor: 'pointer', opacity: link.comingSoon ? 0.4 : 1 }}>
+                <img src={ICON_BASE + link.icon} alt={link.label} style={{ width: 28, height: 28 }} />
+                <span style={{ fontFamily: "'Owners Wide', sans-serif", fontSize: '9px', letterSpacing: '0.5px', textTransform: 'uppercase', color: 'rgba(234,242,215,0.6)' }}>{link.label}</span>
+              </button>
+            ))}
+          </div>
+
+          {/* XP + Bandwidth row */}
+          <div className="flex items-center gap-4 justify-center" style={{ marginTop: '16px', paddingTop: '16px', borderTop: '1px solid rgba(234,242,215,0.1)' }}>
+            <div className="flex items-center gap-2">
+              <span style={{ fontFamily: "'Owners Wide', sans-serif", fontSize: '10px', color: '#EAF2D7', fontWeight: 600 }}>XP</span>
+              <span style={{ fontFamily: "'Owners Wide', sans-serif", fontSize: '10px', color: 'rgba(234,242,215,0.5)' }}>{xp}/{level.maxXp === Infinity ? '∞' : level.maxXp + 1}</span>
+              <div style={{ width: 50, height: 3, background: 'rgba(234,242,215,0.15)', borderRadius: 2, overflow: 'hidden' }}>
+                <div style={{ width: `${levelProgress}%`, height: '100%', background: '#EAF2D7', borderRadius: 2 }} />
+              </div>
+            </div>
+            <div className="flex items-center gap-2">
+              <img src={ICON_BASE + 'bandwidth.svg'} alt="" style={{ width: 12, height: 12, opacity: 0.6 }} />
+              <div style={{ width: 50, height: 3, background: 'rgba(234,242,215,0.15)', borderRadius: 2, overflow: 'hidden' }}>
+                <div style={{ width: `${bandwidthPct}%`, height: '100%', background: getCapacityColor(bandwidthPct), borderRadius: 2 }} />
+              </div>
+              <span style={{ fontFamily: "'Owners Wide', sans-serif", fontSize: '10px', color: 'rgba(234,242,215,0.5)' }}>{bandwidthPct}%</span>
+            </div>
+          </div>
+
+          {/* Coming soon toast */}
+          {comingSoonToast && (
+            <div style={{ position: 'absolute', top: 8, left: '50%', transform: 'translateX(-50%)', background: '#EAF2D7', color: '#000', fontFamily: "'Owners Wide', sans-serif", fontSize: '10px', letterSpacing: '1px', textTransform: 'uppercase', padding: '4px 12px', borderRadius: '75.641px', zIndex: 50 }}>Coming Soon</div>
+          )}
+        </div>
+      </>
+    );
+  }
+
+  /* ---- DESKTOP EXPANDED ---- */
   return (
     <div
       ref={widgetRef}

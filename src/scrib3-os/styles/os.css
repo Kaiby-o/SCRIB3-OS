@@ -204,3 +204,74 @@ html:has(.os-root) #root {
   opacity: 0.9;
   box-shadow: 0 8px 32px rgba(0,0,0,0.12);
 }
+
+/* ===== Mobile Responsive (< 768px) ===== */
+
+@media (max-width: 768px) {
+  /* Header adjustments */
+  .os-root > header {
+    height: 60px !important;
+    padding: 0 16px !important;
+  }
+
+  .os-root > header + * {
+    margin-top: 61px !important;
+  }
+
+  /* Page content padding */
+  .os-root > header + div,
+  .os-root > header + main {
+    padding-left: 16px !important;
+    padding-right: 16px !important;
+  }
+
+  /* Typography scaling */
+  .text-display-hero {
+    font-size: 36px;
+  }
+
+  .text-display-dash {
+    font-size: 20px;
+  }
+
+  .text-body {
+    font-size: 16px;
+  }
+
+  /* Tables scroll horizontally */
+  table {
+    display: block;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  /* Grid layouts go single column */
+  [style*="gridTemplateColumns"] {
+    grid-template-columns: 1fr !important;
+  }
+
+  /* Nav overlay text scales down */
+  .font-kaio {
+    font-size: clamp(24px, 8vw, 80px) !important;
+  }
+
+  /* Hide pill nav on mobile — use burger menu instead */
+  .os-root > header > div:nth-child(2) {
+    display: none;
+  }
+}
+
+@media (max-width: 480px) {
+  .os-root > header {
+    height: 56px !important;
+    padding: 0 12px !important;
+  }
+
+  .os-root > header + * {
+    margin-top: 57px !important;
+  }
+
+  .text-display-hero {
+    font-size: 28px;
+  }
+}
