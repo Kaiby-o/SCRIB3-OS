@@ -61,6 +61,7 @@ const subItemRoutes: Record<string, string> = {
   'Directory ': '/clients', // trailing space to differentiate from team Directory
   // Projects nav
   'All Projects': '/projects',
+  'Tasks': '/tasks',
   // Culture nav
   'Proof of Excellence': '/culture',
   'Operating Principles': '/culture',

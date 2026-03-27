@@ -4,7 +4,7 @@ import LogoScrib3 from '../components/LogoScrib3';
 import { mockTeam } from '../lib/team';
 import {
   fetchIssues, fetchIssueDetail, fetchWorkflowStates, fetchLinearUsers,
-  updateIssueState, updateIssueAssignee, updateIssuePriority, addComment,
+  updateIssueState, updateIssueAssignee, updateIssuePriority, updateIssueDueDate, addComment,
   type LinearIssue, type LinearState, type LinearLabel, type LinearUser,
   PRIORITY_LABELS,
 } from '../lib/linear';
@@ -102,14 +102,14 @@ const TasksPage: React.FC = () => {
       </header>
 
       {loading ? (
-        <div className="flex items-center justify-center flex-1"><span style={{ fontFamily: "'Owners Wide', sans-serif", fontSize: 14, opacity: 0.4, textTransform: 'uppercase', letterSpacing: '1px' }}>Loading from Linear...</span></div>
+        <div className="flex items-center justify-center" style={{ marginTop: '86px', flex: 1 }}><span style={{ fontFamily: "'Owners Wide', sans-serif", fontSize: 14, opacity: 0.4, textTransform: 'uppercase', letterSpacing: '1px' }}>Loading from Linear...</span></div>
       ) : error ? (
         <div className="flex flex-col items-center justify-center flex-1 gap-4">
           <span style={{ fontFamily: "'Owners Wide', sans-serif", fontSize: 14, color: '#E74C3C' }}>{error}</span>
           <button onClick={loadData} style={{ fontFamily: "'Owners Wide', sans-serif", fontSize: 12, padding: '8px 20px', borderRadius: '75.641px', border: '1px solid var(--border-default)', background: 'transparent', cursor: 'pointer' }}>Retry</button>
         </div>
       ) : (
-        <div className="flex flex-1" style={{ overflow: 'hidden' }}>
+        <div className="flex" style={{ overflow: 'hidden', height: 'calc(100vh - 86px)', marginTop: '86px' }}>
           {/* Left panel — independent scroll */}
           <div style={{ flex: selectedIssue ? '0 0 55%' : '1', overflow: 'auto', padding: '24px' }}>
             {grouped.map(({ state, issues: si }) => {
@@ -137,6 +137,8 @@ const TasksPage: React.FC = () => {
               onStateChange={async (sid) => { await updateIssueState(selectedIssue.id, sid); loadData(); }}
               onAssigneeChange={async (uid) => { await updateIssueAssignee(selectedIssue.id, uid); loadData(); }}
               onPriorityChange={async (p) => { await updateIssuePriority(selectedIssue.id, p); loadData(); }}
+              onDueDateChange={async (d) => { await updateIssueDueDate(selectedIssue.id, d); loadData(); }}
+              onSubIssueClick={(child) => openIssue(child)}
               onComment={async (body) => { await addComment(selectedIssue.id, body); setSelectedIssue(await fetchIssueDetail(selectedIssue.id)); }} />
           )}
         </div>
@@ -196,8 +198,10 @@ const DetailPanel: React.FC<{
   onClose: () => void; onStateChange: (s: string) => Promise<void>;
   onAssigneeChange: (u: string | null) => Promise<void>;
   onPriorityChange: (p: number) => Promise<void>;
+  onDueDateChange: (d: string | null) => Promise<void>;
+  onSubIssueClick: (child: LinearIssue) => void;
   onComment: (b: string) => Promise<void>;
-}> = ({ issue, states, users, onClose, onStateChange, onAssigneeChange, onPriorityChange, onComment }) => {
+}> = ({ issue, states, users, onClose, onStateChange, onAssigneeChange, onPriorityChange, onDueDateChange, onSubIssueClick, onComment }) => {
   const [comment, setComment] = useState('');
   const [sending, setSending] = useState(false);
   const [kidsOpen, setKidsOpen] = useState(true);
@@ -241,6 +245,11 @@ const DetailPanel: React.FC<{
             <PropLabel>Project</PropLabel>
             <span style={{ fontFamily: "'Owners Wide', sans-serif", fontSize: 12 }}>{issue.project?.name ?? '—'}</span>
           </div>
+          <div>
+            <PropLabel>Due Date</PropLabel>
+            <input type="date" value={issue.dueDate ?? ''} onChange={(e) => onDueDateChange(e.target.value || null)}
+              style={{ fontFamily: "'Owners Wide', sans-serif", fontSize: 12, background: '#EAF2D7', border: '0.733px solid var(--border-default)', borderRadius: '10.258px', padding: '6px 12px', color: '#000', outline: 'none', cursor: 'pointer', width: '100%' }} />
+          </div>
         </div>
 
         {/* Labels */}
@@ -259,7 +268,8 @@ const DetailPanel: React.FC<{
               <PropLabel style={{ margin: 0 }}>Sub-issues · {issue.children.nodes.filter((c) => c.state.type === 'completed').length}/{issue.children.nodes.length}</PropLabel>
             </button>
             {kidsOpen && issue.children.nodes.map((c) => (
-              <div key={c.id} className="flex items-center gap-2" style={{ padding: '6px 0', borderBottom: '0.5px solid rgba(0,0,0,0.04)' }}>
+              <div key={c.id} onClick={() => onSubIssueClick(c as unknown as LinearIssue)} className="flex items-center gap-2" style={{ padding: '6px 8px', borderBottom: '0.5px solid rgba(0,0,0,0.04)', cursor: 'pointer', borderRadius: 4, transition: `background 100ms ${easing}` }}
+                onMouseEnter={(e) => (e.currentTarget.style.background = 'var(--bg-surface)')} onMouseLeave={(e) => (e.currentTarget.style.background = 'transparent')}>
                 <div style={{ width: 8, height: 8, borderRadius: '50%', background: c.state.color }} />
                 <span style={{ fontFamily: "'Owners Wide', sans-serif", fontSize: 12, flex: 1 }}>{c.title}</span>
                 {c.assignee && <Avatar name={c.assignee.name} url={c.assignee.avatarUrl} size={20} />}

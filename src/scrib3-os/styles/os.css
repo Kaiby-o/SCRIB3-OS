@@ -135,10 +135,12 @@
   letter-spacing: 0.96px;
 }
 
-/* All OS page headers should stick to the top when scrolling */
+/* All OS page headers fixed to top — always visible */
 .os-root > header {
-  position: sticky;
+  position: fixed !important;
   top: 0;
+  left: 0;
+  right: 0;
   z-index: 40;
   background: var(--bg-primary, #EAF2D7);
   border-bottom: 1px solid #000000;

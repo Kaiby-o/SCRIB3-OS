@@ -240,6 +240,16 @@ export async function updateIssuePriority(issueId: string, priority: number): Pr
   `, { id: issueId, priority });
 }
 
+export async function updateIssueDueDate(issueId: string, dueDate: string | null): Promise<void> {
+  await linearQuery(`
+    mutation UpdateIssue($id: String!, $dueDate: TimelessDate) {
+      issueUpdate(id: $id, input: { dueDate: $dueDate }) {
+        success
+      }
+    }
+  `, { id: issueId, dueDate });
+}
+
 export async function addComment(issueId: string, body: string): Promise<void> {
   await linearQuery(`
     mutation AddComment($issueId: String!, $body: String!) {
