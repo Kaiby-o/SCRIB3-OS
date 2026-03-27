@@ -6,7 +6,6 @@ import { getCapacityColor } from '../lib/bandwidth';
 
 const easing = 'cubic-bezier(0.22, 0.61, 0.36, 1)';
 const ICON_BASE = 'https://dzufyjiczbgsvjyinpks.supabase.co/storage/v1/object/public/Icons/';
-const PFP_SHAPE_URL = ICON_BASE + 'PFP-SHAPE.svg';
 
 type StatusOption = 'active' | 'away' | 'busy';
 const STATUS_OPTIONS: { key: StatusOption; label: string; color: string }[] = [
@@ -23,12 +22,8 @@ const QUICK_LINKS: { label: string; icon: string; route: string }[] = [
   { label: 'Bandwidth', icon: 'bandwidth.svg', route: '/bandwidth' },
   { label: 'Tasks', icon: 'tasks.svg', route: '/projects' },
   { label: 'Feedback', icon: 'feedback.svg', route: '/dashboard' },
-  { label: 'Prof Dev', icon: 'prof-dev.svg', route: '/dashboard' },
+  { label: 'Prof Dev', icon: 'prof-dev.svg', route: '/culture' },
 ];
-
-/* ------------------------------------------------------------------ */
-/*  Floating Widget                                                    */
-/* ------------------------------------------------------------------ */
 
 const FloatingWidget: React.FC = () => {
   const navigate = useNavigate();
@@ -66,6 +61,7 @@ const FloatingWidget: React.FC = () => {
   // Drag handlers
   const handleDragStart = useCallback((e: React.MouseEvent) => {
     e.preventDefault();
+    e.stopPropagation();
     const el = widgetRef.current;
     if (!el) return;
     const rect = el.getBoundingClientRect();
@@ -75,53 +71,42 @@ const FloatingWidget: React.FC = () => {
 
   useEffect(() => {
     if (!isDragging) return;
-
     const handleMove = (e: MouseEvent) => {
-      const x = e.clientX - dragOffset.current.x;
-      const y = e.clientY - dragOffset.current.y;
-      setPosition({ x, y });
+      setPosition({ x: e.clientX - dragOffset.current.x, y: e.clientY - dragOffset.current.y });
     };
-
     const handleUp = (e: MouseEvent) => {
       setIsDragging(false);
-      // Check if dropped near top navbar (y < 80px)
       if (e.clientY < 80) {
         setDocked(true);
         setExpanded(false);
         setPosition(null);
       }
     };
-
     window.addEventListener('mousemove', handleMove);
     window.addEventListener('mouseup', handleUp);
-    return () => {
-      window.removeEventListener('mousemove', handleMove);
-      window.removeEventListener('mouseup', handleUp);
-    };
+    return () => { window.removeEventListener('mousemove', handleMove); window.removeEventListener('mouseup', handleUp); };
   }, [isDragging]);
 
-  // Undock: click the docked pill → slide back down
   const handleUndock = () => {
     setDocked(false);
     setExpanded(true);
     setPosition(null);
   };
 
-  // Burger handle icon (horizontal lines)
   const BurgerHandle = ({ size = 16, color = 'rgba(234,242,215,0.4)' }: { size?: number; color?: string }) => (
-    <svg width={size} height={size} viewBox="0 0 16 16" fill="none" style={{ cursor: 'grab', flexShrink: 0 }}>
+    <svg width={size} height={size} viewBox="0 0 16 16" fill="none" style={{ flexShrink: 0 }}>
       <line x1="3" y1="6" x2="13" y2="6" stroke={color} strokeWidth="1.2" strokeLinecap="round" />
       <line x1="3" y1="10" x2="13" y2="10" stroke={color} strokeWidth="1.2" strokeLinecap="round" />
     </svg>
   );
 
-  /* ---- DOCKED STATE: small pill in top navbar ---- */
+  /* ---- DOCKED: small pill that sits TO THE RIGHT of nav pills ---- */
   if (docked) {
     return (
       <button
         onClick={handleUndock}
         style={{
-          position: 'fixed', top: 24, left: '50%', transform: 'translateX(50%)',
+          position: 'fixed', top: 22, right: 80,
           zIndex: 45, background: '#000', borderRadius: '75.641px',
           padding: '8px 18px', display: 'flex', alignItems: 'center', gap: '8px',
           border: 'none', cursor: 'pointer', transition: `all 300ms ${easing}`,
@@ -129,12 +114,7 @@ const FloatingWidget: React.FC = () => {
         onMouseEnter={(e) => (e.currentTarget.style.opacity = '0.85')}
         onMouseLeave={(e) => (e.currentTarget.style.opacity = '1')}
       >
-        <div style={{ width: 22, height: 22, position: 'relative', flexShrink: 0 }}>
-          <img src={PFP_SHAPE_URL} alt="" style={{ width: '100%', height: '100%', position: 'absolute', top: 0, left: 0 }} />
-          {profile?.avatar_url && (
-            <img src={profile.avatar_url} alt="" style={{ width: '80%', height: '80%', objectFit: 'cover', position: 'absolute', top: '10%', left: '10%', borderRadius: '30% 70% 70% 30% / 30% 30% 70% 70%' }} />
-          )}
-        </div>
+        <CircleAvatar name={displayName} size={22} avatarUrl={profile?.avatar_url} />
         <span style={{ fontFamily: "'Kaio', sans-serif", fontWeight: 900, fontSize: '11px', color: '#EAF2D7', textTransform: 'uppercase' }}>
           {displayName}
         </span>
@@ -142,42 +122,41 @@ const FloatingWidget: React.FC = () => {
     );
   }
 
-  /* ---- COLLAPSED STATE ---- */
+  /* ---- COLLAPSED ---- */
   if (!expanded) {
     return (
       <div
         ref={widgetRef}
-        className="fixed"
         style={{
+          position: 'fixed',
           ...(position ? { left: position.x, top: position.y } : { bottom: 24, left: '50%', transform: 'translateX(-50%)' }),
-          zIndex: 35, background: '#000', borderRadius: '75.641px',
+          zIndex: 45, background: '#000', borderRadius: '75.641px',
           padding: '10px 20px', display: 'flex', alignItems: 'center', gap: '12px',
-          cursor: isDragging ? 'grabbing' : 'pointer', transition: isDragging ? 'none' : `all 300ms ${easing}`,
+          cursor: isDragging ? 'grabbing' : 'pointer',
+          transition: isDragging ? 'none' : `all 300ms ${easing}`,
           userSelect: 'none',
         }}
         onClick={() => { if (!isDragging) setExpanded(true); }}
       >
-        <ProfileAvatar name={displayName} size={32} avatarUrl={profile?.avatar_url} />
-        <span style={{ fontFamily: "'Kaio', sans-serif", fontWeight: 900, fontSize: '13px', color: '#EAF2D7', textTransform: 'uppercase' }}>
-          {displayName}
-        </span>
+        <CircleAvatar name={displayName} size={32} avatarUrl={profile?.avatar_url} />
+        <span style={{ fontFamily: "'Kaio', sans-serif", fontWeight: 900, fontSize: '13px', color: '#EAF2D7', textTransform: 'uppercase' }}>{displayName}</span>
         <div style={{ width: 6, height: 6, borderRadius: '50%', background: statusColor, flexShrink: 0 }} />
-        {/* Burger drag handle */}
-        <div onMouseDown={handleDragStart} onClick={(e) => e.stopPropagation()} style={{ padding: '4px' }}>
+        <div onMouseDown={handleDragStart} onClick={(e) => e.stopPropagation()} style={{ padding: '4px', cursor: 'grab', display: 'flex', alignItems: 'center', gap: '4px' }}>
           <BurgerHandle />
+          <span style={{ color: 'rgba(234,242,215,0.4)', fontSize: '12px' }}>›</span>
         </div>
       </div>
     );
   }
 
-  /* ---- EXPANDED STATE ---- */
+  /* ---- EXPANDED ---- */
   return (
     <div
       ref={widgetRef}
-      className="fixed"
       style={{
+        position: 'fixed',
         ...(position ? { left: position.x, top: position.y } : { bottom: 24, left: '50%', transform: 'translateX(-50%)' }),
-        zIndex: 35, background: '#000', borderRadius: '75.641px',
+        zIndex: 45, background: '#000', borderRadius: '75.641px',
         padding: '10px 16px 10px 10px',
         display: 'flex', alignItems: 'center', gap: '16px',
         maxWidth: '960px', width: 'calc(100% - 80px)',
@@ -185,39 +164,18 @@ const FloatingWidget: React.FC = () => {
         userSelect: 'none',
       }}
     >
-      {/* Profile picture with PFP shape mask */}
-      <div style={{ width: 56, height: 56, position: 'relative', flexShrink: 0 }}>
-        {/* Shape outline */}
-        <img src={PFP_SHAPE_URL} alt="" style={{ width: '100%', height: '100%', position: 'absolute', top: 0, left: 0, zIndex: 2 }} />
-        {/* Avatar image clipped to shape */}
-        <div style={{
-          width: '88%', height: '88%', position: 'absolute', top: '6%', left: '6%',
-          borderRadius: '30% 70% 70% 30% / 30% 30% 70% 70%',
-          overflow: 'hidden', background: '#333', zIndex: 1,
-        }}>
-          {profile?.avatar_url ? (
-            <img src={profile.avatar_url} alt={displayName} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-          ) : (
-            <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              <span style={{ color: '#EAF2D7', fontFamily: "'Kaio', sans-serif", fontWeight: 900, fontSize: '18px' }}>
-                {displayName.split(' ').map((w) => w[0]).join('').toUpperCase().slice(0, 2)}
-              </span>
-            </div>
-          )}
-        </div>
-      </div>
+      {/* Circle avatar */}
+      <CircleAvatar name={displayName} size={56} avatarUrl={profile?.avatar_url} />
 
-      {/* User info block */}
+      {/* User info */}
       <div className="flex flex-col" style={{ minWidth: 0, gap: '1px' }}>
         {/* Row 1: Name + status + time/date */}
         <div className="flex items-start gap-3">
           <div className="flex flex-col" style={{ minWidth: 0 }}>
-            {/* Name + status dot */}
             <div className="flex items-center gap-2">
-              <span style={{ fontFamily: "'Kaio', sans-serif", fontWeight: 900, fontSize: '14px', color: '#EAF2D7', textTransform: 'uppercase', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+              <span style={{ fontFamily: "'Kaio', sans-serif", fontWeight: 900, fontSize: '14px', color: '#EAF2D7', textTransform: 'uppercase', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', lineHeight: 1.1 }}>
                 {displayName}
               </span>
-              {/* Clickable status */}
               <div style={{ position: 'relative' }}>
                 <button onClick={() => setStatusDropdown(!statusDropdown)} style={{ width: 8, height: 8, borderRadius: '50%', background: statusColor, border: 'none', cursor: 'pointer', padding: 0 }} />
                 {statusDropdown && (
@@ -233,7 +191,6 @@ const FloatingWidget: React.FC = () => {
                 )}
               </div>
             </div>
-            {/* Title + Level */}
             <div className="flex items-center gap-2">
               <span style={{ fontFamily: "'Owners Wide', sans-serif", fontSize: '10px', color: 'rgba(234,242,215,0.5)', letterSpacing: '0.5px' }}>{title}</span>
               <span style={{ fontFamily: "'Owners Wide', sans-serif", fontSize: '9px', color: '#D7ABC5', letterSpacing: '0.5px', textTransform: 'uppercase' }}>Lvl {level.level}</span>
@@ -241,23 +198,21 @@ const FloatingWidget: React.FC = () => {
           </div>
 
           {/* Time + Date — top-aligned with name */}
-          <div className="flex flex-col items-end" style={{ flexShrink: 0 }}>
-            <span style={{ fontFamily: "'Owners Wide', sans-serif", fontSize: '14px', color: '#EAF2D7', fontWeight: 600, lineHeight: 1.1 }}>{timeStr}</span>
-            <span style={{ fontFamily: "'Owners Wide', sans-serif", fontSize: '10px', color: 'rgba(234,242,215,0.4)', lineHeight: 1.2 }}>{dateStr}</span>
+          <div className="flex flex-col items-end" style={{ flexShrink: 0, lineHeight: 1.1 }}>
+            <span style={{ fontFamily: "'Owners Wide', sans-serif", fontSize: '14px', color: '#EAF2D7', fontWeight: 600 }}>{timeStr}</span>
+            <span style={{ fontFamily: "'Owners Wide', sans-serif", fontSize: '10px', color: 'rgba(234,242,215,0.4)' }}>{dateStr}</span>
           </div>
         </div>
 
-        {/* Row 2: XP bar (left) + Bandwidth bar (right) side by side */}
+        {/* Row 2: XP (left) + Bandwidth (right) */}
         <div className="flex items-center gap-4" style={{ marginTop: '2px' }}>
-          {/* XP */}
           <div className="flex items-center gap-2">
             <span style={{ fontFamily: "'Owners Wide', sans-serif", fontSize: '9px', color: '#EAF2D7', fontWeight: 600, letterSpacing: '0.5px' }}>XP</span>
-            <span style={{ fontFamily: "'Owners Wide', sans-serif", fontSize: '9px', color: 'rgba(234,242,215,0.5)' }}>{xp} / {level.maxXp === Infinity ? '∞' : level.maxXp + 1}</span>
+            <span style={{ fontFamily: "'Owners Wide', sans-serif", fontSize: '9px', color: 'rgba(234,242,215,0.5)' }}>{xp}/{level.maxXp === Infinity ? '∞' : level.maxXp + 1}</span>
             <div style={{ width: 40, height: 3, background: 'rgba(234,242,215,0.15)', borderRadius: 2, overflow: 'hidden' }}>
               <div style={{ width: `${levelProgress}%`, height: '100%', background: '#EAF2D7', borderRadius: 2 }} />
             </div>
           </div>
-          {/* Bandwidth */}
           <div className="flex items-center gap-2">
             <img src={ICON_BASE + 'bandwidth.svg'} alt="" style={{ width: 10, height: 10, opacity: 0.6 }} />
             <div style={{ width: 40, height: 3, background: 'rgba(234,242,215,0.15)', borderRadius: 2, overflow: 'hidden' }}>
@@ -271,37 +226,29 @@ const FloatingWidget: React.FC = () => {
       {/* Divider */}
       <div style={{ width: '1px', height: '40px', background: 'rgba(234,242,215,0.12)', flexShrink: 0 }} />
 
-      {/* Quick links — SVG icons from Supabase */}
+      {/* Quick links — 20% larger icons */}
       <div className="flex items-center gap-1" style={{ flex: 1, justifyContent: 'space-around' }}>
         {QUICK_LINKS.map((link) => (
-          <button
-            key={link.label}
-            onClick={() => navigate(link.route)}
-            className="flex flex-col items-center gap-1"
+          <button key={link.label} onClick={() => navigate(link.route)} className="flex flex-col items-center gap-1"
             style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '4px 6px', borderRadius: '8px', transition: `background 150ms ${easing}` }}
             onMouseEnter={(e) => (e.currentTarget.style.background = 'rgba(234,242,215,0.08)')}
-            onMouseLeave={(e) => (e.currentTarget.style.background = 'transparent')}
-          >
-            <img src={ICON_BASE + link.icon} alt={link.label} style={{ width: 22, height: 22 }} />
-            <span style={{ fontFamily: "'Owners Wide', sans-serif", fontSize: '7px', letterSpacing: '0.5px', textTransform: 'uppercase', color: 'rgba(234,242,215,0.5)' }}>
-              {link.label}
-            </span>
+            onMouseLeave={(e) => (e.currentTarget.style.background = 'transparent')}>
+            <img src={ICON_BASE + link.icon} alt={link.label} style={{ width: 26, height: 26 }} />
+            <span style={{ fontFamily: "'Owners Wide', sans-serif", fontSize: '7px', letterSpacing: '0.5px', textTransform: 'uppercase', color: 'rgba(234,242,215,0.5)' }}>{link.label}</span>
           </button>
         ))}
       </div>
 
-      {/* Burger drag handle + collapse */}
-      <div className="flex flex-col items-center gap-1" style={{ flexShrink: 0 }}>
-        <div onMouseDown={handleDragStart} onClick={(e) => e.stopPropagation()} style={{ padding: '4px', cursor: 'grab' }}>
-          <BurgerHandle size={18} />
-        </div>
+      {/* Drag handle + collapse arrow (‹ = left arrow when open) */}
+      <div onMouseDown={handleDragStart} onClick={(e) => e.stopPropagation()} style={{ display: 'flex', alignItems: 'center', gap: '4px', padding: '4px', cursor: 'grab', flexShrink: 0 }}>
+        <BurgerHandle size={18} />
         <button
-          onClick={() => { setExpanded(false); setPosition(null); }}
-          style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'rgba(234,242,215,0.3)', fontSize: '10px', padding: '2px', fontFamily: "'Owners Wide', sans-serif", letterSpacing: '0.5px' }}
+          onClick={(e) => { e.stopPropagation(); setExpanded(false); setPosition(null); }}
+          style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'rgba(234,242,215,0.4)', fontSize: '12px', padding: '2px', transition: `color 150ms ${easing}` }}
           onMouseEnter={(e) => (e.currentTarget.style.color = '#EAF2D7')}
-          onMouseLeave={(e) => (e.currentTarget.style.color = 'rgba(234,242,215,0.3)')}
+          onMouseLeave={(e) => (e.currentTarget.style.color = 'rgba(234,242,215,0.4)')}
         >
-          ▼
+          ‹
         </button>
       </div>
     </div>
@@ -309,27 +256,22 @@ const FloatingWidget: React.FC = () => {
 };
 
 /* ------------------------------------------------------------------ */
-/*  Profile Avatar with PFP shape                                      */
+/*  Circle Avatar                                                      */
 /* ------------------------------------------------------------------ */
 
-const ProfileAvatar: React.FC<{ name: string; size: number; avatarUrl?: string | null }> = ({ name, size, avatarUrl }) => (
-  <div style={{ width: size, height: size, position: 'relative', flexShrink: 0 }}>
-    <img src={PFP_SHAPE_URL} alt="" style={{ width: '100%', height: '100%', position: 'absolute', top: 0, left: 0, zIndex: 2 }} />
-    <div style={{
-      width: '85%', height: '85%', position: 'absolute', top: '7.5%', left: '7.5%',
-      borderRadius: '30% 70% 70% 30% / 30% 30% 70% 70%',
-      overflow: 'hidden', background: '#333', zIndex: 1,
-    }}>
-      {avatarUrl ? (
-        <img src={avatarUrl} alt={name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-      ) : (
-        <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-          <span style={{ color: '#EAF2D7', fontFamily: "'Kaio', sans-serif", fontWeight: 900, fontSize: size * 0.35 }}>
-            {name.split(' ').map((w) => w[0]).join('').toUpperCase().slice(0, 2)}
-          </span>
-        </div>
-      )}
-    </div>
+const CircleAvatar: React.FC<{ name: string; size: number; avatarUrl?: string | null }> = ({ name, size, avatarUrl }) => (
+  <div style={{
+    width: size, height: size, borderRadius: '50%', background: '#333',
+    border: '2px solid #EAF2D7', display: 'flex', alignItems: 'center', justifyContent: 'center',
+    flexShrink: 0, overflow: 'hidden',
+  }}>
+    {avatarUrl ? (
+      <img src={avatarUrl} alt={name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+    ) : (
+      <span style={{ color: '#EAF2D7', fontFamily: "'Kaio', sans-serif", fontWeight: 900, fontSize: size * 0.35 }}>
+        {name.split(' ').map((w) => w[0]).join('').toUpperCase().slice(0, 2)}
+      </span>
+    )}
   </div>
 );
 
