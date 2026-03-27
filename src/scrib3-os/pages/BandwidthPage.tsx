@@ -10,7 +10,6 @@ import {
 } from '../lib/bandwidth';
 
 const easing = 'cubic-bezier(0.22, 0.61, 0.36, 1)';
-const fmt = (n: number) => `$${n.toLocaleString(undefined, { maximumFractionDigits: 0 })}`;
 
 /* ------------------------------------------------------------------ */
 /*  Capacity Bar                                                       */
@@ -43,7 +42,6 @@ const DigestTab: React.FC = () => {
         <Stat value={`${digest.teamAvgCapacity}%`} label="avg capacity" />
         <Stat value={digest.highCapacity.length.toString()} label="≥80% capacity" accent={digest.highCapacity.length > 0} />
         <Stat value={digest.missingSubmissions.length.toString()} label="missing" accent={digest.missingSubmissions.length > 0} />
-        <Stat value={fmt(digest.submissions.reduce((a, s) => a + s.totalCost, 0))} label="total labour cost" />
       </div>
 
       {/* High capacity alert */}
@@ -76,11 +74,10 @@ const DigestTab: React.FC = () => {
       </h3>
       <div style={{ border: '0.733px solid var(--border-default)', borderRadius: '10.258px', overflow: 'hidden', marginBottom: '32px' }}>
         <div className="flex items-center" style={{ padding: '12px 24px', borderBottom: '0.733px solid var(--border-default)', opacity: 0.5 }}>
-          <TH width="20%">Team Member</TH>
+          <TH width="22%">Team Member</TH>
           <TH width="12%">Hours</TH>
-          <TH width="16%">Capacity</TH>
-          <TH width="14%">Labour Cost</TH>
-          <TH width="38%">Projects</TH>
+          <TH width="18%">Capacity</TH>
+          <TH width="48%">Projects</TH>
         </div>
         {digest.submissions.sort((a, b) => b.capacityPct - a.capacityPct).map((est) => (
           <div key={est.id} className="flex items-center" style={{ padding: '12px 24px', borderBottom: '0.5px solid rgba(0,0,0,0.06)' }}>
@@ -90,16 +87,13 @@ const DigestTab: React.FC = () => {
             <div style={{ width: '12%' }}>
               <span style={{ fontFamily: "'Owners Wide', sans-serif", fontSize: '13px' }}>{est.totalHours}h</span>
             </div>
-            <div style={{ width: '16%' }}>
+            <div style={{ width: '18%' }}>
               <div className="flex items-center gap-2">
                 <CapacityBar pct={est.capacityPct} />
                 <span style={{ fontFamily: "'Owners Wide', sans-serif", fontSize: '12px', color: getCapacityColor(est.capacityPct) }}>{est.capacityPct}%</span>
               </div>
             </div>
-            <div style={{ width: '14%' }}>
-              <span style={{ fontFamily: "'Owners Wide', sans-serif", fontSize: '13px' }}>{fmt(est.totalCost)}</span>
-            </div>
-            <div style={{ width: '38%' }}>
+            <div style={{ width: '48%' }}>
               <span style={{ fontFamily: "'Owners Wide', sans-serif", fontSize: '11px', opacity: 0.6 }}>
                 {est.entries.map((e) => `${e.projectCode} (${e.estimatedHours}h)`).join(' · ')}
               </span>
@@ -108,28 +102,6 @@ const DigestTab: React.FC = () => {
         ))}
       </div>
 
-      {/* Project cost summary */}
-      <h3 style={{ fontFamily: "'Kaio', sans-serif", fontWeight: 800, fontSize: '16px', textTransform: 'uppercase', margin: '0 0 12px 0' }}>
-        Project Cost Attribution
-      </h3>
-      <div style={{ border: '0.733px solid var(--border-default)', borderRadius: '10.258px', overflow: 'hidden' }}>
-        <div className="flex items-center" style={{ padding: '12px 24px', borderBottom: '0.733px solid var(--border-default)', opacity: 0.5 }}>
-          <TH width="15%">Code</TH>
-          <TH width="25%">Project</TH>
-          <TH width="20%">Client</TH>
-          <TH width="15%">Hours</TH>
-          <TH width="25%">Labour Cost</TH>
-        </div>
-        {digest.projectCostSummary.map((p) => (
-          <div key={p.projectCode} className="flex items-center" style={{ padding: '12px 24px', borderBottom: '0.5px solid rgba(0,0,0,0.06)' }}>
-            <div style={{ width: '15%' }}><span style={{ fontFamily: "'Kaio', sans-serif", fontWeight: 800, fontSize: '12px', textTransform: 'uppercase' }}>{p.projectCode}</span></div>
-            <div style={{ width: '25%' }}><span style={{ fontFamily: "'Owners Wide', sans-serif", fontSize: '12px' }}>{p.projectName}</span></div>
-            <div style={{ width: '20%' }}><span style={{ fontFamily: "'Owners Wide', sans-serif", fontSize: '12px' }}>{p.clientName}</span></div>
-            <div style={{ width: '15%' }}><span style={{ fontFamily: "'Owners Wide', sans-serif", fontSize: '13px' }}>{p.totalHours}h</span></div>
-            <div style={{ width: '25%' }}><span style={{ fontFamily: "'Owners Wide', sans-serif", fontSize: '13px', fontWeight: 600 }}>{fmt(p.totalCost)}</span></div>
-          </div>
-        ))}
-      </div>
     </>
   );
 };
@@ -141,7 +113,7 @@ const DigestTab: React.FC = () => {
 const SubmitTab: React.FC = () => {
   const [memberName, setMemberName] = useState('');
   const [entries, setEntries] = useState<Omit<BandwidthEntry, 'labourCost'>[]>([
-    { projectCode: '', projectName: '', clientName: '', estimatedHours: 0, hourlyRate: 75 },
+    { projectCode: '', projectName: '', clientName: '', estimatedHours: 0, hourlyRate: 0 },
   ]);
   const [submitted, setSubmitted] = useState(false);
 
@@ -149,11 +121,10 @@ const SubmitTab: React.FC = () => {
     setEntries((prev) => prev.map((e, i) => i === idx ? { ...e, [field]: value } : e));
   };
 
-  const addRow = () => setEntries((prev) => [...prev, { projectCode: '', projectName: '', clientName: '', estimatedHours: 0, hourlyRate: 75 }]);
+  const addRow = () => setEntries((prev) => [...prev, { projectCode: '', projectName: '', clientName: '', estimatedHours: 0, hourlyRate: 0 }]);
   const removeRow = (idx: number) => setEntries((prev) => prev.filter((_, i) => i !== idx));
 
   const totalHours = entries.reduce((a, e) => a + e.estimatedHours, 0);
-  const totalCost = entries.reduce((a, e) => a + e.estimatedHours * e.hourlyRate, 0);
   const capacityPct = Math.round((totalHours / 40) * 100);
 
   if (submitted) {
@@ -164,7 +135,7 @@ const SubmitTab: React.FC = () => {
           {memberName}'s bandwidth estimate for this week has been recorded.
         </p>
         <p style={{ fontFamily: "'Owners Wide', sans-serif", fontSize: '12px', opacity: 0.4 }}>
-          {totalHours}h total · {capacityPct}% capacity · {fmt(totalCost)} labour cost
+          {totalHours}h total · {capacityPct}% capacity
         </p>
       </div>
     );
@@ -194,12 +165,7 @@ const SubmitTab: React.FC = () => {
             <SmField label="Project Code" value={entry.projectCode} onChange={(v) => updateEntry(idx, 'projectCode', v)} placeholder="RSK-001" width="120px" />
             <SmField label="Project Name" value={entry.projectName} onChange={(v) => updateEntry(idx, 'projectName', v)} placeholder="Rootstock Refresh" width="180px" />
             <SmField label="Client" value={entry.clientName} onChange={(v) => updateEntry(idx, 'clientName', v)} placeholder="Rootstock" width="140px" />
-            <SmField label="Hours" value={entry.estimatedHours.toString()} onChange={(v) => updateEntry(idx, 'estimatedHours', parseFloat(v) || 0)} placeholder="0" width="70px" type="number" />
-            <SmField label="$/hr" value={entry.hourlyRate.toString()} onChange={(v) => updateEntry(idx, 'hourlyRate', parseFloat(v) || 0)} placeholder="75" width="70px" type="number" />
-            <div className="flex flex-col gap-1">
-              <label style={{ fontFamily: "'Owners Wide', sans-serif", fontSize: '10px', letterSpacing: '1px', textTransform: 'uppercase', opacity: 0.5 }}>Cost</label>
-              <span style={{ fontFamily: "'Owners Wide', sans-serif", fontSize: '14px', padding: '10px 0' }}>{fmt(entry.estimatedHours * entry.hourlyRate)}</span>
-            </div>
+            <SmField label="Hours" value={entry.estimatedHours.toString()} onChange={(v) => updateEntry(idx, 'estimatedHours', parseFloat(v) || 0)} placeholder="0" width="80px" type="number" />
             {entries.length > 1 && (
               <button onClick={() => removeRow(idx)} style={{ fontFamily: "'Kaio', sans-serif", fontSize: '16px', background: 'none', border: 'none', cursor: 'pointer', color: '#E74C3C', padding: '8px', opacity: 0.5 }}>×</button>
             )}
@@ -222,7 +188,6 @@ const SubmitTab: React.FC = () => {
             </div>
             <span style={{ fontFamily: "'Owners Wide', sans-serif", fontSize: '11px', letterSpacing: '1px', textTransform: 'uppercase', opacity: 0.45 }}>capacity</span>
           </div>
-          <Stat value={fmt(totalCost)} label="labour cost" />
         </div>
         <button onClick={() => { if (memberName) setSubmitted(true); }}
           style={{
