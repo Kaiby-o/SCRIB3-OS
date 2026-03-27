@@ -163,72 +163,70 @@ const FloatingWidget: React.FC = () => {
         position: 'fixed',
         ...(position ? { left: position.x, top: position.y } : { bottom: 24, left: '50%', transform: 'translateX(-50%)' }),
         zIndex: 45, background: '#000', borderRadius: '75.641px',
-        padding: '10px 16px 10px 10px',
-        display: 'flex', alignItems: 'center', gap: '16px',
+        padding: '6px 16px 6px 6px',
+        display: 'flex', alignItems: 'center', gap: '12px',
         maxWidth: '960px', width: 'calc(100% - 80px)',
         transition: isDragging ? 'none' : `all 300ms ${easing}`,
         userSelect: 'none',
       }}
     >
-      {/* Circle avatar — click to go to profile */}
-      <div onClick={() => navigate('/profile/' + (profile?.id ?? ''))} style={{ cursor: 'pointer' }}>
-        <CircleAvatar name={displayName} size={56} avatarUrl={profile?.avatar_url} />
+      {/* Large circle avatar — fills capsule height */}
+      <div onClick={() => navigate('/profile/' + (profile?.id ?? ''))} style={{ cursor: 'pointer', flexShrink: 0 }}>
+        <CircleAvatar name={displayName} size={64} avatarUrl={profile?.avatar_url} />
       </div>
 
-      {/* User info */}
-      <div className="flex flex-col" style={{ minWidth: 0, gap: '1px' }}>
-        {/* Row 1: Name + status + time/date */}
-        <div className="flex items-start gap-3">
-          <div className="flex flex-col" style={{ minWidth: 0 }}>
+      {/* User info + time/date in one row */}
+      <div className="flex items-start gap-4" style={{ minWidth: 0, flex: '0 0 auto' }}>
+        {/* Left column: name, title, bars */}
+        <div className="flex flex-col" style={{ minWidth: 0, gap: '2px' }}>
+          {/* Name + status */}
+          <div className="flex items-center gap-2">
+            <span onClick={() => navigate('/profile/' + (profile?.id ?? ''))} style={{ fontFamily: "'Kaio', sans-serif", fontWeight: 900, fontSize: '14px', color: '#EAF2D7', textTransform: 'uppercase', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', lineHeight: 1.1, cursor: 'pointer' }}>
+              {displayName}
+            </span>
+            <div style={{ position: 'relative' }}>
+              <button onClick={() => setStatusDropdown(!statusDropdown)} style={{ width: 8, height: 8, borderRadius: '50%', background: statusColor, border: 'none', cursor: 'pointer', padding: 0 }} />
+              {statusDropdown && (
+                <div style={{ position: 'absolute', bottom: 16, left: -20, background: '#1A1A1A', borderRadius: '10.258px', padding: '6px', zIndex: 50, minWidth: '100px' }}>
+                  {STATUS_OPTIONS.map((opt) => (
+                    <button key={opt.key} onClick={() => { setStatus(opt.key); setStatusDropdown(false); }} className="flex items-center gap-2"
+                      style={{ background: status === opt.key ? 'rgba(234,242,215,0.08)' : 'transparent', border: 'none', cursor: 'pointer', padding: '6px 10px', borderRadius: '6px', width: '100%' }}>
+                      <div style={{ width: 6, height: 6, borderRadius: '50%', background: opt.color }} />
+                      <span style={{ fontFamily: "'Owners Wide', sans-serif", fontSize: '10px', color: '#EAF2D7', letterSpacing: '0.5px', textTransform: 'uppercase' }}>{opt.label}</span>
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
+          {/* Title + Level */}
+          <div className="flex items-center gap-2">
+            <span style={{ fontFamily: "'Owners Wide', sans-serif", fontSize: '10px', color: 'rgba(234,242,215,0.5)', letterSpacing: '0.5px' }}>{title}</span>
+            <span style={{ fontFamily: "'Owners Wide', sans-serif", fontSize: '9px', color: '#D7ABC5', letterSpacing: '0.5px', textTransform: 'uppercase' }}>Lvl {level.level}</span>
+          </div>
+          {/* XP + Bandwidth side by side */}
+          <div className="flex items-center gap-4" style={{ marginTop: '2px' }}>
             <div className="flex items-center gap-2">
-              <span onClick={() => navigate('/profile/' + (profile?.id ?? ''))} style={{ fontFamily: "'Kaio', sans-serif", fontWeight: 900, fontSize: '14px', color: '#EAF2D7', textTransform: 'uppercase', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', lineHeight: 1.1, cursor: 'pointer' }}>
-                {displayName}
-              </span>
-              <div style={{ position: 'relative' }}>
-                <button onClick={() => setStatusDropdown(!statusDropdown)} style={{ width: 8, height: 8, borderRadius: '50%', background: statusColor, border: 'none', cursor: 'pointer', padding: 0 }} />
-                {statusDropdown && (
-                  <div style={{ position: 'absolute', bottom: 16, left: -20, background: '#1A1A1A', borderRadius: '10.258px', padding: '6px', zIndex: 50, minWidth: '100px' }}>
-                    {STATUS_OPTIONS.map((opt) => (
-                      <button key={opt.key} onClick={() => { setStatus(opt.key); setStatusDropdown(false); }} className="flex items-center gap-2"
-                        style={{ background: status === opt.key ? 'rgba(234,242,215,0.08)' : 'transparent', border: 'none', cursor: 'pointer', padding: '6px 10px', borderRadius: '6px', width: '100%' }}>
-                        <div style={{ width: 6, height: 6, borderRadius: '50%', background: opt.color }} />
-                        <span style={{ fontFamily: "'Owners Wide', sans-serif", fontSize: '10px', color: '#EAF2D7', letterSpacing: '0.5px', textTransform: 'uppercase' }}>{opt.label}</span>
-                      </button>
-                    ))}
-                  </div>
-                )}
+              <span style={{ fontFamily: "'Owners Wide', sans-serif", fontSize: '9px', color: '#EAF2D7', fontWeight: 600, letterSpacing: '0.5px' }}>XP</span>
+              <span style={{ fontFamily: "'Owners Wide', sans-serif", fontSize: '9px', color: 'rgba(234,242,215,0.5)' }}>{xp}/{level.maxXp === Infinity ? '∞' : level.maxXp + 1}</span>
+              <div style={{ width: 40, height: 3, background: 'rgba(234,242,215,0.15)', borderRadius: 2, overflow: 'hidden' }}>
+                <div style={{ width: `${levelProgress}%`, height: '100%', background: '#EAF2D7', borderRadius: 2 }} />
               </div>
             </div>
             <div className="flex items-center gap-2">
-              <span style={{ fontFamily: "'Owners Wide', sans-serif", fontSize: '10px', color: 'rgba(234,242,215,0.5)', letterSpacing: '0.5px' }}>{title}</span>
-              <span style={{ fontFamily: "'Owners Wide', sans-serif", fontSize: '9px', color: '#D7ABC5', letterSpacing: '0.5px', textTransform: 'uppercase' }}>Lvl {level.level}</span>
+              <img src={ICON_BASE + 'bandwidth.svg'} alt="" style={{ width: 10, height: 10, opacity: 0.6 }} />
+              <div style={{ width: 40, height: 3, background: 'rgba(234,242,215,0.15)', borderRadius: 2, overflow: 'hidden' }}>
+                <div style={{ width: `${bandwidthPct}%`, height: '100%', background: getCapacityColor(bandwidthPct), borderRadius: 2 }} />
+              </div>
+              <span style={{ fontFamily: "'Owners Wide', sans-serif", fontSize: '9px', color: 'rgba(234,242,215,0.5)' }}>{bandwidthPct}%</span>
             </div>
           </div>
-
         </div>
 
-        {/* Time + Date — aligned with top of divider line */}
-        <div className="flex flex-col items-end justify-start" style={{ flexShrink: 0, alignSelf: 'stretch', paddingTop: '0px' }}>
-          <span style={{ fontFamily: "'Owners Wide', sans-serif", fontSize: '14px', color: '#EAF2D7', fontWeight: 600, lineHeight: 1 }}>{timeStr}</span>
-          <span style={{ fontFamily: "'Owners Wide', sans-serif", fontSize: '10px', color: 'rgba(234,242,215,0.4)', lineHeight: 1.2, marginTop: '2px' }}>{dateStr}</span>
-        </div>
-
-        {/* Row 2: XP (left) + Bandwidth (right) */}
-        <div className="flex items-center gap-4" style={{ marginTop: '2px' }}>
-          <div className="flex items-center gap-2">
-            <span style={{ fontFamily: "'Owners Wide', sans-serif", fontSize: '9px', color: '#EAF2D7', fontWeight: 600, letterSpacing: '0.5px' }}>XP</span>
-            <span style={{ fontFamily: "'Owners Wide', sans-serif", fontSize: '9px', color: 'rgba(234,242,215,0.5)' }}>{xp}/{level.maxXp === Infinity ? '∞' : level.maxXp + 1}</span>
-            <div style={{ width: 40, height: 3, background: 'rgba(234,242,215,0.15)', borderRadius: 2, overflow: 'hidden' }}>
-              <div style={{ width: `${levelProgress}%`, height: '100%', background: '#EAF2D7', borderRadius: 2 }} />
-            </div>
-          </div>
-          <div className="flex items-center gap-2">
-            <img src={ICON_BASE + 'bandwidth.svg'} alt="" style={{ width: 10, height: 10, opacity: 0.6 }} />
-            <div style={{ width: 40, height: 3, background: 'rgba(234,242,215,0.15)', borderRadius: 2, overflow: 'hidden' }}>
-              <div style={{ width: `${bandwidthPct}%`, height: '100%', background: getCapacityColor(bandwidthPct), borderRadius: 2 }} />
-            </div>
-            <span style={{ fontFamily: "'Owners Wide', sans-serif", fontSize: '9px', color: 'rgba(234,242,215,0.5)' }}>{bandwidthPct}%</span>
-          </div>
+        {/* Right column: time + date — top-aligned with name */}
+        <div className="flex flex-col items-end" style={{ flexShrink: 0 }}>
+          <span style={{ fontFamily: "'Owners Wide', sans-serif", fontSize: '14px', color: '#EAF2D7', fontWeight: 600, lineHeight: 1.1 }}>{timeStr}</span>
+          <span style={{ fontFamily: "'Owners Wide', sans-serif", fontSize: '10px', color: 'rgba(234,242,215,0.4)', marginTop: '2px' }}>{dateStr}</span>
         </div>
       </div>
 
