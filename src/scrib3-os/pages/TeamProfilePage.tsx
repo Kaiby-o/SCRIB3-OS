@@ -2,7 +2,8 @@ import React from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import LogoScrib3 from '../components/LogoScrib3';
 import BurgerButton from '../components/BurgerButton';
-import { mockTeam, availabilityColors, getInitials, type TeamMember } from '../lib/team';
+import { mockTeam, availabilityColors, getInitials, getManager, isManagerOf, type TeamMember } from '../lib/team';
+import { useAuthStore } from '../hooks/useAuth';
 import { getCapacityColor } from '../lib/bandwidth';
 
 const easing = 'cubic-bezier(0.22, 0.61, 0.36, 1)';
@@ -16,7 +17,12 @@ const easing = 'cubic-bezier(0.22, 0.61, 0.36, 1)';
 const TeamProfilePage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
+  const { user, role: authRole } = useAuthStore();
   const member = mockTeam.find((m) => m.id === id);
+  const currentMember = mockTeam.find((m) => m.email === user?.email);
+  const currentMemberId = currentMember?.id ?? '';
+  const canSeePD = member && (member.id === currentMemberId || isManagerOf(currentMemberId, member.id) || authRole === 'admin');
+  const manager = member ? getManager(member) : undefined;
 
   if (!member) {
     return (
@@ -137,7 +143,18 @@ const TeamProfilePage: React.FC = () => {
           <InfoCard label="XP" value={`${member.xp} XP`} />
         </div>
 
-        {/* PD link */}
+        {/* Manager info */}
+        {manager && (
+          <div style={{ marginBottom: '24px' }}>
+            <h2 style={{ fontFamily: "'Kaio', sans-serif", fontWeight: 800, fontSize: '14px', textTransform: 'uppercase', margin: '0 0 8px 0' }}>Reports To</h2>
+            <button onClick={() => navigate(`/team/${manager.id}`)} style={{ fontFamily: "'Owners Wide', sans-serif", fontSize: '12px', padding: '6px 14px', borderRadius: '75.641px', border: '0.733px solid var(--border-default)', background: 'transparent', cursor: 'pointer' }}>
+              {manager.name} — {manager.title}
+            </button>
+          </div>
+        )}
+
+        {/* PD link — only for self, manager, or admin */}
+        {canSeePD && (
         <div className="flex justify-center" style={{ marginTop: '32px' }}>
           <button onClick={() => navigate(`/pd/${member.id}`)} style={{
             fontFamily: "'Owners Wide', sans-serif", fontSize: '12px', letterSpacing: '1px', textTransform: 'uppercase',
@@ -148,6 +165,7 @@ const TeamProfilePage: React.FC = () => {
             View Professional Development →
           </button>
         </div>
+        )}
       </div>
     </div>
   );

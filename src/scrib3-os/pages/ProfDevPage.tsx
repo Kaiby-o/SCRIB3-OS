@@ -2,7 +2,8 @@ import React, { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import LogoScrib3 from '../components/LogoScrib3';
 import BurgerButton from '../components/BurgerButton';
-import { mockTeam, getInitials } from '../lib/team';
+import { mockTeam, getInitials, isManagerOf } from '../lib/team';
+import { useAuthStore } from '../hooks/useAuth';
 
 /* ------------------------------------------------------------------ */
 /*  Plan v4 §2D — Professional Development System — Layer 1            */
@@ -55,18 +56,43 @@ const mockFeedback: Feedback[] = [
 const ProfDevPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
+  const { user, role: authRole } = useAuthStore();
   const member = mockTeam.find((m) => m.id === id);
   const [activeTab, setActiveTab] = useState<'goals' | 'poe' | 'principles' | 'feedback'>('goals');
+
+  // Find the current user's mock team member ID
+  const currentMember = mockTeam.find((m) => m.email === user?.email);
+  const currentMemberId = currentMember?.id ?? '';
+
+  // Access control: only the person themselves, their manager, or admin can view
+  const isOwnPD = member?.id === currentMemberId;
+  const isManager = member ? isManagerOf(currentMemberId, member.id) : false;
+  const isAdmin = authRole === 'admin';
+  const hasAccess = isOwnPD || isManager || isAdmin;
 
   if (!member) {
     return (
       <div className="os-root flex flex-col items-center justify-center" style={{ minHeight: '100vh' }}>
         <h1 style={{ fontFamily: "'Kaio', sans-serif", fontWeight: 800, fontSize: '30px', textTransform: 'uppercase' }}>Member Not Found</h1>
         <button onClick={() => navigate('/team')} style={{ fontFamily: "'Owners Wide', sans-serif", fontSize: '13px', letterSpacing: '1px', textTransform: 'uppercase', color: '#000', marginTop: '24px', padding: '10px 24px', border: '0.733px solid #000', borderRadius: '75.641px', background: 'transparent', cursor: 'pointer' }}>
-          &larr; Team Directory
+          ← Team Directory
         </button>
       </div>
     );
+
+  if (!hasAccess) {
+    return (
+      <div className="os-root flex flex-col items-center justify-center" style={{ minHeight: '100vh' }}>
+        <h1 style={{ fontFamily: "'Kaio', sans-serif", fontWeight: 800, fontSize: '30px', textTransform: 'uppercase' }}>Access Restricted</h1>
+        <p style={{ fontFamily: "'Owners Wide', sans-serif", fontSize: '14px', opacity: 0.6, marginTop: '16px' }}>
+          Professional development is only visible to the team member and their manager.
+        </p>
+        <button onClick={() => navigate('/team')} style={{ fontFamily: "'Owners Wide', sans-serif", fontSize: '13px', letterSpacing: '1px', textTransform: 'uppercase', color: '#000', marginTop: '24px', padding: '10px 24px', border: '0.733px solid #000', borderRadius: '75.641px', background: 'transparent', cursor: 'pointer' }}>
+          ← Team Directory
+        </button>
+      </div>
+    );
+  }
   }
 
   return (

@@ -2,7 +2,7 @@ import React, { useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import LogoScrib3 from '../components/LogoScrib3';
 import BurgerButton from '../components/BurgerButton';
-import { mockTeam, availabilityColors, getInitials, type TeamMember } from '../lib/team';
+import { mockTeam, availabilityColors, getInitials, getManager, type TeamMember } from '../lib/team';
 import { getCapacityColor } from '../lib/bandwidth';
 import { useSupabaseQuery } from '../hooks/useSupabase';
 
@@ -202,6 +202,13 @@ const MemberCard: React.FC<{ member: TeamMember; onClick: () => void }> = ({ mem
     >
       {m.unit}
     </span>
+
+    {/* Manager */}
+    {(() => { const mgr = getManager(m); return mgr ? (
+      <span style={{ fontFamily: "'Owners Wide', sans-serif", fontSize: '10px', opacity: 0.35, display: 'block', marginBottom: '8px' }}>
+        Reports to {mgr.name}
+      </span>
+    ) : null; })()}
 
     {/* Location + bandwidth */}
     <div className="flex items-center justify-between">
