@@ -23,6 +23,7 @@ import OSUnitDashboards from './scrib3-os/pages/UnitDashboardsPage';
 import OSCultureHub from './scrib3-os/pages/CultureHubPage';
 import OSToolsDirectory from './scrib3-os/pages/ToolsDirectoryPage';
 import OSSettings from './scrib3-os/pages/SettingsPage';
+import OSTasks from './scrib3-os/pages/TasksPage';
 import { AuthGuard, RoleGuard } from './scrib3-os/components/AuthGuard';
 import FloatingWidget from './scrib3-os/components/FloatingWidget';
 import { useAuthStore } from './scrib3-os/hooks/useAuth';
@@ -254,6 +255,14 @@ export default function App() {
           }
         />
 
+        <Route
+          path="/tasks"
+          element={
+            <AuthGuard>
+              <OSTasks />
+            </AuthGuard>
+          }
+        />
         <Route
           path="/settings"
           element={
