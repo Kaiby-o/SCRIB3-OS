@@ -167,7 +167,7 @@ export const mockTeam: TeamMember[] = [
     isOnline: false, availability: 'offline', bio: '', skillsets: ['PR', 'Media Relations'],
     socialLinks: [], currentClients: ['Midnight'], currentProjects: ['MID-002'],
     joinedDate: '2024-03-01', xp: 190, bandwidthPct: 50,
-    avatarUrl: AVATAR_BASE + 'Destini.png',
+    avatarUrl: AVATAR_BASE + 'destini.png',
   },
   {
     id: 'tm-janelle', name: 'Janelle', email: 'janelle@scrib3.co', role: 'team',
@@ -299,7 +299,7 @@ export const mockTeam: TeamMember[] = [
     isOnline: false, availability: 'away', bio: '', skillsets: ['PR', 'Account Management', 'MENA Markets'],
     socialLinks: [], currentClients: ['Canton'], currentProjects: ['CTN-003'],
     joinedDate: '2024-11-01', xp: 100, bandwidthPct: 50,
-    avatarUrl: AVATAR_BASE + 'Kim.jpg',
+    avatarUrl: AVATAR_BASE + 'kim.png',
   },
   {
     id: 'tm-ck', name: 'CK', email: 'ck@scrib3.co', role: 'csuite',
