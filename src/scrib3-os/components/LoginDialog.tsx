@@ -54,12 +54,20 @@ const LoginDialog: React.FC<LoginDialogProps> = ({ isOpen, onClose }) => {
     return () => { document.body.style.overflow = ''; };
   }, [isOpen]);
 
+  // Watch for user becoming authenticated → navigate to dashboard
+  const { user } = useAuthStore();
+  useEffect(() => {
+    if (user && isOpen) {
+      navigate('/dashboard');
+    }
+  }, [user, isOpen, navigate]);
+
   const handleSignIn = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
     try {
       await signIn(email, password);
-      navigate('/dashboard');
+      // Navigation happens via the useEffect above when user state updates
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : 'Sign in failed';
       setError(msg);
