@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import LogoScrib3 from '../components/LogoScrib3';
+import BurgerButton from '../components/BurgerButton';
 import { useAuthStore } from '../hooks/useAuth';
+import { useThemeStore } from '../hooks/useTheme';
 
 /* ------------------------------------------------------------------ */
 /*  Settings Page                                                      */
@@ -63,6 +65,7 @@ const SettingsPage: React.FC = () => {
           onMouseEnter={(e) => (e.currentTarget.style.opacity = '1')} onMouseLeave={(e) => (e.currentTarget.style.opacity = '0.5')}>
           &larr; Dashboard
         </button>
+      <BurgerButton />
       </header>
 
       <div style={{ padding: '40px', maxWidth: '800px', margin: '0 auto' }}>
@@ -90,6 +93,11 @@ const SettingsPage: React.FC = () => {
           >
             Sign Out
           </button>
+        </Section>
+
+        {/* Appearance */}
+        <Section title="Appearance">
+          <DarkModeToggle />
         </Section>
 
         {/* Dashboard widgets section */}
@@ -153,5 +161,32 @@ const InfoCard: React.FC<{ label: string; value: string }> = ({ label, value }) 
     <span style={{ fontFamily: "'Owners Wide', sans-serif", fontSize: '14px' }}>{value}</span>
   </div>
 );
+
+const DarkModeToggle: React.FC = () => {
+  const { theme, toggle } = useThemeStore();
+  return (
+    <div className="flex items-center justify-between" style={{ padding: '16px 20px', border: '0.733px solid var(--border-default)', borderRadius: '10.258px' }}>
+      <div>
+        <span style={{ fontFamily: "'Kaio', sans-serif", fontWeight: 800, fontSize: '13px', textTransform: 'uppercase', display: 'block' }}>Dark Mode</span>
+        <span style={{ fontFamily: "'Owners Wide', sans-serif", fontSize: '11px', opacity: 0.5 }}>
+          Switch between light and dark themes
+        </span>
+      </div>
+      <button onClick={toggle} style={{
+        width: 48, height: 26, borderRadius: 13, border: 'none', cursor: 'pointer',
+        background: theme === 'dark' ? '#D7ABC5' : 'rgba(0,0,0,0.15)',
+        position: 'relative', transition: 'background 200ms',
+      }}>
+        <div style={{
+          width: 20, height: 20, borderRadius: '50%', background: '#fff',
+          position: 'absolute', top: 3,
+          left: theme === 'dark' ? 25 : 3,
+          transition: 'left 200ms',
+          boxShadow: '0 1px 3px rgba(0,0,0,0.2)',
+        }} />
+      </button>
+    </div>
+  );
+};
 
 export default SettingsPage;

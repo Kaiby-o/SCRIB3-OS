@@ -7,6 +7,7 @@ import React, {
   useRef,
 } from 'react';
 import { useNavigate } from 'react-router-dom';
+import LogoScrib3 from './LogoScrib3';
 import { mockTeam } from '../lib/team';
 import { priorityClients } from '../lib/clients';
 import { mockProjects } from '../lib/projects';
@@ -117,78 +118,6 @@ const comingSoonItems = new Set([
 const searchItems = new Set(['Search Team', 'Search Clients', 'Search Projects']);
 
 /* ------------------------------------------------------------------ */
-/*  Theme Toggle Pill                                                  */
-/* ------------------------------------------------------------------ */
-
-const ThemeToggle: React.FC = () => {
-  const [toast, setToast] = useState(false);
-  const easing = 'cubic-bezier(0.22, 0.61, 0.36, 1)';
-
-  const showToast = () => {
-    setToast(true);
-    setTimeout(() => setToast(false), 1500);
-  };
-
-  return (
-    <div style={{ position: 'relative' }}>
-      {toast && (
-        <div style={{
-          position: 'absolute', top: -28, left: 0, background: '#EAF2D7', color: '#000',
-          fontFamily: "'Owners Wide', sans-serif", fontSize: '10px', letterSpacing: '1px',
-          textTransform: 'uppercase', padding: '4px 12px', borderRadius: '75.641px',
-          whiteSpace: 'nowrap', zIndex: 10,
-        }}>
-          Coming Soon
-        </div>
-      )}
-      <div
-        style={{
-          display: 'flex',
-          border: '1px solid #EAF2D7',
-          borderRadius: '75.641px',
-          overflow: 'hidden',
-        }}
-      >
-        <button
-          onClick={showToast}
-          style={{
-            padding: '6px 16px',
-            fontFamily: "'Owners Wide', sans-serif",
-            fontSize: '12.55px',
-            letterSpacing: '1.004px',
-            textTransform: 'uppercase',
-            color: '#EAF2D7',
-            background: 'transparent',
-            border: 'none',
-            cursor: 'pointer',
-            transition: `background 200ms ${easing}, color 200ms ${easing}`,
-          }}
-        >
-          Dark
-        </button>
-        <button
-          onClick={showToast}
-          style={{
-            padding: '6px 16px',
-            fontFamily: "'Owners Wide', sans-serif",
-            fontSize: '12.55px',
-            letterSpacing: '1.004px',
-            textTransform: 'uppercase',
-            color: '#000000',
-            background: '#D7ABC5',
-            border: 'none',
-            cursor: 'pointer',
-            transition: `background 200ms ${easing}, color 200ms ${easing}`,
-          }}
-        >
-          Light
-        </button>
-      </div>
-    </div>
-  );
-};
-
-/* ------------------------------------------------------------------ */
 /*  Provider + Overlay                                                 */
 /* ------------------------------------------------------------------ */
 
@@ -286,9 +215,9 @@ export const NavOverlayProvider: React.FC<NavOverlayProviderProps> = ({
           pointerEvents: layer >= 1 ? 'auto' : 'none',
         }}
       >
-        {/* Top-left: Dark/Light toggle */}
+        {/* Top-left: SCRIB3 logo */}
         <div className="absolute top-8 left-10">
-          <ThemeToggle />
+          <LogoScrib3 height={20} color="#EAF2D7" />
         </div>
 
         {/* Top-right: Close button */}

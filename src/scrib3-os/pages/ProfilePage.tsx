@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import LogoScrib3 from '../components/LogoScrib3';
+import BurgerButton from '../components/BurgerButton';
 import { supabase } from '../lib/supabase';
 import { useAuthStore } from '../hooks/useAuth';
 
@@ -95,6 +96,7 @@ const ProfilePage: React.FC = () => {
         <button onClick={() => navigate(-1 as number)} style={{ fontFamily: "'Owners Wide', sans-serif", fontSize: '12px', letterSpacing: '1px', textTransform: 'uppercase', color: 'var(--text-primary)', opacity: 0.5, background: 'none', border: 'none', cursor: 'pointer' }}>
           ← Back
         </button>
+      <BurgerButton />
       </header>
 
       <div style={{ padding: '40px', maxWidth: '640px', margin: '0 auto' }}>

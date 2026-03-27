@@ -1,6 +1,7 @@
 import React from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import LogoScrib3 from '../components/LogoScrib3';
+import BurgerButton from '../components/BurgerButton';
 import { mockTeam, availabilityColors, getInitials, type TeamMember } from '../lib/team';
 import { getCapacityColor } from '../lib/bandwidth';
 
@@ -41,6 +42,7 @@ const TeamProfilePage: React.FC = () => {
           onMouseEnter={(e) => (e.currentTarget.style.opacity = '1')} onMouseLeave={(e) => (e.currentTarget.style.opacity = '0.5')}>
           &larr; Directory
         </button>
+      <BurgerButton />
       </header>
 
       <div style={{ padding: '40px', maxWidth: '800px', margin: '0 auto' }}>

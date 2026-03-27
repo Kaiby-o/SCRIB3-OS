@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import LogoScrib3 from '../components/LogoScrib3';
+import BurgerButton from '../components/BurgerButton';
 import { supabaseInsert } from '../hooks/useSupabase';
 
 /* ------------------------------------------------------------------ */
@@ -194,6 +195,7 @@ const ClientOnboardPage: React.FC = () => {
         >
           &larr; Clients
         </button>
+      <BurgerButton />
       </header>
 
       <div style={{ padding: '40px', maxWidth: '720px', margin: '0 auto' }}>

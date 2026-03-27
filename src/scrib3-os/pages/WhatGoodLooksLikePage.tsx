@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import LogoScrib3 from '../components/LogoScrib3';
+import BurgerButton from '../components/BurgerButton';
 
 /* ------------------------------------------------------------------ */
 /*  Plan v4 §4D — "What Good Looks Like" Library (Nick)                */
@@ -96,6 +97,7 @@ const WhatGoodLooksLikePage: React.FC = () => {
           onMouseEnter={(e) => (e.currentTarget.style.opacity = '1')} onMouseLeave={(e) => (e.currentTarget.style.opacity = '0.5')}>
           &larr; Dashboard
         </button>
+      <BurgerButton />
       </header>
 
       <div style={{ padding: '40px', maxWidth: '900px', margin: '0 auto' }}>

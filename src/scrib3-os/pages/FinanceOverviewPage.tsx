@@ -1,6 +1,7 @@
 import React, { useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import LogoScrib3 from '../components/LogoScrib3';
+import BurgerButton from '../components/BurgerButton';
 import {
   mockEngagements,
   getHealthTier,
@@ -370,6 +371,7 @@ const FinanceOverviewPage: React.FC = () => {
         >
           &larr; Dashboard
         </button>
+      <BurgerButton />
       </header>
 
       <div style={{ padding: '40px', maxWidth: '1400px', margin: '0 auto' }}>

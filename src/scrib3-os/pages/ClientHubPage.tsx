@@ -1,6 +1,7 @@
 import React, { useState, useMemo } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import LogoScrib3 from '../components/LogoScrib3';
+import BurgerButton from '../components/BurgerButton';
 import { priorityClients, type ClientProfile } from '../lib/clients';
 import { useSupabaseRow, useSupabaseQuery } from '../hooks/useSupabase';
 
@@ -81,6 +82,7 @@ const ClientHubPage: React.FC = () => {
           onMouseEnter={(e) => (e.currentTarget.style.opacity = '1')} onMouseLeave={(e) => (e.currentTarget.style.opacity = '0.5')}>
           &larr; Clients
         </button>
+      <BurgerButton />
       </header>
 
       <div style={{ padding: '40px', maxWidth: '1100px', margin: '0 auto' }}>

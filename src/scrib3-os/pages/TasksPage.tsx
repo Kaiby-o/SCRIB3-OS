@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import LogoScrib3 from '../components/LogoScrib3';
+import BurgerButton from '../components/BurgerButton';
 import { mockTeam } from '../lib/team';
 import {
   fetchIssues, fetchIssueDetail, fetchWorkflowStates, fetchLinearUsers,
@@ -103,6 +104,7 @@ const TasksPage: React.FC = () => {
           <span style={{ fontFamily: "'Owners Wide', sans-serif", fontSize: '10px', opacity: 0.3 }}>{issues.length} issues · Live</span>
         </div>
         <button onClick={() => navigate('/dashboard')} style={{ fontFamily: "'Owners Wide', sans-serif", fontSize: '12px', letterSpacing: '1px', textTransform: 'uppercase', color: 'var(--text-primary)', opacity: 0.5, background: 'none', border: 'none', cursor: 'pointer' }}>&larr; Dashboard</button>
+      <BurgerButton />
       </header>
 
       {loading ? (
@@ -271,14 +273,23 @@ const DetailPanel: React.FC<{
               <svg width="8" height="8" viewBox="0 0 8 8" fill="var(--text-primary)" style={{ transform: kidsOpen ? 'rotate(90deg)' : '', transition: `transform 150ms ${easing}`, opacity: 0.3 }}><polygon points="0,0 8,4 0,8" /></svg>
               <PropLabel style={{ margin: 0 }}>Sub-issues · {issue.children.nodes.filter((c) => c.state.type === 'completed').length}/{issue.children.nodes.length}</PropLabel>
             </button>
-            {kidsOpen && issue.children.nodes.map((c) => (
-              <div key={c.id} onClick={() => onSubIssueClick(c as unknown as LinearIssue)} className="flex items-center gap-2" style={{ padding: '6px 8px', borderBottom: '0.5px solid rgba(0,0,0,0.04)', cursor: 'pointer', borderRadius: 4, transition: `background 100ms ${easing}` }}
-                onMouseEnter={(e) => (e.currentTarget.style.background = 'var(--bg-surface)')} onMouseLeave={(e) => (e.currentTarget.style.background = 'transparent')}>
-                <div style={{ width: 8, height: 8, borderRadius: '50%', background: c.state.color }} />
-                <span style={{ fontFamily: "'Owners Wide', sans-serif", fontSize: 12, flex: 1 }}>{c.title}</span>
-                {c.assignee && <Avatar name={c.assignee.name} url={c.assignee.avatarUrl} size={20} />}
-              </div>
-            ))}
+            {kidsOpen && issue.children.nodes.map((c) => {
+              const childP = PRIORITY_LABELS[(c as unknown as LinearIssue).priority] ?? PRIORITY_LABELS[0];
+              const childLabels = ((c as unknown as LinearIssue).labels?.nodes ?? []);
+              const childDue = (c as unknown as LinearIssue).dueDate;
+              return (
+                <div key={c.id} onClick={() => onSubIssueClick(c as unknown as LinearIssue)}
+                  className="flex items-center gap-2" style={{ padding: '8px 8px', borderBottom: '0.5px solid rgba(0,0,0,0.04)', cursor: 'pointer', borderRadius: 4, transition: `background 100ms ${easing}` }}
+                  onMouseEnter={(e) => (e.currentTarget.style.background = 'var(--bg-surface)')} onMouseLeave={(e) => (e.currentTarget.style.background = 'transparent')}>
+                  <div style={{ width: 8, height: 8, borderRadius: '50%', background: c.state.color, flexShrink: 0 }} />
+                  {childP.color !== '#95A5A6' && <div style={{ width: 6, height: 6, borderRadius: '50%', background: childP.color, flexShrink: 0 }} title={childP.label} />}
+                  <span style={{ fontFamily: "'Owners Wide', sans-serif", fontSize: 12, flex: 1 }}>{c.title}</span>
+                  {childLabels.slice(0, 2).map((l: LinearLabel) => <LabelBadge key={l.id} label={l} />)}
+                  {childDue && <span style={{ fontFamily: "'Owners Wide', sans-serif", fontSize: 9, opacity: 0.4, flexShrink: 0 }}>{new Date(childDue).toLocaleDateString('en-GB', { month: 'short', day: 'numeric' })}</span>}
+                  {c.assignee && <Avatar name={c.assignee.name} url={c.assignee.avatarUrl} size={20} />}
+                </div>
+              );
+            })}
           </div>
         )}
 

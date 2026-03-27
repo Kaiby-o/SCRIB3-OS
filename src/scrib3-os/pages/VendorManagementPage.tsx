@@ -1,6 +1,7 @@
 import React, { useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import LogoScrib3 from '../components/LogoScrib3';
+import BurgerButton from '../components/BurgerButton';
 import {
   mockVendors,
   mockInvoices,
@@ -47,7 +48,8 @@ const PageHeader: React.FC<{ title: string; navigate: ReturnType<typeof useNavig
     >
       &larr; Dashboard
     </button>
-  </header>
+  <BurgerButton />
+      </header>
 );
 
 const StatusBadge: React.FC<{ status: string; color: string }> = ({ status, color }) => (

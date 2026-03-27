@@ -1,6 +1,7 @@
 import React, { useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import LogoScrib3 from '../components/LogoScrib3';
+import BurgerButton from '../components/BurgerButton';
 import { mockTeam, availabilityColors, getInitials, type TeamMember } from '../lib/team';
 import { getCapacityColor } from '../lib/bandwidth';
 import { useSupabaseQuery } from '../hooks/useSupabase';
@@ -81,6 +82,7 @@ const TeamDirectoryPage: React.FC = () => {
           onMouseEnter={(e) => (e.currentTarget.style.opacity = '1')} onMouseLeave={(e) => (e.currentTarget.style.opacity = '0.5')}>
           &larr; Dashboard
         </button>
+      <BurgerButton />
       </header>
 
       <div style={{ padding: '40px', maxWidth: '1400px', margin: '0 auto' }}>

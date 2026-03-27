@@ -127,9 +127,10 @@ const ISSUES_QUERY = `
         }
         children {
           nodes {
-            id identifier title
+            id identifier title priority dueDate
             state { id name color type }
-            assignee { id name avatarUrl }
+            assignee { id name email avatarUrl }
+            labels { nodes { id name color } }
           }
         }
       }
@@ -147,9 +148,10 @@ const ISSUE_DETAIL_QUERY = `
       project { id name icon color }
       children {
         nodes {
-          id identifier title
+          id identifier title priority dueDate
           state { id name color type }
-          assignee { id name avatarUrl }
+          assignee { id name email avatarUrl }
+          labels { nodes { id name color } }
         }
       }
       comments(orderBy: createdAt) {

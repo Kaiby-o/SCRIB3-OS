@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import LogoScrib3 from '../components/LogoScrib3';
+import BurgerButton from '../components/BurgerButton';
 import { supabaseInsert } from '../hooks/useSupabase';
 
 const easing = 'cubic-bezier(0.22, 0.61, 0.36, 1)';
@@ -85,6 +86,7 @@ const VendorOnboardPage: React.FC = () => {
           onMouseEnter={(e) => (e.currentTarget.style.opacity = '1')} onMouseLeave={(e) => (e.currentTarget.style.opacity = '0.5')}>
           &larr; Vendors
         </button>
+      <BurgerButton />
       </header>
 
       <div style={{ padding: '40px', maxWidth: '640px', margin: '0 auto' }}>

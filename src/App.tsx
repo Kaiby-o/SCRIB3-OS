@@ -26,6 +26,8 @@ import OSSettings from './scrib3-os/pages/SettingsPage';
 import OSTasks from './scrib3-os/pages/TasksPage';
 import { AuthGuard, RoleGuard } from './scrib3-os/components/AuthGuard';
 import FloatingWidget from './scrib3-os/components/FloatingWidget';
+import { NavOverlayProvider } from './scrib3-os/components/NavOverlay';
+import { dashboardConfigs, type UserRole } from './scrib3-os/config/dashboardConfig';
 import { useAuthStore } from './scrib3-os/hooks/useAuth';
 import { useLocation } from 'react-router-dom';
 // DEVICE layer imports
@@ -35,14 +37,24 @@ import AvatarCreatorPage from './scrib3-device/pages/AvatarCreatorPage';
 function GlobalWidget() {
   const { user } = useAuthStore();
   const location = useLocation();
-  // Don't show on landing page or login
   if (!user || location.pathname === '/' || location.pathname === '/login') return null;
   return <FloatingWidget />;
+}
+
+function GlobalNavOverlay({ children }: { children: React.ReactNode }) {
+  const { role } = useAuthStore();
+  const location = useLocation();
+  // Don't wrap landing page or login
+  if (location.pathname === '/' || location.pathname === '/login') return <>{children}</>;
+  const r: UserRole = (role as UserRole) ?? 'team';
+  const config = dashboardConfigs[r];
+  return <NavOverlayProvider categories={config.categories}>{children}</NavOverlayProvider>;
 }
 
 export default function App() {
   return (
     <BrowserRouter>
+      <GlobalNavOverlay>
       <GlobalWidget />
       <Routes>
         {/* ===== SCRIB3-OS routes ===== */}
@@ -297,6 +309,7 @@ export default function App() {
         {/* Catch-all */}
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
+      </GlobalNavOverlay>
     </BrowserRouter>
   );
 }
