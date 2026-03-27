@@ -32,9 +32,14 @@ const easing = 'cubic-bezier(0.22, 0.61, 0.36, 1)';
 const SettingsPage: React.FC = () => {
   const navigate = useNavigate();
   const { profile, signOut } = useAuthStore();
-  const [enabledWidgets, setEnabledWidgets] = useState<Set<string>>(
-    new Set(['active-projects', 'task-queue', 'team-activity', 'comms'])
-  );
+  const storageKey = `scrib3-dash-widgets-${profile?.role ?? 'team'}`;
+  const [enabledWidgets, setEnabledWidgets] = useState<Set<string>>(() => {
+    try {
+      const saved = localStorage.getItem(storageKey);
+      if (saved) return new Set(JSON.parse(saved));
+    } catch { /* ignore */ }
+    return new Set(['active-projects', 'task-queue', 'team-activity', 'comms']);
+  });
   const [saved, setSaved] = useState(false);
 
   const toggleWidget = (id: string) => {
@@ -42,14 +47,15 @@ const SettingsPage: React.FC = () => {
       const next = new Set(prev);
       if (next.has(id)) next.delete(id);
       else next.add(id);
+      // Save immediately to sync with dashboard
+      localStorage.setItem(storageKey, JSON.stringify(Array.from(next)));
       return next;
     });
     setSaved(false);
   };
 
   const handleSave = () => {
-    // In production: save to Supabase profiles.dashboard_layout
-    console.log('[settings] Widget preferences:', Array.from(enabledWidgets));
+    localStorage.setItem(storageKey, JSON.stringify(Array.from(enabledWidgets)));
     setSaved(true);
     setTimeout(() => setSaved(false), 2000);
   };

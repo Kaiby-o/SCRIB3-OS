@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import LogoScrib3 from '../components/LogoScrib3';
 import BurgerButton from '../components/BurgerButton';
+import { supabase } from '../lib/supabase';
 
 const easing = 'cubic-bezier(0.22, 0.61, 0.36, 1)';
 
@@ -119,7 +120,11 @@ const PreAlignmentPage: React.FC = () => {
   const totalFields = CHECKLIST_FIELDS.length + BRIEF_FIELDS.length + 2;
 
   const handleSubmit = () => {
-    console.log('[pre-alignment] Submitted:', { projectName, projectCode, clientName, checklist, brief, loop });
+    // Write pre-alignment data to the projects table
+    void supabase.from('projects').update({
+      pre_alignment_complete: true,
+      pre_alignment_data: { checklist, brief, loop },
+    }).eq('code', projectCode);
     setSubmitted(true);
   };
 

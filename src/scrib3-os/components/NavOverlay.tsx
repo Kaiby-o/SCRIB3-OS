@@ -63,6 +63,9 @@ const subItemRoutes: Record<string, string> = {
   // Projects nav
   'All Projects': '/projects',
   'Tasks': '/tasks',
+  // Team nav extra
+  'Prof Dev': '/culture',
+  'Dapps': '/tools',
   // Culture nav
   'Proof of Excellence': '/culture',
   'Operating Principles': '/culture',
@@ -107,11 +110,9 @@ const subItemRoutes: Record<string, string> = {
   'Board': '/culture',
 };
 
-// Items that show "Coming Soon" instead of navigating
+// Items that show "Coming Soon" — only truly unbuilt features
 const comingSoonItems = new Set([
-  'Feedback', 'Prof Dev', 'Office', 'Dapps',
-  'Accounts', 'C-Suite', 'Brand', 'Media', 'Ops', 'PR',
-  'Proof of Excellence', 'Operating Principles', 'Culture Book',
+  'Feedback', 'Office',
 ]);
 
 // Items that render as search fields

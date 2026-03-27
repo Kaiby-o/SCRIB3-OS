@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import LogoScrib3 from '../components/LogoScrib3';
 import BurgerButton from '../components/BurgerButton';
+import { supabase } from '../lib/supabase';
 import {
   mockEstimates,
   buildDigest,
@@ -190,7 +191,21 @@ const SubmitTab: React.FC = () => {
             <span style={{ fontFamily: "'Owners Wide', sans-serif", fontSize: '11px', letterSpacing: '1px', textTransform: 'uppercase', opacity: 0.45 }}>capacity</span>
           </div>
         </div>
-        <button onClick={() => { if (memberName) setSubmitted(true); }}
+        <button onClick={async () => {
+            if (!memberName) return;
+            // Write each entry to Supabase
+            for (const entry of entries) {
+              if (entry.projectCode && entry.estimatedHours > 0) {
+                void supabase.from('bandwidth_estimates').insert({
+                  project_code: entry.projectCode,
+                  week_of: new Date().toISOString().split('T')[0],
+                  estimated_hours: entry.estimatedHours,
+                  submitted_at: new Date().toISOString(),
+                });
+              }
+            }
+            setSubmitted(true);
+          }}
           style={{
             fontFamily: "'Owners Wide', sans-serif", fontSize: '12px', letterSpacing: '1px', textTransform: 'uppercase',
             background: memberName ? '#D7ABC5' : 'transparent', color: memberName ? '#000' : 'var(--text-primary)',

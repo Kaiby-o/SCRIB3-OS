@@ -28,11 +28,11 @@ const QUICK_LINKS: { label: string; icon: string; route: string; comingSoon?: bo
   { label: 'Chat', icon: 'chat.svg', route: '/dashboard', comingSoon: true },
   { label: 'Calendar', icon: 'calendar.svg', route: '/dashboard', comingSoon: true },
   { label: 'Office', icon: 'office.svg', route: '/device', comingSoon: true },
-  { label: 'Dapps', icon: 'dapps.svg', route: '/tools', comingSoon: true },
+  { label: 'Dapps', icon: 'dapps.svg', route: '/tools' },
   { label: 'Bandwidth', icon: 'bandwidth.svg', route: '/bandwidth' },
   { label: 'Tasks', icon: 'tasks.svg', route: '/tasks' },
   { label: 'Feedback', icon: 'feedback.svg', route: '/dashboard', comingSoon: true },
-  { label: 'Prof Dev', icon: 'profdev.svg', route: '/culture', comingSoon: true },
+  { label: 'Prof Dev', icon: 'profdev.svg', route: '/culture' },
   { label: 'Settings', icon: 'settings.svg', route: '/settings' },
 ];
 
