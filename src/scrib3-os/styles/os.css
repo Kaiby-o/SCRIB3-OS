@@ -147,3 +147,26 @@ html:has(.os-root) #root {
   background: var(--bg-primary, #EAF2D7) !important;
   touch-action: auto !important;
 }
+
+/* ===== React Grid Layout Overrides ===== */
+
+.react-grid-item.react-grid-placeholder {
+  background: var(--accent, #D7ABC5) !important;
+  opacity: 0.15 !important;
+  border-radius: 10.258px !important;
+}
+
+.react-grid-item > .react-resizable-handle::after {
+  border-color: var(--text-primary) !important;
+  opacity: 0.15;
+}
+
+.react-grid-item > .react-resizable-handle:hover::after {
+  opacity: 0.4;
+}
+
+.react-grid-item.react-draggable-dragging {
+  z-index: 20;
+  opacity: 0.9;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.12);
+}
