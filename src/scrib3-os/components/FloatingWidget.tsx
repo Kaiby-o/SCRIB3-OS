@@ -23,6 +23,7 @@ const QUICK_LINKS: { label: string; icon: string; route: string; comingSoon?: bo
   { label: 'Tasks', icon: 'tasks.svg', route: '/projects' },
   { label: 'Feedback', icon: 'feedback.svg', route: '/dashboard', comingSoon: true },
   { label: 'Prof Dev', icon: 'prof-dev.svg', route: '/culture', comingSoon: true },
+  { label: 'Settings', icon: 'settings.svg', route: '/settings' },
 ];
 
 const FloatingWidget: React.FC = () => {

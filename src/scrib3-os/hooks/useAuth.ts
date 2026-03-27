@@ -95,19 +95,31 @@ export const useAuthStore = create<AuthState>((set, get) => ({
 
   signIn: async (email: string, password: string) => {
     set({ loading: true });
-    const { data, error } = await supabase.auth.signInWithPassword({ email, password });
-    if (error) {
+    try {
+      const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+      if (error) {
+        set({ loading: false });
+        throw error;
+      }
+      if (data.user) {
+        let profile = null;
+        try {
+          profile = await loadProfile(data.user.id);
+        } catch (e) {
+          console.warn('[os-auth] Profile load failed after sign-in:', e);
+        }
+        set({
+          user: data.user,
+          profile,
+          role: profile?.role ?? 'team',
+          loading: false,
+        });
+      } else {
+        set({ loading: false });
+      }
+    } catch (e) {
       set({ loading: false });
-      throw error;
-    }
-    if (data.user) {
-      const profile = await loadProfile(data.user.id);
-      set({
-        user: data.user,
-        profile,
-        role: profile?.role ?? 'team',
-        loading: false,
-      });
+      throw e;
     }
   },
 

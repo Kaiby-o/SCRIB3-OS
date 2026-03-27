@@ -140,7 +140,7 @@ const adminConfig: DashboardConfig = {
     { id: 'active-projects', label: 'ACTIVE PROJECTS', gridArea: 'projects', pillFilter: ['Overview', 'Projects'] },
     { id: 'task-queue', label: 'TASK QUEUE', gridArea: 'tasks', pillFilter: ['Overview', 'Projects'] },
     { id: 'team-activity', label: 'TEAM ACTIVITY', gridArea: 'activity', pillFilter: ['Overview', 'Team'] },
-    { id: 'system-overview', label: 'SYSTEM OVERVIEW', gridArea: 'system', pillFilter: ['Overview', 'System'] },
+    { id: 'system-overview', label: 'SYSTEM OVERVIEW', gridArea: 'system', pillFilter: ['Overview', 'Tools'] },
   ],
   gridTemplate: `
     "projects projects tasks"

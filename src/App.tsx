@@ -22,6 +22,7 @@ import OSProjectRegistry from './scrib3-os/pages/ProjectRegistryPage';
 import OSUnitDashboards from './scrib3-os/pages/UnitDashboardsPage';
 import OSCultureHub from './scrib3-os/pages/CultureHubPage';
 import OSToolsDirectory from './scrib3-os/pages/ToolsDirectoryPage';
+import OSSettings from './scrib3-os/pages/SettingsPage';
 import { AuthGuard, RoleGuard } from './scrib3-os/components/AuthGuard';
 // DEVICE layer imports
 import DeviceDashboard from './scrib3-device/pages/DashboardPage';
@@ -237,6 +238,15 @@ export default function App() {
               <RoleGuard allowed={['admin', 'team', 'csuite']}>
                 <OSScopeWatch />
               </RoleGuard>
+            </AuthGuard>
+          }
+        />
+
+        <Route
+          path="/settings"
+          element={
+            <AuthGuard>
+              <OSSettings />
             </AuthGuard>
           }
         />
