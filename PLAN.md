@@ -1,8 +1,8 @@
 # SCRIB3-OS Build Plan
 
-> **Version:** 2.0 | **Date:** 2026-03-26 | **Author:** Ben Lydiat + Claude
-> **Status:** PHASES 1–6 SHELL COMPLETE. Plan v4 integrated. All 5 red priorities built.
-> **Last session:** 2026-03-26 (Session 3). Massive build sprint — 24 routes, 11 data layers, 29-person team roster, 6 priority clients, floating widget, XP system, all nav sub-items wired to real pages. Next: Supabase wiring, mobile pass, drag-and-drop dashboards.
+> **Version:** 3.0 | **Date:** 2026-03-27 | **Author:** Ben Lydiat + Claude
+> **Status:** PHASES 1–6 COMPLETE + LINEAR INTEGRATION LIVE. Security audit done. Dashboard in rebuild mode.
+> **Last session:** 2026-03-27 (Session 4). Linear /tasks integration, floating widget overhaul, login fix, security audit, empty dashboard for widget rebuild. 25 routes live at s3-os.com via Railway.
 
 ---
 
@@ -256,15 +256,25 @@ Phases 2 and 4 can run in parallel after Phase 1. Phase 5 requires both.
 | Phase 4 — Projects + Work | ✅ Complete | `/projects`, `/units`, `/resources/what-good-looks-like` |
 | Phase 6 — Culture + Tools | ✅ Complete | `/culture`, `/tools` |
 
+### Session 4 Additions (2026-03-27)
+| Feature | Status | Notes |
+|---------|--------|-------|
+| `/tasks` — Linear integration | ✅ Live | GraphQL API, 30s auto-refresh, bi-directional sync |
+| `/settings` — User settings | ✅ Built | Widget toggles, sign out |
+| Floating widget overhaul | ✅ Done | Draggable, dockable, SVG icons, status dropdown |
+| Login auth rewrite | ✅ Fixed | Timeout-protected, no more infinite loading |
+| Editable user profile | ✅ Built | Own profile editable (bio, title, location, skills) |
+| Security audit | ✅ Done | Secrets scrubbed, .env protected, XSS fixed |
+| Railway deployment | ✅ Live | s3-os.com with auto-deploy from main |
+
 ### Not Yet Built
 | Phase | Status | Notes |
 |-------|--------|-------|
 | Phase 3.5 — Mobile | ⬜ Not started | CSS responsive pass at 375px |
-| Phase 5 — Drag-and-drop | ⬜ Not started | Needs `react-grid-layout` |
-| Phase 7 — Fun layer | ⬜ Not started | Virtual office fixes, Pokémon mechanics, SCRIB3r cards |
-| Supabase wiring | ⬜ Not started | All pages use mock data — no persistence |
-| Linear API | ⬜ Not started | Needs API key connection |
-| Vercel deployment | ⬜ Not started | Localhost only |
+| Phase 5 — Dashboard widgets | ⬜ In rebuild | Empty "Add Widgets" state, react-grid-layout installed |
+| Phase 7 — Fun layer | ⬜ Not started | Virtual office fixes, Pokémon mechanics |
+| Webhook real-time sync | ⬜ Planned | Linear webhooks for push updates |
+| Backend API proxy | ⬜ Planned | Move Linear API key server-side |
 
 ### Data Layers Built (all mock)
 `engagementHealth.ts`, `bandwidth.ts`, `vendors.ts`, `scopeWatch.ts`, `team.ts` (29 members), `clients.ts` (6 priority), `projects.ts` (10 projects), `xp.ts`, `dashboardConfig.ts`

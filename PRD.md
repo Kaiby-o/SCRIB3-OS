@@ -59,6 +59,8 @@ admin > csuite > team > client | vendor
 | 22 | `/culture` | Auth | admin, team, csuite | Culture hub — principles, XP, culture book |
 | 23 | `/tools` | Auth | admin, team, csuite | Tools directory — 13 tools |
 | 24 | `/device` | Auth | admin only | SCRIB3-DEVICE (gamified admin layer) |
+| 25 | `/tasks` | Auth | All | Linear integration — live issue tracking |
+| 26 | `/settings` | Auth | All | User settings — widget toggles, sign out |
 
 ---
 

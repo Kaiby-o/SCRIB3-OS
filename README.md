@@ -110,6 +110,8 @@ src/
       WhatGoodLooksLikePage.tsx  # /resources/what-good-looks-like
       CultureHubPage.tsx         # /culture
       ToolsDirectoryPage.tsx     # /tools
+      TasksPage.tsx              # /tasks (Linear integration)
+      SettingsPage.tsx           # /settings
     hooks/
       useAuth.ts                 # Zustand auth store
       useTheme.ts                # Dark/light mode (localStorage + data-theme)
@@ -123,6 +125,7 @@ src/
       clients.ts                 # 6 priority clients, full MD schema
       projects.ts                # 10 projects
       xp.ts                      # 5 levels, 16 events
+      linear.ts                  # Linear GraphQL API client
 
   scrib3-device/                 # Gamified admin layer (frozen)
     pages/                       # Dashboard, avatar creator
