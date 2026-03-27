@@ -70,7 +70,11 @@ const TasksPage: React.FC = () => {
   }, []);
 
   useEffect(() => { loadData(); }, [loadData]);
-  useEffect(() => { const t = setInterval(loadData, 30000); return () => clearInterval(t); }, [loadData]);
+  // Auto-refresh every 30s, but only when tab is visible
+  useEffect(() => {
+    const t = setInterval(() => { if (document.visibilityState === 'visible') loadData(); }, 30000);
+    return () => clearInterval(t);
+  }, [loadData]);
 
   const openIssue = async (issue: LinearIssue) => {
     setSelectedIssue(issue);

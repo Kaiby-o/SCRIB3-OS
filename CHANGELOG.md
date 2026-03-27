@@ -388,7 +388,7 @@
 - Dashboard content modules (bento grid, metrics)
 - "Having Issues?" email form wiring
 - Visual polish pass on dashboard
-- Seed accounts: `ben.lydiat@scrib3.co` (admin), `sixtyne@scrib3.co` (csuite), `ck@scrib3.co` (team), `nick@scrib3.co` (csuite) — password: `Scrib3Dev2026!`
+- Seed accounts: `ben.lydiat@scrib3.co` (admin), `sixtyne@scrib3.co` (csuite), `ck@scrib3.co` (team), `nick@scrib3.co` (csuite) — password set via SEED_PASSWORD env var
 
 **Next session priorities:**
 1. Visual refinement against Figma screenshots (page-by-page comparison)

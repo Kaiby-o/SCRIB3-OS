@@ -317,13 +317,13 @@ const ClientOnboardPage: React.FC = () => {
           style={{ marginTop: '24px' }}
         >
           {phaseIndex > 0 ? (
-            <PillButton label="&larr; Previous" onClick={prev} secondary />
+            <PillButton label="← Previous" onClick={prev} secondary />
           ) : (
             <div />
           )}
 
           {phaseIndex < PHASES.length - 1 ? (
-            <PillButton label="Next &rarr;" onClick={next} />
+            <PillButton label="Next →" onClick={next} />
           ) : (
             <PillButton
               label="Create Client"
@@ -557,7 +557,6 @@ const PillButton: React.FC<{
 }> = ({ label, onClick, secondary, accent }) => (
   <button
     onClick={onClick}
-    dangerouslySetInnerHTML={{ __html: label }}
     style={{
       fontFamily: "'Owners Wide', sans-serif",
       fontSize: '12px',
@@ -573,7 +572,9 @@ const PillButton: React.FC<{
     }}
     onMouseEnter={(e) => (e.currentTarget.style.opacity = '0.8')}
     onMouseLeave={(e) => (e.currentTarget.style.opacity = '1')}
-  />
+  >
+    {label}
+  </button>
 );
 
 export default ClientOnboardPage;

@@ -4,13 +4,16 @@
 
 import { createClient } from '@supabase/supabase-js';
 
-const supabase = createClient(
-  'https://dzufyjiczbgsvjyinpks.supabase.co',
-  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR6dWZ5amljemJnc3ZqeWlucGtzIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc3MzQ0MzEzOCwiZXhwIjoyMDg5MDE5MTM4fQ.xGLUU7gD-vKZ3I_CMQn70sSz_Vla-OaW_H86D_6kV0U'
-);
+const SUPABASE_URL = process.env.SUPABASE_URL ?? '';
+const SUPABASE_SERVICE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY ?? '';
+if (!SUPABASE_URL || !SUPABASE_SERVICE_KEY) {
+  console.error('Set SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY env vars');
+  process.exit(1);
+}
+const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_KEY);
 
-const AVATAR_BASE = 'https://dzufyjiczbgsvjyinpks.supabase.co/storage/v1/object/public/Avatars/';
-const DEFAULT_PASSWORD = 'Scrib3Dev2026!';
+const AVATAR_BASE = SUPABASE_URL + '/storage/v1/object/public/Avatars/';
+const DEFAULT_PASSWORD = process.env.SEED_PASSWORD ?? 'changeme123';
 
 const teamMembers = [
   { email: 'jb@scrib3.co', display_name: 'JB', role: 'csuite', title: 'Chief Executive Officer', unit: 'C-Suite', location: 'Chicago, USA', timezone: 'America/Chicago', avatar: 'JB.png', xp: 500, bandwidth: 40, bio: '', skillsets: ['Leadership', 'Business Development', 'Web3'], joined: '2021-01-01' },

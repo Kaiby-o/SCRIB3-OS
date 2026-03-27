@@ -112,3 +112,19 @@ SCRIB3-OS — **Phases 1–6 shell complete (Plan v4 integrated).** All 5 red pr
 - Mechanical easing curves (`cubic-bezier`, no `ease-in-out`)
 - No drop shadows, no glassmorphism, no decorative elements
 - Roles: `admin`, `team`, `csuite`, `client`, `vendor`
+
+## Security Notes
+- **NEVER** commit `.env` files, API keys, or service role keys
+- `VITE_LINEAR_API_KEY` is exposed in the frontend bundle — move to backend proxy before public launch
+- All seed scripts read credentials from env vars, not hardcoded
+- RLS is enabled on `profiles` and `support_requests` — remaining tables need policies before production
+- The Supabase service_role key was rotated after accidental commit (March 2026)
+
+## Session 4 Additions (2026-03-27)
+- `/tasks` — Linear integration with live issue tracking, 30s auto-refresh
+- `/settings` — User settings with widget toggles
+- Floating widget: draggable, dockable, SVG icons from Supabase Storage
+- Login: rewritten auth flow with timeout safety
+- Dashboard: empty "Add Widgets" placeholder (widgets being rebuilt)
+- All team avatars from Supabase Storage bucket
+- Security audit completed — secrets scrubbed, .env protected
