@@ -133,7 +133,6 @@
   font-size: 16px;
   line-height: 1.4;
   letter-spacing: 0.96px;
-  overflow: auto !important;
 }
 
 /* All OS page headers should stick to the top when scrolling */
@@ -142,6 +141,7 @@
   top: 0;
   z-index: 40;
   background: var(--bg-primary, #EAF2D7);
+  border-bottom: 1px solid #000000;
 }
 
 /* Reset all DEVICE global styles when on OS routes */
