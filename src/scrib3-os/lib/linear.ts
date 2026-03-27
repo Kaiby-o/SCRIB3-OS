@@ -87,12 +87,12 @@ export interface LinearIssue {
   url: string;
 }
 
-export const PRIORITY_LABELS: Record<number, { label: string; icon: string; color: string }> = {
-  0: { label: 'No Priority', icon: '—', color: '#95A5A6' },
-  1: { label: 'Urgent', icon: '🔴', color: '#E74C3C' },
-  2: { label: 'High', icon: '🟠', color: '#E67E22' },
-  3: { label: 'Medium', icon: '🟡', color: '#F1C40F' },
-  4: { label: 'Low', icon: '🔵', color: '#6E93C3' },
+export const PRIORITY_LABELS: Record<number, { label: string; color: string }> = {
+  0: { label: 'No Priority', color: '#95A5A6' },
+  1: { label: 'Urgent', color: '#E74C3C' },
+  2: { label: 'High', color: '#E67E22' },
+  3: { label: 'Medium', color: '#F1C40F' },
+  4: { label: 'Low', color: '#6E93C3' },
 };
 
 /* ------------------------------------------------------------------ */

@@ -1,19 +1,62 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import LogoScrib3 from '../components/LogoScrib3';
+import { mockTeam } from '../lib/team';
 import {
-  fetchIssues, fetchIssueDetail, fetchWorkflowStates,
-  updateIssueState, addComment,
-  type LinearIssue, type LinearState, type LinearLabel,
+  fetchIssues, fetchIssueDetail, fetchWorkflowStates, fetchLinearUsers,
+  updateIssueState, updateIssueAssignee, updateIssuePriority, addComment,
+  type LinearIssue, type LinearState, type LinearLabel, type LinearUser,
   PRIORITY_LABELS,
 } from '../lib/linear';
 
 const easing = 'cubic-bezier(0.22, 0.61, 0.36, 1)';
 
+
+// Map Linear user email → Supabase avatar
+function getAvatarForEmail(email: string): string | null {
+  const member = mockTeam.find((m) => m.email === email);
+  return member?.avatarUrl ?? null;
+}
+
+/* Priority dot */
+const PriorityDot: React.FC<{ priority: number; size?: number }> = ({ priority, size = 8 }) => {
+  const p = PRIORITY_LABELS[priority] ?? PRIORITY_LABELS[0];
+  return <div style={{ width: size, height: size, borderRadius: '50%', background: p.color, flexShrink: 0 }} title={p.label} />;
+};
+
+/* Mini avatar */
+const Avatar: React.FC<{ name: string; email?: string; url?: string | null; size?: number; style?: React.CSSProperties }> = ({ name, email, url, size = 22, style: s }) => {
+  const avatarUrl = url || (email ? getAvatarForEmail(email) : null);
+  return (
+    <div style={{ width: size, height: size, borderRadius: '50%', background: '#333', overflow: 'hidden', flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', ...s }}>
+      {avatarUrl ? <img src={avatarUrl} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} /> :
+        <span style={{ color: '#EAF2D7', fontSize: size * 0.35, fontFamily: "'Kaio', sans-serif", fontWeight: 900 }}>{name.split(' ').map((w) => w[0]).join('').slice(0, 2)}</span>}
+    </div>
+  );
+};
+
+/* Label badge */
+const LabelBadge: React.FC<{ label: LinearLabel }> = ({ label }) => (
+  <span style={{ fontFamily: "'Owners Wide', sans-serif", fontSize: 9, letterSpacing: '0.5px', padding: '2px 8px', borderRadius: '75.641px', whiteSpace: 'nowrap', background: `${label.color}20`, border: `1px solid ${label.color}40`, color: label.color }}>{label.name}</span>
+);
+
+/* Styled select */
+const StyledSelect: React.FC<{ value: string; onChange: (v: string) => void; options: { value: string; label: string }[] }> = ({ value, onChange, options }) => (
+  <select value={value} onChange={(e) => onChange(e.target.value)}
+    style={{ fontFamily: "'Owners Wide', sans-serif", fontSize: 12, background: '#EAF2D7', border: '0.733px solid var(--border-default)', borderRadius: '10.258px', padding: '8px 12px', color: '#000', outline: 'none', cursor: 'pointer', appearance: 'none', width: '100%' }}>
+    {options.map((o) => <option key={o.value} value={o.value}>{o.label}</option>)}
+  </select>
+);
+
+/* ------------------------------------------------------------------ */
+/*  Tasks Page                                                         */
+/* ------------------------------------------------------------------ */
+
 const TasksPage: React.FC = () => {
   const navigate = useNavigate();
   const [issues, setIssues] = useState<LinearIssue[]>([]);
   const [states, setStates] = useState<LinearState[]>([]);
+  const [linearUsers, setLinearUsers] = useState<LinearUser[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [selectedIssue, setSelectedIssue] = useState<LinearIssue | null>(null);
@@ -21,37 +64,36 @@ const TasksPage: React.FC = () => {
 
   const loadData = useCallback(async () => {
     try {
-      const [issueData, stateData] = await Promise.all([fetchIssues(200), fetchWorkflowStates()]);
-      setIssues(issueData);
-      setStates(stateData);
-      setError(null);
-    } catch (e) {
-      setError(e instanceof Error ? e.message : 'Failed to load');
-    } finally {
-      setLoading(false);
-    }
+      const [i, s, u] = await Promise.all([fetchIssues(200), fetchWorkflowStates(), fetchLinearUsers()]);
+      setIssues(i); setStates(s); setLinearUsers(u); setError(null);
+    } catch (e) { setError(e instanceof Error ? e.message : 'Failed'); } finally { setLoading(false); }
   }, []);
 
   useEffect(() => { loadData(); }, [loadData]);
-  useEffect(() => { const i = setInterval(loadData, 30000); return () => clearInterval(i); }, [loadData]);
+  useEffect(() => { const t = setInterval(loadData, 30000); return () => clearInterval(t); }, [loadData]);
 
   const openIssue = async (issue: LinearIssue) => {
     setSelectedIssue(issue);
-    try { const full = await fetchIssueDetail(issue.id); setSelectedIssue(full); } catch { /* keep partial */ }
+    try { setSelectedIssue(await fetchIssueDetail(issue.id)); } catch { /* keep partial */ }
   };
 
-  const toggleState = (id: string) => setCollapsedStates((prev) => { const n = new Set(prev); if (n.has(id)) n.delete(id); else n.add(id); return n; });
+  const toggleState = (id: string) => setCollapsedStates((p) => { const n = new Set(p); n.has(id) ? n.delete(id) : n.add(id); return n; });
 
+  // Deduplicate states by name
+  const uniqueStates = useMemo(() => {
+    const seen = new Set<string>();
+    return states.filter((s) => { if (seen.has(s.name)) return false; seen.add(s.name); return true; });
+  }, [states]);
+
+  // Group top-level issues
   const childIds = new Set(issues.flatMap((i) => i.children?.nodes?.map((c) => c.id) ?? []));
   const topLevel = issues.filter((i) => !childIds.has(i.id));
-  const grouped = states.map((s) => ({ state: s, issues: topLevel.filter((i) => i.state.id === s.id) })).filter((g) => g.issues.length > 0);
+  const grouped = uniqueStates.map((s) => ({ state: s, issues: topLevel.filter((i) => i.state.name === s.name) })).filter((g) => g.issues.length > 0);
 
   return (
     <div className="os-root" style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
       <header className="flex items-center justify-between" style={{ height: '85px', padding: '0 40px' }}>
-        <button onClick={() => navigate('/dashboard')} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}>
-          <LogoScrib3 height={18} color="var(--text-primary)" />
-        </button>
+        <button onClick={() => navigate('/dashboard')} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}><LogoScrib3 height={18} color="var(--text-primary)" /></button>
         <div className="flex items-center gap-3">
           <span style={{ fontFamily: "'Kaio', sans-serif", fontWeight: 800, fontSize: '16px', textTransform: 'uppercase' }}>Tasks</span>
           <span style={{ fontFamily: "'Owners Wide', sans-serif", fontSize: '10px', opacity: 0.3 }}>{issues.length} issues · Live</span>
@@ -60,36 +102,42 @@ const TasksPage: React.FC = () => {
       </header>
 
       {loading ? (
-        <div className="flex items-center justify-center flex-1">
-          <span style={{ fontFamily: "'Owners Wide', sans-serif", fontSize: '14px', opacity: 0.4, textTransform: 'uppercase', letterSpacing: '1px' }}>Loading from Linear...</span>
-        </div>
+        <div className="flex items-center justify-center flex-1"><span style={{ fontFamily: "'Owners Wide', sans-serif", fontSize: 14, opacity: 0.4, textTransform: 'uppercase', letterSpacing: '1px' }}>Loading from Linear...</span></div>
       ) : error ? (
         <div className="flex flex-col items-center justify-center flex-1 gap-4">
-          <span style={{ fontFamily: "'Owners Wide', sans-serif", fontSize: '14px', color: '#E74C3C' }}>{error}</span>
-          <button onClick={loadData} style={{ fontFamily: "'Owners Wide', sans-serif", fontSize: '12px', padding: '8px 20px', borderRadius: '75.641px', border: '1px solid var(--border-default)', background: 'transparent', cursor: 'pointer' }}>Retry</button>
+          <span style={{ fontFamily: "'Owners Wide', sans-serif", fontSize: 14, color: '#E74C3C' }}>{error}</span>
+          <button onClick={loadData} style={{ fontFamily: "'Owners Wide', sans-serif", fontSize: 12, padding: '8px 20px', borderRadius: '75.641px', border: '1px solid var(--border-default)', background: 'transparent', cursor: 'pointer' }}>Retry</button>
         </div>
       ) : (
         <div className="flex flex-1" style={{ overflow: 'hidden' }}>
+          {/* Left panel — independent scroll */}
           <div style={{ flex: selectedIssue ? '0 0 55%' : '1', overflow: 'auto', padding: '24px' }}>
             {grouped.map(({ state, issues: si }) => {
               const collapsed = collapsedStates.has(state.id);
               return (
-                <div key={state.id} style={{ marginBottom: '24px' }}>
-                  <button onClick={() => toggleState(state.id)} className="flex items-center gap-2" style={{ marginBottom: collapsed ? '0' : '8px', background: 'none', border: 'none', cursor: 'pointer', padding: '4px 0', width: '100%', textAlign: 'left' }}>
+                <div key={state.id} style={{ marginBottom: 24 }}>
+                  <button onClick={() => toggleState(state.id)} className="flex items-center gap-2" style={{ marginBottom: collapsed ? 0 : 8, background: 'none', border: 'none', cursor: 'pointer', padding: '4px 0', width: '100%', textAlign: 'left' }}>
                     <svg width="10" height="10" viewBox="0 0 10 10" fill="var(--text-primary)" style={{ transform: collapsed ? 'rotate(-90deg)' : '', transition: `transform 150ms ${easing}`, opacity: 0.3 }}><polygon points="0,0 10,5 0,10" /></svg>
                     <div style={{ width: 10, height: 10, borderRadius: '50%', background: state.color }} />
-                    <span style={{ fontFamily: "'Kaio', sans-serif", fontWeight: 800, fontSize: '13px', textTransform: 'uppercase' }}>{state.name}</span>
-                    <span style={{ fontFamily: "'Owners Wide', sans-serif", fontSize: '11px', opacity: 0.4 }}>{si.length}</span>
+                    <span style={{ fontFamily: "'Kaio', sans-serif", fontWeight: 800, fontSize: 13, textTransform: 'uppercase' }}>{state.name}</span>
+                    <span style={{ fontFamily: "'Owners Wide', sans-serif", fontSize: 11, opacity: 0.4 }}>{si.length}</span>
                   </button>
-                  {!collapsed && si.map((issue) => <IssueRowNested key={issue.id} issue={issue} allIssues={issues} selected={selectedIssue?.id === issue.id} onClick={() => openIssue(issue)} onChildClick={openIssue} />)}
+                  {!collapsed && si.map((issue) => (
+                    <IssueRowNested key={issue.id} issue={issue} allIssues={issues} selected={selectedIssue?.id === issue.id} onClick={() => openIssue(issue)} onChildClick={openIssue} />
+                  ))}
                 </div>
               );
             })}
           </div>
+
+          {/* Right panel — independent scroll */}
           {selectedIssue && (
-            <DetailPanel issue={selectedIssue} states={states} onClose={() => setSelectedIssue(null)}
+            <DetailPanel issue={selectedIssue} states={uniqueStates} users={linearUsers}
+              onClose={() => setSelectedIssue(null)}
               onStateChange={async (sid) => { await updateIssueState(selectedIssue.id, sid); loadData(); }}
-              onComment={async (body) => { await addComment(selectedIssue.id, body); const u = await fetchIssueDetail(selectedIssue.id); setSelectedIssue(u); }} />
+              onAssigneeChange={async (uid) => { await updateIssueAssignee(selectedIssue.id, uid); loadData(); }}
+              onPriorityChange={async (p) => { await updateIssuePriority(selectedIssue.id, p); loadData(); }}
+              onComment={async (body) => { await addComment(selectedIssue.id, body); setSelectedIssue(await fetchIssueDetail(selectedIssue.id)); }} />
           )}
         </div>
       )}
@@ -97,19 +145,31 @@ const TasksPage: React.FC = () => {
   );
 };
 
-/* Issue row with collapsible children */
+/* Issue row with nested children */
 const IssueRowNested: React.FC<{ issue: LinearIssue; allIssues: LinearIssue[]; selected: boolean; onClick: () => void; onChildClick: (i: LinearIssue) => void }> = ({ issue, allIssues, selected, onClick, onChildClick }) => {
   const [open, setOpen] = useState(false);
   const kids = issue.children?.nodes ?? [];
+  
+  const sc = kids.length; const sd = kids.filter((c) => c.state.type === 'completed').length;
+
   return (
     <>
       <div className="flex items-center">
-        {kids.length > 0 ? (
-          <button onClick={(e) => { e.stopPropagation(); setOpen(!open); }} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '4px', marginRight: '2px', flexShrink: 0 }}>
+        {sc > 0 ? (
+          <button onClick={(e) => { e.stopPropagation(); setOpen(!open); }} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 4, marginRight: 2, flexShrink: 0 }}>
             <svg width="8" height="8" viewBox="0 0 8 8" fill="var(--text-primary)" style={{ transform: open ? 'rotate(90deg)' : '', transition: `transform 150ms ${easing}`, opacity: 0.3 }}><polygon points="0,0 8,4 0,8" /></svg>
           </button>
         ) : <div style={{ width: 16 }} />}
-        <Row issue={issue} selected={selected} onClick={onClick} />
+        <div onClick={onClick} className="flex items-center" style={{ padding: '8px 12px', flex: 1, borderRadius: 6, cursor: 'pointer', background: selected ? 'var(--bg-surface)' : 'transparent', border: selected ? '0.733px solid var(--border-default)' : '0.733px solid transparent', transition: `background 100ms ${easing}` }}
+          onMouseEnter={(e) => { if (!selected) e.currentTarget.style.background = 'var(--bg-surface)'; }} onMouseLeave={(e) => { if (!selected) e.currentTarget.style.background = 'transparent'; }}>
+          <PriorityDot priority={issue.priority} />
+          <span style={{ width: 75, fontFamily: "'Owners Wide', sans-serif", fontSize: 10, opacity: 0.35, flexShrink: 0, marginLeft: 8 }}>{issue.identifier}</span>
+          <span style={{ flex: 1, fontFamily: "'Owners Wide', sans-serif", fontSize: 13, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{issue.title}</span>
+          {sc > 0 && <span style={{ fontFamily: "'Owners Wide', sans-serif", fontSize: 10, opacity: 0.4, marginLeft: 8, flexShrink: 0 }}>{sd}/{sc}</span>}
+          <div className="flex gap-1" style={{ marginLeft: 12, flexShrink: 0 }}>{issue.labels.nodes.slice(0, 3).map((l) => <LabelBadge key={l.id} label={l} />)}</div>
+          {issue.assignee && <Avatar name={issue.assignee.name} email={issue.assignee.email} url={issue.assignee.avatarUrl} size={22} style={{ marginLeft: 8 }} />}
+          {issue.dueDate && <span style={{ fontFamily: "'Owners Wide', sans-serif", fontSize: 10, opacity: 0.4, marginLeft: 8, flexShrink: 0 }}>{new Date(issue.dueDate).toLocaleDateString('en-GB', { month: 'short', day: 'numeric' })}</span>}
+        </div>
       </div>
       {open && kids.length > 0 && (
         <div style={{ paddingLeft: 32, borderLeft: '1px solid rgba(0,0,0,0.06)', marginLeft: 8 }}>
@@ -119,8 +179,8 @@ const IssueRowNested: React.FC<{ issue: LinearIssue; allIssues: LinearIssue[]; s
               <div key={c.id} onClick={() => full && onChildClick(full)} className="flex items-center" style={{ padding: '6px 12px', borderRadius: 6, cursor: 'pointer', transition: `background 100ms ${easing}` }}
                 onMouseEnter={(e) => (e.currentTarget.style.background = 'var(--bg-surface)')} onMouseLeave={(e) => (e.currentTarget.style.background = 'transparent')}>
                 <div style={{ width: 8, height: 8, borderRadius: '50%', background: c.state.color, flexShrink: 0, marginRight: 8 }} />
-                <span style={{ fontFamily: "'Owners Wide', sans-serif", fontSize: '12px', flex: 1 }}>{c.title}</span>
-                {c.assignee && <MiniAvatar name={c.assignee.name} url={c.assignee.avatarUrl} size={20} />}
+                <span style={{ fontFamily: "'Owners Wide', sans-serif", fontSize: 12, flex: 1 }}>{c.title}</span>
+                {c.assignee && <Avatar name={c.assignee.name} url={c.assignee.avatarUrl} size={20} />}
               </div>
             );
           })}
@@ -130,35 +190,23 @@ const IssueRowNested: React.FC<{ issue: LinearIssue; allIssues: LinearIssue[]; s
   );
 };
 
-const Row: React.FC<{ issue: LinearIssue; selected: boolean; onClick: () => void }> = ({ issue: i, selected, onClick }) => {
-  const p = PRIORITY_LABELS[i.priority] ?? PRIORITY_LABELS[0];
-  const sc = i.children?.nodes?.length ?? 0;
-  const sd = i.children?.nodes?.filter((c) => c.state.type === 'completed').length ?? 0;
-  return (
-    <div onClick={onClick} className="flex items-center" style={{ padding: '8px 12px', flex: 1, borderRadius: 6, cursor: 'pointer', background: selected ? 'var(--bg-surface)' : 'transparent', border: selected ? '0.733px solid var(--border-default)' : '0.733px solid transparent', transition: `background 100ms ${easing}` }}
-      onMouseEnter={(e) => { if (!selected) e.currentTarget.style.background = 'var(--bg-surface)'; }} onMouseLeave={(e) => { if (!selected) e.currentTarget.style.background = 'transparent'; }}>
-      <span style={{ width: 20, fontSize: 11, opacity: 0.4, flexShrink: 0 }} title={p.label}>{p.icon}</span>
-      <span style={{ width: 75, fontFamily: "'Owners Wide', sans-serif", fontSize: 10, opacity: 0.35, flexShrink: 0 }}>{i.identifier}</span>
-      <span style={{ flex: 1, fontFamily: "'Owners Wide', sans-serif", fontSize: 13, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{i.title}</span>
-      {sc > 0 && <span style={{ fontFamily: "'Owners Wide', sans-serif", fontSize: 10, opacity: 0.4, marginLeft: 8, flexShrink: 0 }}>{sd}/{sc}</span>}
-      <div className="flex gap-1" style={{ marginLeft: 12, flexShrink: 0 }}>{i.labels.nodes.slice(0, 3).map((l) => <LabelBadge key={l.id} label={l} />)}</div>
-      {i.assignee && <MiniAvatar name={i.assignee.name} url={i.assignee.avatarUrl} size={22} style={{ marginLeft: 8 }} />}
-      {i.dueDate && <span style={{ fontFamily: "'Owners Wide', sans-serif", fontSize: 10, opacity: 0.4, marginLeft: 8, flexShrink: 0 }}>{new Date(i.dueDate).toLocaleDateString('en-GB', { month: 'short', day: 'numeric' })}</span>}
-    </div>
-  );
-};
-
 /* Detail panel */
-const DetailPanel: React.FC<{ issue: LinearIssue; states: LinearState[]; onClose: () => void; onStateChange: (s: string) => Promise<void>; onComment: (b: string) => Promise<void> }> = ({ issue, states, onClose, onStateChange, onComment }) => {
+const DetailPanel: React.FC<{
+  issue: LinearIssue; states: LinearState[]; users: LinearUser[];
+  onClose: () => void; onStateChange: (s: string) => Promise<void>;
+  onAssigneeChange: (u: string | null) => Promise<void>;
+  onPriorityChange: (p: number) => Promise<void>;
+  onComment: (b: string) => Promise<void>;
+}> = ({ issue, states, users, onClose, onStateChange, onAssigneeChange, onPriorityChange, onComment }) => {
   const [comment, setComment] = useState('');
   const [sending, setSending] = useState(false);
   const [kidsOpen, setKidsOpen] = useState(true);
-  const p = PRIORITY_LABELS[issue.priority] ?? PRIORITY_LABELS[0];
   const comments = [...(issue.comments?.nodes ?? [])].sort((a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime());
   const send = async () => { if (!comment.trim()) return; setSending(true); await onComment(comment.trim()); setComment(''); setSending(false); };
 
   return (
-    <div style={{ flex: '0 0 45%', borderLeft: '0.733px solid var(--border-default)', display: 'flex', flexDirection: 'column', background: 'var(--bg-primary)' }}>
+    <div style={{ flex: '0 0 45%', borderLeft: '0.733px solid var(--border-default)', display: 'flex', flexDirection: 'column', background: 'var(--bg-primary)', overflow: 'hidden' }}>
+      {/* Header */}
       <div className="flex items-center justify-between" style={{ padding: '16px 24px', borderBottom: '0.5px solid rgba(0,0,0,0.06)', flexShrink: 0 }}>
         <div className="flex items-center gap-2">
           <span style={{ fontFamily: "'Owners Wide', sans-serif", fontSize: 11, opacity: 0.4 }}>{issue.identifier}</span>
@@ -167,23 +215,35 @@ const DetailPanel: React.FC<{ issue: LinearIssue; states: LinearState[]; onClose
         <button onClick={onClose} style={{ fontFamily: "'Kaio', sans-serif", fontSize: 18, background: 'none', border: 'none', cursor: 'pointer', opacity: 0.4 }}>&times;</button>
       </div>
 
+      {/* Scrollable content — independent from left panel */}
       <div style={{ flex: 1, overflow: 'auto', padding: 24 }}>
         <h2 style={{ fontFamily: "'Kaio', sans-serif", fontWeight: 800, fontSize: 20, textTransform: 'uppercase', lineHeight: 1.1, margin: '0 0 16px' }}>{issue.title}</h2>
         {issue.description && <p style={{ fontFamily: "'Owners Wide', sans-serif", fontSize: 13, lineHeight: 1.6, opacity: 0.7, marginBottom: 24, whiteSpace: 'pre-wrap' }}>{issue.description}</p>}
 
+        {/* Editable properties */}
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, marginBottom: 24 }}>
           <div>
             <PropLabel>Status</PropLabel>
-            <select value={issue.state.id} onChange={(e) => onStateChange(e.target.value)}
-              style={{ fontFamily: "'Owners Wide', sans-serif", fontSize: 12, background: 'var(--bg-surface)', border: '0.733px solid var(--border-default)', borderRadius: '75.641px', padding: '6px 12px', color: 'var(--text-primary)', outline: 'none', cursor: 'pointer', appearance: 'none', width: '100%' }}>
-              {states.map((s) => <option key={s.id} value={s.id}>{s.name}</option>)}
-            </select>
+            <StyledSelect value={issue.state.id} onChange={onStateChange}
+              options={states.map((s) => ({ value: s.id, label: s.name }))} />
           </div>
-          <div><PropLabel>Priority</PropLabel><span style={{ fontFamily: "'Owners Wide', sans-serif", fontSize: 12 }}>{p.icon} {p.label}</span></div>
-          <div><PropLabel>Assignee</PropLabel><span style={{ fontFamily: "'Owners Wide', sans-serif", fontSize: 12 }}>{issue.assignee?.name ?? 'Unassigned'}</span></div>
-          <div><PropLabel>Project</PropLabel><span style={{ fontFamily: "'Owners Wide', sans-serif", fontSize: 12 }}>{issue.project?.name ?? '—'}</span></div>
+          <div>
+            <PropLabel>Priority</PropLabel>
+            <StyledSelect value={String(issue.priority)} onChange={(v) => onPriorityChange(Number(v))}
+              options={[0,1,2,3,4].map((p) => ({ value: String(p), label: PRIORITY_LABELS[p]?.label ?? 'None' }))} />
+          </div>
+          <div>
+            <PropLabel>Assignee</PropLabel>
+            <StyledSelect value={issue.assignee?.id ?? ''} onChange={(v) => onAssigneeChange(v || null)}
+              options={[{ value: '', label: 'Unassigned' }, ...users.map((u) => ({ value: u.id, label: u.name }))]} />
+          </div>
+          <div>
+            <PropLabel>Project</PropLabel>
+            <span style={{ fontFamily: "'Owners Wide', sans-serif", fontSize: 12 }}>{issue.project?.name ?? '—'}</span>
+          </div>
         </div>
 
+        {/* Labels */}
         {issue.labels.nodes.length > 0 && (
           <div style={{ marginBottom: 24 }}>
             <PropLabel>Labels</PropLabel>
@@ -191,6 +251,7 @@ const DetailPanel: React.FC<{ issue: LinearIssue; states: LinearState[]; onClose
           </div>
         )}
 
+        {/* Sub-issues */}
         {issue.children?.nodes?.length > 0 && (
           <div style={{ marginBottom: 24 }}>
             <button onClick={() => setKidsOpen(!kidsOpen)} className="flex items-center gap-2" style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '0 0 8px' }}>
@@ -201,13 +262,13 @@ const DetailPanel: React.FC<{ issue: LinearIssue; states: LinearState[]; onClose
               <div key={c.id} className="flex items-center gap-2" style={{ padding: '6px 0', borderBottom: '0.5px solid rgba(0,0,0,0.04)' }}>
                 <div style={{ width: 8, height: 8, borderRadius: '50%', background: c.state.color }} />
                 <span style={{ fontFamily: "'Owners Wide', sans-serif", fontSize: 12, flex: 1 }}>{c.title}</span>
-                {c.assignee && <MiniAvatar name={c.assignee.name} url={c.assignee.avatarUrl} size={20} />}
+                {c.assignee && <Avatar name={c.assignee.name} url={c.assignee.avatarUrl} size={20} />}
               </div>
             ))}
           </div>
         )}
 
-        {/* Comments — individual boxes, oldest first, newest at bottom */}
+        {/* Comments */}
         <div>
           <PropLabel>Activity · {comments.length}</PropLabel>
           <div className="flex flex-col gap-3">
@@ -226,7 +287,7 @@ const DetailPanel: React.FC<{ issue: LinearIssue; states: LinearState[]; onClose
         </div>
       </div>
 
-      {/* Comment input pinned to bottom */}
+      {/* Comment input — fixed at bottom */}
       <div style={{ padding: '16px 24px', borderTop: '0.733px solid var(--border-default)', flexShrink: 0 }}>
         <div className="flex gap-2">
           <textarea value={comment} onChange={(e) => setComment(e.target.value)} placeholder="Leave a comment..." rows={2}
@@ -241,20 +302,8 @@ const DetailPanel: React.FC<{ issue: LinearIssue; states: LinearState[]; onClose
   );
 };
 
-/* Shared */
 const PropLabel: React.FC<{ children: React.ReactNode; style?: React.CSSProperties }> = ({ children, style }) => (
   <span style={{ fontFamily: "'Owners Wide', sans-serif", fontSize: 10, letterSpacing: '1px', textTransform: 'uppercase', opacity: 0.4, display: 'block', marginBottom: 8, ...style }}>{children}</span>
-);
-
-const LabelBadge: React.FC<{ label: LinearLabel }> = ({ label }) => (
-  <span style={{ fontFamily: "'Owners Wide', sans-serif", fontSize: 9, letterSpacing: '0.5px', padding: '2px 8px', borderRadius: '75.641px', whiteSpace: 'nowrap', background: `${label.color}20`, border: `1px solid ${label.color}40`, color: label.color }}>{label.name}</span>
-);
-
-const MiniAvatar: React.FC<{ name: string; url: string | null; size: number; style?: React.CSSProperties }> = ({ name, url, size, style: s }) => (
-  <div style={{ width: size, height: size, borderRadius: '50%', background: '#333', overflow: 'hidden', flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', ...s }}>
-    {url ? <img src={url} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} /> :
-      <span style={{ color: '#EAF2D7', fontSize: size * 0.35, fontFamily: "'Kaio', sans-serif", fontWeight: 900 }}>{name.split(' ').map((w) => w[0]).join('').slice(0, 2)}</span>}
-  </div>
 );
 
 export default TasksPage;
