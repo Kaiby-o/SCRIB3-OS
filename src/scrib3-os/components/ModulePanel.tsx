@@ -25,14 +25,26 @@ const ModulePanel: React.FC<ModulePanelProps> = ({
         borderRadius: '10.258px',
         padding: '20px',
         position: 'relative',
-        overflow: 'hidden',
         ...style,
       }}
     >
-      {/* Header row: drag handle + label + controls */}
+      {/* Header row: label (left) + drag dots + close (right) */}
       <div className="flex items-center justify-between" style={{ marginBottom: '12px' }}>
-        {/* Drag handle (left) */}
+        <span
+          className="font-owners uppercase"
+          style={{
+            fontSize: '12px',
+            letterSpacing: '1px',
+            opacity: 0.6,
+            color: 'var(--text-primary)',
+          }}
+        >
+          {label}
+        </span>
+
+        {/* Controls: drag handle + close */}
         <div className="flex items-center gap-2">
+          {/* Drag handle (4 dots) */}
           <div className="module-drag-handle" style={{ cursor: 'grab', padding: '2px 4px', opacity: 0.2, transition: 'opacity 0.15s' }}
             onMouseEnter={(e) => (e.currentTarget.style.opacity = '0.6')}
             onMouseLeave={(e) => (e.currentTarget.style.opacity = '0.2')}>
@@ -43,28 +55,7 @@ const ModulePanel: React.FC<ModulePanelProps> = ({
               <circle cx="9" cy="9" r="1" fill="var(--text-primary)" />
             </svg>
           </div>
-          <span
-            className="font-owners uppercase"
-            style={{
-              fontSize: '12px',
-              letterSpacing: '1px',
-              opacity: 0.6,
-              color: 'var(--text-primary)',
-            }}
-          >
-            {label}
-          </span>
-        </div>
-
-        {/* Controls (right) */}
-        <div className="flex items-center gap-2">
-          {/* Resize indicator */}
-          <div style={{ opacity: 0.15, padding: '2px' }}>
-            <svg width="10" height="10" viewBox="0 0 10 10" fill="none">
-              <path d="M1 9L9 1M5 9L9 5" stroke="var(--text-primary)" strokeWidth="1" strokeLinecap="round" />
-            </svg>
-          </div>
-          {/* Close/remove button */}
+          {/* Close/remove */}
           {onRemove && (
             <button onClick={onRemove} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '2px', opacity: 0.2, transition: 'opacity 0.15s' }}
               onMouseEnter={(e) => (e.currentTarget.style.opacity = '0.6')} onMouseLeave={(e) => (e.currentTarget.style.opacity = '0.2')} aria-label="Remove module">
@@ -76,8 +67,8 @@ const ModulePanel: React.FC<ModulePanelProps> = ({
         </div>
       </div>
 
-      {/* Content */}
-      <div className="flex-1" style={{ overflow: 'auto' }}>
+      {/* Content — no overflow hidden, scrollbar styled */}
+      <div className="flex-1 module-content" style={{ overflow: 'auto', minHeight: 0 }}>
         {children ?? (
           <div className="flex items-center justify-center h-full">
             <span

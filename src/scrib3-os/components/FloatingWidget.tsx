@@ -112,7 +112,7 @@ const FloatingWidget: React.FC = () => {
         onClick={handleUndock}
         style={{
           position: 'fixed', top: 22,
-          ...(dockSide === 'left' ? { left: 120 } : { right: 80 }),
+          ...(dockSide === 'left' ? { left: 180 } : { right: 120 }),
           zIndex: 45, background: '#000', borderRadius: '75.641px',
           padding: '8px 18px', display: 'flex', alignItems: 'center', gap: '8px',
           border: 'none', cursor: 'pointer', transition: `all 300ms ${easing}`,
@@ -205,11 +205,12 @@ const FloatingWidget: React.FC = () => {
             </div>
           </div>
 
-          {/* Time + Date — top edge aligned with username, right edge aligned with bandwidth % */}
-          <div className="flex flex-col items-end" style={{ flexShrink: 0, marginLeft: 'auto' }}>
-            <span style={{ fontFamily: "'Owners Wide', sans-serif", fontSize: '14px', color: '#EAF2D7', fontWeight: 600, lineHeight: '15px' }}>{timeStr}</span>
-            <span style={{ fontFamily: "'Owners Wide', sans-serif", fontSize: '10px', color: 'rgba(234,242,215,0.4)', lineHeight: '12px' }}>{dateStr}</span>
-          </div>
+        </div>
+
+        {/* Time + Date — aligned with top of divider line */}
+        <div className="flex flex-col items-end justify-start" style={{ flexShrink: 0, alignSelf: 'stretch', paddingTop: '0px' }}>
+          <span style={{ fontFamily: "'Owners Wide', sans-serif", fontSize: '14px', color: '#EAF2D7', fontWeight: 600, lineHeight: 1 }}>{timeStr}</span>
+          <span style={{ fontFamily: "'Owners Wide', sans-serif", fontSize: '10px', color: 'rgba(234,242,215,0.4)', lineHeight: 1.2, marginTop: '2px' }}>{dateStr}</span>
         </div>
 
         {/* Row 2: XP (left) + Bandwidth (right) */}

@@ -159,7 +159,7 @@ const DashboardInner: React.FC<{ role: UserRole }> = ({ role }) => {
       <main style={{ paddingTop: 'calc(85px + 24px)', paddingLeft: '24px', paddingRight: '24px', paddingBottom: '140px' }}>
         <ResponsiveGridLayout
           className="layout"
-          width={1200}
+          width={typeof window !== 'undefined' ? window.innerWidth - 48 : 1200}
           layouts={{ lg: currentLayout as Layout }}
           breakpoints={{ lg: 1200, md: 996, sm: 768 }}
           cols={{ lg: 6, md: 4, sm: 2 }}

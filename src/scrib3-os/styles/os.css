@@ -148,6 +148,25 @@ html:has(.os-root) #root {
   touch-action: auto !important;
 }
 
+/* ===== Scrollbar Styling ===== */
+
+.module-content::-webkit-scrollbar {
+  width: 6px;
+}
+
+.module-content::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.module-content::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.15);
+  border-radius: 3px;
+}
+
+.module-content::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 0, 0, 0.25);
+}
+
 /* ===== React Grid Layout Overrides ===== */
 
 .react-grid-item.react-grid-placeholder {
