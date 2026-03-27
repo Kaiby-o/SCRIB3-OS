@@ -165,15 +165,19 @@ html:has(.os-root) #root {
 
 /* ===== Scrollbar Styling ===== */
 
-.module-content::-webkit-scrollbar {
+.module-content::-webkit-scrollbar,
+.os-root ::-webkit-scrollbar {
   width: 6px;
+  height: 6px;
 }
 
-.module-content::-webkit-scrollbar-track {
+.module-content::-webkit-scrollbar-track,
+.os-root ::-webkit-scrollbar-track {
   background: transparent;
 }
 
-.module-content::-webkit-scrollbar-thumb {
+.module-content::-webkit-scrollbar-thumb,
+.os-root ::-webkit-scrollbar-thumb {
   background: rgba(0, 0, 0, 0.15);
   border-radius: 3px;
 }

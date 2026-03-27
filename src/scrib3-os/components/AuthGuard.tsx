@@ -29,7 +29,8 @@ export const RoleGuard: React.FC<{
 }> = ({ allowed, children }) => {
   const { role } = useAuthStore();
 
-  if (!role || !allowed.includes(role)) {
+  // Admin has access to everything
+  if (!role || (!allowed.includes(role) && role !== 'admin')) {
     return (
       <div className="os-root flex items-center justify-center">
         <div className="text-center">

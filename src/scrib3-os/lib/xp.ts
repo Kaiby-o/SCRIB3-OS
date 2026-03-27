@@ -13,7 +13,7 @@ export interface XPLevel {
 export const XP_LEVELS: XPLevel[] = [
   { level: 1, name: 'Builder', minXp: 0, maxXp: 99, badge: '🧱' },
   { level: 2, name: 'Creator', minXp: 100, maxXp: 299, badge: '✏️' },
-  { level: 3, name: 'Contributor', minXp: 300, maxXp: 599, badge: '⚡' },
+  { level: 3, name: 'Strategist', minXp: 300, maxXp: 599, badge: '⚡' },
   { level: 4, name: 'Veteran', minXp: 600, maxXp: 999, badge: '🔥' },
   { level: 5, name: 'Legend', minXp: 1000, maxXp: Infinity, badge: '⭐' },
 ];

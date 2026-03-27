@@ -28,11 +28,11 @@ const QUICK_LINKS: { label: string; icon: string; route: string; comingSoon?: bo
   { label: 'Chat', icon: 'chat.svg', route: '/dashboard', comingSoon: true },
   { label: 'Calendar', icon: 'calendar.svg', route: '/dashboard', comingSoon: true },
   { label: 'Office', icon: 'office.svg', route: '/device', comingSoon: true },
-  { label: 'Dapps', icon: 'dapps.svg', route: '/tools' },
+  { label: 'Shoutouts', icon: 'dapps.svg', route: '/shoutouts' },
   { label: 'Bandwidth', icon: 'bandwidth.svg', route: '/bandwidth' },
   { label: 'Tasks', icon: 'tasks.svg', route: '/tasks' },
   { label: 'Feedback', icon: 'feedback.svg', route: '/dashboard', comingSoon: true },
-  { label: 'Prof Dev', icon: 'profdev.svg', route: '/culture' },
+  { label: 'Prof Dev', icon: 'profdev.svg', route: '/dashboard', comingSoon: true },
   { label: 'Settings', icon: 'settings.svg', route: '/settings' },
 ];
 
@@ -238,6 +238,7 @@ const FloatingWidget: React.FC = () => {
   return (
     <div
       ref={widgetRef}
+      onMouseDown={handleDragStart}
       style={{
         position: 'fixed',
         ...(position ? { left: position.x, top: position.y } : { bottom: 24, left: '50%', transform: 'translateX(-50%)' }),
@@ -245,6 +246,7 @@ const FloatingWidget: React.FC = () => {
         padding: '6px 16px 6px 6px',
         display: 'flex', alignItems: 'center', gap: '12px',
         maxWidth: '960px', width: 'calc(100% - 80px)',
+        cursor: isDragging ? 'grabbing' : 'default',
         transition: isDragging ? 'none' : `all 300ms ${easing}`,
         userSelect: 'none',
       }}

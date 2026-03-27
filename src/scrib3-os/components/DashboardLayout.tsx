@@ -99,12 +99,14 @@ const DashboardLayout: React.FC = () => {
   );
 
   const visibleIds = visibleModules.map((m) => m.id);
+  const visibleKey = visibleIds.join(',');
   const [layout, setLayout] = useState<LayoutItem[]>(() => getLayout(role, visibleIds));
 
   // Update layout when visible modules change
   useEffect(() => {
     setLayout(getLayout(role, visibleIds));
-  }, [role, activeNav, JSON.stringify(visibleIds)]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [role, visibleKey]);
 
   const handleLayoutChange = useCallback((newLayout: LayoutItem[]) => {
     setLayout(newLayout);

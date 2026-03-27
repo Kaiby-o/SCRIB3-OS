@@ -34,7 +34,7 @@ const teamConfig: DashboardConfig = {
     { label: 'CLIENTS', subItems: ['Search Clients', 'Directory'] },
     { label: 'PROJECTS', subItems: ['Search Projects', 'All Projects', 'Tasks'] },
     { label: 'CULTURE', subItems: ['Proof of Excellence', 'Operating Principles', 'Culture Book'] },
-    { label: 'TOOLS', subItems: [] },
+    { label: 'TOOLS', subItems: ['Tools Directory', 'Systems Map'] },
   ],
   modules: [
     { id: 'active-projects', label: 'ACTIVE PROJECTS', gridArea: 'projects', pillFilter: ['Overview', 'Projects'] },
@@ -134,7 +134,7 @@ const adminConfig: DashboardConfig = {
     { label: 'CLIENTS', subItems: ['Search Clients', 'Directory'] },
     { label: 'PROJECTS', subItems: ['Search Projects', 'All Projects', 'Tasks'] },
     { label: 'CULTURE', subItems: ['Proof of Excellence', 'Operating Principles', 'Culture Book'] },
-    { label: 'TOOLS', subItems: [] },
+    { label: 'TOOLS', subItems: ['Tools Directory', 'Systems Map'] },
   ],
   modules: [
     { id: 'active-projects', label: 'ACTIVE PROJECTS', gridArea: 'projects', pillFilter: ['Overview', 'Projects'] },

@@ -50,19 +50,27 @@ const ProfilePage: React.FC = () => {
   const isOwnProfile = user?.id === profileId;
 
   useEffect(() => {
-    if (!profileId) return;
+    if (!profileId) { setLoading(false); return; }
+    let cancelled = false;
     (async () => {
-      const { data } = await supabase.from('profiles').select('*').eq('id', profileId).single();
-      if (data) {
-        const p = data as ProfileData;
-        setProfile(p);
-        setEditBio(p.bio ?? '');
-        setEditTitle(p.title ?? '');
-        setEditLocation(p.location ?? '');
-        setEditSkillsets((p.skillsets ?? []).join(', '));
+      try {
+        const { data, error } = await supabase.from('profiles').select('*').eq('id', profileId).single();
+        if (cancelled) return;
+        if (error) console.warn('[profile] Load failed:', error.message);
+        if (data) {
+          const p = data as ProfileData;
+          setProfile(p);
+          setEditBio(p.bio ?? '');
+          setEditTitle(p.title ?? '');
+          setEditLocation(p.location ?? '');
+          setEditSkillsets((p.skillsets ?? []).join(', '));
+        }
+      } catch (e) {
+        console.warn('[profile] Error:', e);
       }
-      setLoading(false);
+      if (!cancelled) setLoading(false);
     })();
+    return () => { cancelled = true; };
   }, [profileId]);
 
   const handleSave = async () => {
