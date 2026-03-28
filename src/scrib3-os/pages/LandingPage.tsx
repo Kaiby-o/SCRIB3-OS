@@ -426,6 +426,13 @@ const LandingPage: React.FC = () => {
   const closeLogin = useCallback(() => setLoginOpen(false), []);
   const closeLetsTalk = useCallback(() => setLetsTalkOpen(false), []);
 
+  // Force light mode on landing page — dark mode not fully supported yet
+  useEffect(() => {
+    const prev = document.documentElement.getAttribute('data-theme');
+    document.documentElement.setAttribute('data-theme', 'light');
+    return () => { if (prev) document.documentElement.setAttribute('data-theme', prev); };
+  }, []);
+
   return (
     <div className="os-root flex flex-col items-center justify-center min-h-screen relative">
 

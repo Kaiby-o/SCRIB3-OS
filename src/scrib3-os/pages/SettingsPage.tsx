@@ -3,7 +3,6 @@ import { useNavigate } from 'react-router-dom';
 import LogoScrib3 from '../components/LogoScrib3';
 import BurgerButton from '../components/BurgerButton';
 import { useAuthStore } from '../hooks/useAuth';
-import { useThemeStore } from '../hooks/useTheme';
 
 /* ------------------------------------------------------------------ */
 /*  Settings Page                                                      */
@@ -191,24 +190,29 @@ const InfoCard: React.FC<{ label: string; value: string }> = ({ label, value }) 
 );
 
 const DarkModeToggle: React.FC = () => {
-  const { theme, toggle } = useThemeStore();
+  const [toast, setToast] = useState(false);
   return (
-    <div className="flex items-center justify-between" style={{ padding: '16px 20px', border: '0.733px solid var(--border-default)', borderRadius: '10.258px' }}>
+    <div className="flex items-center justify-between" style={{ padding: '16px 20px', border: '0.733px solid var(--border-default)', borderRadius: '10.258px', position: 'relative' }}>
+      {toast && (
+        <div style={{ position: 'absolute', top: -28, right: 0, background: '#000', color: '#EAF2D7', fontFamily: "'Owners Wide', sans-serif", fontSize: '10px', letterSpacing: '1px', textTransform: 'uppercase', padding: '4px 12px', borderRadius: '75.641px', whiteSpace: 'nowrap', zIndex: 10 }}>
+          Coming Soon
+        </div>
+      )}
       <div>
         <span style={{ fontFamily: "'Kaio', sans-serif", fontWeight: 800, fontSize: '13px', textTransform: 'uppercase', display: 'block' }}>Dark Mode</span>
         <span style={{ fontFamily: "'Owners Wide', sans-serif", fontSize: '11px', opacity: 0.5 }}>
-          Switch between light and dark themes
+          Coming soon — not all elements support dark mode yet
         </span>
       </div>
-      <button onClick={toggle} style={{
+      <button onClick={() => { setToast(true); setTimeout(() => setToast(false), 1500); }} style={{
         width: 48, height: 26, borderRadius: 13, border: 'none', cursor: 'pointer',
-        background: theme === 'dark' ? '#D7ABC5' : 'rgba(0,0,0,0.15)',
+        background: 'rgba(0,0,0,0.15)',
         position: 'relative', transition: 'background 200ms',
       }}>
         <div style={{
           width: 20, height: 20, borderRadius: '50%', background: '#fff',
           position: 'absolute', top: 3,
-          left: theme === 'dark' ? 25 : 3,
+          left: 3,
           transition: 'left 200ms',
           boxShadow: '0 1px 3px rgba(0,0,0,0.2)',
         }} />

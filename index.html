@@ -11,8 +11,9 @@
   </head>
   <body>
     <script>
-      var t = localStorage.getItem('scrib3-theme') || 'light';
-      document.documentElement.setAttribute('data-theme', t);
+      // Force light mode — dark mode not fully supported yet
+      localStorage.setItem('scrib3-theme', 'light');
+      document.documentElement.setAttribute('data-theme', 'light');
     </script>
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
