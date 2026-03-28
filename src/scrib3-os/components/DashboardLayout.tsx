@@ -73,7 +73,6 @@ const DashboardLayout: React.FC = () => {
   const { role: authRole } = useAuthStore();
   const role: UserRole = authRole ?? 'team';
   const config = dashboardConfigs[role];
-  const [activeNav, setActiveNav] = useState(config.pillNavItems[0]);
   const [enabledWidgets, setEnabledWidgets] = useState<Set<string>>(() => getEnabledWidgets(role));
   const [width, setWidth] = useState(typeof window !== 'undefined' ? window.innerWidth - 48 : 1200);
 
@@ -92,10 +91,9 @@ const DashboardLayout: React.FC = () => {
     return () => window.removeEventListener('resize', handler);
   }, []);
 
-  // Visible modules: filtered by pill nav + enabled widgets
+  // Visible modules: all enabled widgets (pill nav removed)
   const visibleModules = config.modules.filter((mod) =>
-    enabledWidgets.has(mod.id) &&
-    (!mod.pillFilter || mod.pillFilter.includes(activeNav))
+    enabledWidgets.has(mod.id)
   );
 
   const visibleIds = visibleModules.map((m) => m.id);
@@ -139,7 +137,7 @@ const DashboardLayout: React.FC = () => {
         style={{ height: '85px', padding: '0 40px', background: 'var(--bg-primary)' }}
       >
         <LogoScrib3 height={18} color="var(--text-primary)" />
-        <PillNav items={config.pillNavItems} activeItem={activeNav} onItemClick={setActiveNav} />
+        <span style={{ fontFamily: "'Kaio', sans-serif", fontWeight: 800, fontSize: '16px', textTransform: 'uppercase' }}>Dashboard</span>
         <div className="flex items-center gap-2">
           {hasWidgets && (
             <button onClick={handleResetLayout}
