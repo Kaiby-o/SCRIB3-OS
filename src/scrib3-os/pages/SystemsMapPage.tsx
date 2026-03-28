@@ -30,8 +30,33 @@ const SystemsMapPage: React.FC = () => {
   const [zoom, setZoom] = useState(0.75);
   const [pan, setPan] = useState({ x: 0, y: 0 });
   const [isPanning, setIsPanning] = useState(false);
+  const [columnMode, setColumnMode] = useState(false);
+  const [noteText, setNoteText] = useState('');
+  const [showNoteBox, setShowNoteBox] = useState(false);
   const panStart = useRef({ x: 0, y: 0 });
   const panOrigin = useRef({ x: 0, y: 0 });
+  const mapRef = useRef<HTMLDivElement>(null);
+
+  // Column layout: organize nodes into neat aligned columns by layer
+  const columnPositions = useMemo(() => {
+    if (!columnMode) return new Map<string, { x: number; y: number }>();
+    const layerOrder: Layer[] = ['development', 'structure', 'quality', 'visibility'];
+    const positions = new Map<string, { x: number; y: number }>();
+    layerOrder.forEach((layer, colIdx) => {
+      const layerNodes = NODES.filter((n) => n.layer === layer && !n.deprecated);
+      layerNodes.forEach((node, rowIdx) => {
+        positions.set(node.id, { x: 80 + colIdx * 380, y: 40 + rowIdx * 80 });
+      });
+    });
+    return positions;
+  }, [columnMode]);
+
+  // Wheel zoom
+  const handleWheel = useCallback((e: React.WheelEvent) => {
+    e.preventDefault();
+    const delta = e.deltaY > 0 ? -0.05 : 0.05;
+    setZoom((z) => Math.max(0.3, Math.min(2, z + delta)));
+  }, []);
 
   // Filter nodes by active layer
   const visibleNodes = useMemo(() => {
@@ -87,18 +112,23 @@ const SystemsMapPage: React.FC = () => {
 
   const handlePanEnd = useCallback(() => setIsPanning(false), []);
 
-  // Draw right-angle connector
-  const drawConnector = (fromNode: SystemNode, toNode: SystemNode, color: string, dashed?: boolean) => {
-    const x1 = fromNode.x + 60; const y1 = fromNode.y + 25;
-    const x2 = toNode.x + 60; const y2 = toNode.y + 25;
-    const midX = (x1 + x2) / 2;
+  // Draw right-angle connector with offset to avoid overlap
+  const drawConnector = (fromNode: SystemNode, toNode: SystemNode, color: string, dashed?: boolean, flowIdx?: number) => {
+    const cp = columnMode ? columnPositions : null;
+    const fx = (cp?.get(fromNode.id)?.x ?? fromNode.x) + 60;
+    const fy = (cp?.get(fromNode.id)?.y ?? fromNode.y) + 25;
+    const tx = (cp?.get(toNode.id)?.x ?? toNode.x) + 60;
+    const ty = (cp?.get(toNode.id)?.y ?? toNode.y) + 25;
+    // Small offset per flow to prevent exact overlaps
+    const offset = ((flowIdx ?? 0) % 5) * 4 - 8;
+    const midX = (fx + tx) / 2 + offset;
     return (
       <path key={`${fromNode.id}-${toNode.id}`}
-        d={`M ${x1} ${y1} L ${midX} ${y1} L ${midX} ${y2} L ${x2} ${y2}`}
+        d={`M ${fx} ${fy} L ${midX} ${fy} L ${midX} ${ty} L ${tx} ${ty}`}
         fill="none" stroke={color} strokeWidth={1.5}
         strokeDasharray={dashed ? '4 4' : 'none'}
         opacity={0.6}
-        style={{ transition: 'stroke 200ms, opacity 200ms' }} />
+        style={{ transition: 'all 300ms' }} />
     );
   };
 
@@ -129,32 +159,56 @@ const SystemsMapPage: React.FC = () => {
           <FilterPill key={key} label={journey.label} active={activeJourney === key} onClick={() => setActiveJourney(activeJourney === key ? null : key)} color={journey.color} />
         ))}
 
+        <div style={{ width: 1, height: 20, background: 'rgba(0,0,0,0.1)', margin: '0 4px' }} />
+
+        <FilterPill label={columnMode ? 'Free Layout' : 'Columns'} active={columnMode} onClick={() => setColumnMode(!columnMode)} color="#000" />
+        <FilterPill label="Notes" active={showNoteBox} onClick={() => setShowNoteBox(!showNoteBox)} color="#6E93C3" />
+
         <div style={{ marginLeft: 'auto', display: 'flex', gap: '8px', alignItems: 'center' }}>
           <button onClick={() => setZoom((z) => Math.max(0.3, z - 0.1))} style={{ background: 'none', border: '1px solid var(--border-default)', borderRadius: '4px', width: 28, height: 28, cursor: 'pointer', fontFamily: "'Owners Wide', sans-serif", fontSize: '14px' }}>-</button>
           <span style={{ fontFamily: "'Owners Wide', sans-serif", fontSize: '10px', opacity: 0.4, minWidth: '30px', textAlign: 'center' }}>{Math.round(zoom * 100)}%</span>
           <button onClick={() => setZoom((z) => Math.min(2, z + 0.1))} style={{ background: 'none', border: '1px solid var(--border-default)', borderRadius: '4px', width: 28, height: 28, cursor: 'pointer', fontFamily: "'Owners Wide', sans-serif", fontSize: '14px' }}>+</button>
-          <button onClick={() => { setZoom(0.75); setPan({ x: 0, y: 0 }); }} style={{ fontFamily: "'Owners Wide', sans-serif", fontSize: '9px', letterSpacing: '1px', textTransform: 'uppercase', opacity: 0.3, background: 'none', border: 'none', cursor: 'pointer' }}>Reset</button>
+          <button onClick={() => { setZoom(0.75); setPan({ x: 0, y: 0 }); setColumnMode(false); }} style={{ fontFamily: "'Owners Wide', sans-serif", fontSize: '9px', letterSpacing: '1px', textTransform: 'uppercase', opacity: 0.3, background: 'none', border: 'none', cursor: 'pointer' }}>Reset</button>
         </div>
       </div>
 
+      {/* Note box */}
+      {showNoteBox && (
+        <div style={{ position: 'fixed', bottom: selectedNode ? 220 : 24, right: 24, width: '300px', zIndex: 30, background: 'var(--bg-primary)', border: '0.733px solid var(--border-default)', borderRadius: '10.258px', padding: '16px', boxShadow: '0 4px 16px rgba(0,0,0,0.08)' }}>
+          <div className="flex items-center justify-between" style={{ marginBottom: '8px' }}>
+            <span style={{ fontFamily: "'Kaio', sans-serif", fontWeight: 800, fontSize: '11px', textTransform: 'uppercase' }}>Notes</span>
+            <button onClick={() => setShowNoteBox(false)} style={{ background: 'none', border: 'none', cursor: 'pointer', opacity: 0.4, fontSize: '14px' }}>&times;</button>
+          </div>
+          <textarea
+            value={noteText}
+            onChange={(e) => setNoteText(e.target.value)}
+            placeholder="Add notes, corrections, or process changes here..."
+            rows={6}
+            style={{ fontFamily: "'Owners Wide', sans-serif", fontSize: '12px', width: '100%', background: 'var(--bg-surface)', border: '0.733px solid var(--border-default)', borderRadius: '8px', padding: '10px 12px', color: 'var(--text-primary)', outline: 'none', resize: 'vertical' }}
+          />
+        </div>
+      )}
+
       {/* Map canvas */}
       <div
+        ref={mapRef}
         style={{ flex: 1, overflow: 'hidden', marginTop: '130px', cursor: isPanning ? 'grabbing' : 'grab', userSelect: 'none' }}
         onMouseDown={handlePanStart}
         onMouseMove={handlePanMove}
         onMouseUp={handlePanEnd}
         onMouseLeave={handlePanEnd}
+        onWheel={handleWheel}
       >
         <div style={{ transform: `translate(${pan.x}px, ${pan.y}px) scale(${zoom})`, transformOrigin: '0 0', position: 'relative', width: '1600px', height: '1000px' }}>
           {/* Connectors */}
           <svg style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', pointerEvents: 'none' }}>
-            {visibleFlows.map((flow) => {
+            {visibleFlows.map((flow, idx) => {
               const from = NODES.find((n) => n.id === flow.from);
               const to = NODES.find((n) => n.id === flow.to);
               if (!from || !to) return null;
               const isHighlighted = connectedIds.has(flow.from) && connectedIds.has(flow.to);
               const journeyColor = activeJourney ? JOURNEYS[activeJourney]?.color ?? '#D7ABC5' : OS_LAYER_COLORS[from.layer];
-              return drawConnector(from, to, isHighlighted ? '#D7ABC5' : journeyColor, flow.dashed);
+              return drawConnector(from, to, isHighlighted ? '#D7ABC5' : journeyColor, flow.dashed, idx);
             })}
           </svg>
 
@@ -172,7 +226,9 @@ const SystemsMapPage: React.FC = () => {
                 onMouseEnter={() => setHoveredNode(node.id)}
                 onMouseLeave={() => setHoveredNode(null)}
                 style={{
-                  position: 'absolute', left: node.x, top: node.y,
+                  position: 'absolute',
+                  left: columnMode ? (columnPositions.get(node.id)?.x ?? node.x) : node.x,
+                  top: columnMode ? (columnPositions.get(node.id)?.y ?? node.y) : node.y,
                   width: 120, padding: '8px 10px',
                   background: isSelected ? color : 'var(--bg-primary)',
                   border: `1.5px solid ${isHovered || isSelected ? color : 'rgba(0,0,0,0.15)'}`,
