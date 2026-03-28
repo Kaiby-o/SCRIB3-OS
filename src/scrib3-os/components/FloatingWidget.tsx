@@ -25,7 +25,7 @@ const STATUS_OPTIONS: { key: StatusOption; label: string; color: string }[] = [
 ];
 
 const QUICK_LINKS: { label: string; icon: string; route: string; comingSoon?: boolean }[] = [
-  { label: 'Chat', icon: 'chat.svg', route: '/dashboard', comingSoon: true },
+  { label: 'Chat', icon: 'chat.svg', route: '/chat' },
   { label: 'Calendar', icon: 'calendar.svg', route: '/dashboard', comingSoon: true },
   { label: 'Office', icon: 'office.svg', route: '/device', comingSoon: true },
   { label: 'Dapps', icon: 'dapps.svg', route: '/dapps' },
@@ -73,20 +73,34 @@ const FloatingWidget: React.FC = () => {
   const monthShort = now.toLocaleString('en-GB', { month: 'short' }).toUpperCase();
   const dateStr = `${String(day).padStart(2, '0')} ${monthShort}`;
 
-  // Drag handlers
+  // Drag handlers — only triggers after 5px mouse movement to avoid click conflicts
+  const dragThreshold = useRef(false);
+  const dragStartPos = useRef({ x: 0, y: 0 });
+
   const handleDragStart = useCallback((e: React.MouseEvent) => {
+    // Don't drag from interactive elements
+    const tag = (e.target as HTMLElement).tagName;
+    if (tag === 'BUTTON' || tag === 'A' || tag === 'SELECT' || tag === 'IMG') return;
     e.preventDefault();
-    e.stopPropagation();
     const el = widgetRef.current;
     if (!el) return;
     const rect = el.getBoundingClientRect();
     dragOffset.current = { x: e.clientX - rect.left, y: e.clientY - rect.top };
+    dragStartPos.current = { x: e.clientX, y: e.clientY };
+    dragThreshold.current = false;
     setIsDragging(true);
   }, []);
 
   useEffect(() => {
     if (!isDragging) return;
     const handleMove = (e: MouseEvent) => {
+      // Only start moving after 5px threshold
+      if (!dragThreshold.current) {
+        const dx = Math.abs(e.clientX - dragStartPos.current.x);
+        const dy = Math.abs(e.clientY - dragStartPos.current.y);
+        if (dx < 5 && dy < 5) return;
+        dragThreshold.current = true;
+      }
       const el = widgetRef.current;
       const w = el?.offsetWidth ?? 300;
       const h = el?.offsetHeight ?? 60;
@@ -96,6 +110,7 @@ const FloatingWidget: React.FC = () => {
     };
     const handleUp = (e: MouseEvent) => {
       setIsDragging(false);
+      if (!dragThreshold.current) return; // Was a click, not a drag
       if (e.clientY < 80) {
         setDocked(true);
         setDockSide(e.clientX < window.innerWidth / 2 ? 'left' : 'right');
@@ -129,9 +144,9 @@ const FloatingWidget: React.FC = () => {
         style={{
           position: 'fixed', top: 22,
           ...(dockSide === 'left' ? { left: 180 } : { right: 180 }),
-          zIndex: 45, background: '#000', borderRadius: '75.641px',
+          zIndex: 45, background: '#000', border: 'var(--widget-border, none)', borderRadius: '75.641px',
           padding: '8px 18px', display: 'flex', alignItems: 'center', gap: '8px',
-          border: 'none', cursor: 'pointer', transition: `all 300ms ${easing}`,
+          cursor: 'pointer', transition: `all 300ms ${easing}`,
         }}
         onMouseEnter={(e) => (e.currentTarget.style.opacity = '0.85')}
         onMouseLeave={(e) => (e.currentTarget.style.opacity = '1')}
@@ -153,7 +168,7 @@ const FloatingWidget: React.FC = () => {
         style={{
           position: 'fixed',
           ...(position ? { left: position.x, top: position.y } : { bottom: 24, left: '50%', transform: 'translateX(-50%)' }),
-          zIndex: 45, background: '#000', borderRadius: '75.641px',
+          zIndex: 45, background: '#000', border: 'var(--widget-border, none)', borderRadius: '75.641px',
           padding: '10px 20px', display: 'flex', alignItems: 'center', gap: '12px',
           cursor: isDragging ? 'grabbing' : 'grab',
           transition: isDragging ? 'none' : `all 300ms ${easing}`,
@@ -242,7 +257,7 @@ const FloatingWidget: React.FC = () => {
       style={{
         position: 'fixed',
         ...(position ? { left: position.x, top: position.y } : { bottom: 24, left: '50%', transform: 'translateX(-50%)' }),
-        zIndex: 45, background: '#000', borderRadius: '75.641px',
+        zIndex: 45, background: '#000', border: 'var(--widget-border, none)', borderRadius: '75.641px',
         padding: '6px 16px 6px 6px',
         display: 'flex', alignItems: 'center', gap: '12px',
         maxWidth: '960px', width: 'calc(100% - 80px)',

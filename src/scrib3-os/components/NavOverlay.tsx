@@ -59,7 +59,7 @@ const subItemRoutes: Record<string, string> = {
   'Ops': '/units',
   'PR': '/units',
   // Clients nav
-  'Directory ': '/clients', // trailing space to differentiate from team Directory
+  'Client Directory': '/clients',
   // Projects nav
   'All Projects': '/projects',
   'Tasks': '/tasks',

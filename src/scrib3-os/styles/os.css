@@ -22,6 +22,11 @@
   --accent: #D7ABC5;
   --text-on-accent: #000000;
   --text-on-dark: #EAF2D7;
+  --widget-border: 2px solid #EAF2D7;
+}
+
+:root, [data-theme="light"] {
+  --widget-border: none;
 }
 
 /* ===== Tailwind v4 Theme Extension ===== */
@@ -263,6 +268,50 @@ html:has(.os-root) #root {
   .os-root > header > div:nth-child(2) {
     display: none;
   }
+
+  /* Cards and panels */
+  .os-root [style*="maxWidth"] {
+    max-width: 100% !important;
+  }
+
+  /* Filter pill rows wrap */
+  .os-root .flex.gap-2 {
+    flex-wrap: wrap;
+  }
+
+  /* Info grids — 1 column on mobile */
+  .os-root [style*="grid-template-columns: 1fr 1fr"] {
+    grid-template-columns: 1fr !important;
+  }
+
+  /* Issue detail panel — full width on mobile */
+  .os-root [style*="flex: 0 0 45%"],
+  .os-root [style*="flex: 0 0 55%"],
+  .os-root [style*="flex: 0 0 40%"] {
+    flex: 1 !important;
+    min-width: 100% !important;
+  }
+
+  /* Touch targets minimum 44px */
+  button, a, select {
+    min-height: 44px;
+    min-width: 44px;
+  }
+
+  /* Pill buttons stay readable */
+  .os-root button[style*="borderRadius: '75.641px'"] {
+    white-space: nowrap;
+  }
+
+  /* Systems map — scroll horizontally */
+  .os-root [style*="width: '1600px'"] {
+    min-width: 1600px;
+  }
+
+  /* Task rows — stack on mobile */
+  .os-root [style*="flex: 1"][style*="fontSize: 13"] {
+    min-width: 0;
+  }
 }
 
 @media (max-width: 480px) {
@@ -275,6 +324,7 @@ html:has(.os-root) #root {
     margin-top: 57px !important;
   }
 
+  /* Even smaller type */
   .text-display-hero {
     font-size: 28px;
   }

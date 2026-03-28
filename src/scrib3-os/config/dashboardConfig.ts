@@ -31,7 +31,7 @@ const teamConfig: DashboardConfig = {
   categories: [
     { label: 'TEAM', subItems: ['Search Team', 'Directory', 'Feedback', 'Prof Dev', 'Office', 'Dapps'] },
     { label: 'UNITS', subItems: ['Accounts', 'C-Suite', 'Brand', 'Media', 'Ops', 'PR'] },
-    { label: 'CLIENTS', subItems: ['Search Clients', 'Directory'] },
+    { label: 'CLIENTS', subItems: ['Search Clients', 'Client Directory'] },
     { label: 'PROJECTS', subItems: ['Search Projects', 'All Projects', 'Tasks'] },
     { label: 'CULTURE', subItems: ['Proof of Excellence', 'Operating Principles', 'Culture Book'] },
     { label: 'TOOLS', subItems: ['Tools Directory', 'Systems Map'] },
@@ -131,7 +131,7 @@ const adminConfig: DashboardConfig = {
   categories: [
     { label: 'TEAM', subItems: ['Search Team', 'Directory', 'Feedback', 'Prof Dev', 'Office', 'Dapps'] },
     { label: 'UNITS', subItems: ['Accounts', 'C-Suite', 'Brand', 'Media', 'Ops', 'PR'] },
-    { label: 'CLIENTS', subItems: ['Search Clients', 'Directory'] },
+    { label: 'CLIENTS', subItems: ['Search Clients', 'Client Directory'] },
     { label: 'PROJECTS', subItems: ['Search Projects', 'All Projects', 'Tasks'] },
     { label: 'CULTURE', subItems: ['Proof of Excellence', 'Operating Principles', 'Culture Book'] },
     { label: 'TOOLS', subItems: ['Tools Directory', 'Systems Map'] },

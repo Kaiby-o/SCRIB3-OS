@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import LogoScrib3 from '../components/LogoScrib3';
 import BurgerButton from '../components/BurgerButton';
@@ -40,6 +40,20 @@ const SettingsPage: React.FC = () => {
     } catch { /* ignore */ }
     return new Set(['active-projects', 'task-queue', 'team-activity', 'comms']);
   });
+
+  // Load from Supabase on mount if available
+  useEffect(() => {
+    if (!profile?.id) return;
+    (async () => {
+      const { supabase } = await import('../lib/supabase');
+      const { data } = await supabase.from('profiles').select('dashboard_layout').eq('id', profile.id).single();
+      if (data?.dashboard_layout?.enabledWidgets) {
+        const widgets = new Set<string>(data.dashboard_layout.enabledWidgets);
+        setEnabledWidgets(widgets);
+        localStorage.setItem(storageKey, JSON.stringify(Array.from(widgets)));
+      }
+    })();
+  }, [profile?.id, storageKey]);
   const [saved, setSaved] = useState(false);
 
   const toggleWidget = (id: string) => {
@@ -54,8 +68,16 @@ const SettingsPage: React.FC = () => {
     setSaved(false);
   };
 
-  const handleSave = () => {
-    localStorage.setItem(storageKey, JSON.stringify(Array.from(enabledWidgets)));
+  const handleSave = async () => {
+    const widgets = Array.from(enabledWidgets);
+    localStorage.setItem(storageKey, JSON.stringify(widgets));
+    // Also persist to Supabase for cross-device sync
+    if (profile?.id) {
+      const { supabase } = await import('../lib/supabase');
+      void supabase.from('profiles').update({
+        dashboard_layout: { enabledWidgets: widgets },
+      }).eq('id', profile.id);
+    }
     setSaved(true);
     setTimeout(() => setSaved(false), 2000);
   };
