@@ -47,16 +47,16 @@
 /* ===== Battle Scene Grid ===== */
 
 .battle-scene {
-  display: grid;
-  grid-template-rows: 1fr;
-  width: 60vh;
-  height: 60vh;
-  max-width: 90vw;
-  max-height: 60vh;
+  display: flex;
+  width: 80vh;
+  height: 45vh;
+  max-width: 95vw;
+  max-height: 45vh;
   margin: 0 auto;
   position: relative;
   border: 1px solid rgba(0, 0, 0, 0.1);
   border-radius: 10.258px;
+  flex-shrink: 0;
 }
 
 /* ===== Sprites ===== */

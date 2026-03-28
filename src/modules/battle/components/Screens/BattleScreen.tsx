@@ -33,9 +33,18 @@ const BattleScreen: React.FC = () => {
     initBattle(teamSelectStore.playerTeam, teamSelectStore.opponentTeam);
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
-  // Background music
+  // Background music — start on first interaction (browser autoplay policy)
+  const musicStartedRef = React.useRef(false);
+  const tryStartMusic = useCallback(() => {
+    if (!musicStartedRef.current) {
+      musicStartedRef.current = true;
+      startBattleMusic();
+    }
+  }, []);
+
   useEffect(() => {
-    if (phase === 'INTRO') startBattleMusic();
+    // Try on intro, but may be blocked by autoplay policy
+    if (phase === 'INTRO') tryStartMusic();
     return () => { stopBattleMusic(); };
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
@@ -70,6 +79,7 @@ const BattleScreen: React.FC = () => {
   }
 
   const handleTextAdvance = () => {
+    tryStartMusic(); // Ensure music starts on first user interaction
     if (!isComplete) { skip(); return; }
     advanceText();
   };
@@ -118,8 +128,8 @@ const BattleScreen: React.FC = () => {
         Forfeit
       </button>
 
-      {/* Battle Frame — 60vh square */}
-      <div ref={screenRef} className="battle-scene battle-arena" style={{ width: '60vh', height: '60vh', maxWidth: '90vw', maxHeight: '60vh', borderRadius: '10.258px', border: '1px solid rgba(0,0,0,0.1)', position: 'relative', display: 'flex' }}>
+      {/* Battle Frame — landscape rectangle, fixed size */}
+      <div ref={screenRef} className="battle-scene battle-arena" style={{ width: '80vh', height: '45vh', maxWidth: '95vw', maxHeight: '45vh', borderRadius: '10.258px', border: '1px solid rgba(0,0,0,0.1)', position: 'relative', display: 'flex', flexShrink: 0 }}>
         {/* Opponent nameplate — top left */}
         <div className="battle-nameplate" style={{ position: 'absolute', top: 16, left: 16, zIndex: 5 }}>
           <div className="flex items-center justify-between" style={{ marginBottom: '4px' }}>
@@ -147,10 +157,10 @@ const BattleScreen: React.FC = () => {
             onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }} />
         </div>
 
-        {/* Player sprite — bottom left */}
-        <div ref={playerRef} style={{ position: 'absolute', bottom: '15%', left: '10%' }}>
+        {/* Player sprite — bottom left, flush with bottom edge */}
+        <div ref={playerRef} style={{ position: 'absolute', bottom: 0, left: '8%' }}>
           <img src={spritePath(activePlayer.id, 'back')} alt={activePlayer.name}
-            style={{ width: '22vh', height: '22vh', imageRendering: 'pixelated', objectFit: 'contain', filter: playerFilter }}
+            style={{ width: '20vh', height: '20vh', imageRendering: 'pixelated', objectFit: 'contain', filter: playerFilter }}
             onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }} />
         </div>
 
@@ -177,7 +187,7 @@ const BattleScreen: React.FC = () => {
       </div>
 
       {/* Everything below the battle frame — centered */}
-      <div style={{ width: '60vh', maxWidth: '90vw', marginTop: '12px' }}>
+      <div style={{ width: '80vh', maxWidth: '95vw', marginTop: '12px' }}>
         {/* Victory / Defeat */}
         {(phase === 'VICTORY' || phase === 'DEFEAT' || phase === 'FLED') && (
           <div style={{ textAlign: 'center', padding: '24px 0' }}>

@@ -57,7 +57,7 @@ const TeamSelectScreen: React.FC = () => {
         </div>
 
         {/* Fighter grid — new card layout */}
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(260px, 1fr))', gap: '16px', marginBottom: '100px' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: '12px', marginBottom: '100px' }}>
           {roster.map((fighter) => {
             const selected = isSelected(fighter.id);
             const order = playerTeam.findIndex((f) => f.id === fighter.id) + 1;
@@ -84,24 +84,24 @@ const TeamSelectScreen: React.FC = () => {
                 )}
 
                 {/* Card content — sprite left, info right */}
-                <div className="flex" style={{ padding: '16px' }}>
+                <div className="flex" style={{ padding: '12px', overflow: 'hidden' }}>
                   {/* Sprite — large, cropped to center */}
-                  <div style={{ width: 120, height: 160, flexShrink: 0, overflow: 'hidden', display: 'flex', alignItems: 'flex-end', justifyContent: 'center' }}>
+                  <div style={{ width: 90, flexShrink: 0, overflow: 'hidden', display: 'flex', alignItems: 'flex-end', justifyContent: 'center' }}>
                     <img src={spritePath(fighter.id, 'front')} alt={fighter.name}
-                      style={{ width: 140, height: 140, imageRendering: 'pixelated', objectFit: 'contain' }}
+                      style={{ width: 100, height: 130, imageRendering: 'pixelated', objectFit: 'contain' }}
                       onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }} />
                   </div>
 
                   {/* Info */}
-                  <div style={{ flex: 1, paddingLeft: '12px' }}>
-                    <span style={{ fontFamily: "'Kaio', sans-serif", fontSize: '16px', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '3px', display: 'block', lineHeight: 1.1, marginBottom: '4px' }}>{fighter.name}</span>
-                    <span style={{ fontFamily: "'Owners Wide', sans-serif", fontSize: '10px', opacity: 0.5, display: 'block', marginBottom: '10px', letterSpacing: '1px' }}>{fighter.role}</span>
+                  <div style={{ flex: 1, paddingLeft: '10px', minWidth: 0, overflow: 'hidden' }}>
+                    <span style={{ fontFamily: "'Kaio', sans-serif", fontSize: '14px', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '2px', display: 'block', lineHeight: 1.1, marginBottom: '3px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{fighter.name}</span>
+                    <span style={{ fontFamily: "'Owners Wide', sans-serif", fontSize: '9px', opacity: 0.5, display: 'block', marginBottom: '8px', letterSpacing: '0.5px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{fighter.role}</span>
 
                     {/* Move boxes — 2x2 grid */}
-                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '4px', marginBottom: '10px' }}>
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '3px', marginBottom: '8px' }}>
                       {fighter.moves.slice(0, 4).map((move) => (
-                        <div key={move.id} style={{ background: 'rgba(234,242,215,0.06)', border: '1px solid rgba(234,242,215,0.12)', borderRadius: '4px', padding: '4px 6px' }}>
-                          <span style={{ fontFamily: "'Owners Wide', sans-serif", fontSize: '7px', textTransform: 'uppercase', letterSpacing: '0.5px', opacity: 0.7, display: 'block', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{move.name}</span>
+                        <div key={move.id} style={{ background: 'rgba(234,242,215,0.06)', border: '1px solid rgba(234,242,215,0.12)', borderRadius: '3px', padding: '3px 5px', overflow: 'hidden' }}>
+                          <span style={{ fontFamily: "'Owners Wide', sans-serif", fontSize: '6.5px', textTransform: 'uppercase', letterSpacing: '0.3px', opacity: 0.7, display: 'block', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{move.name}</span>
                         </div>
                       ))}
                     </div>
@@ -110,7 +110,7 @@ const TeamSelectScreen: React.FC = () => {
                     <div className="flex flex-col gap-1">
                       {([['HP', fighter.stats.hp, 240], ['ATK', fighter.stats.atk, 95], ['DEF', fighter.stats.def, 85], ['SPD', fighter.stats.spd, 95]] as [string, number, number][]).map(([label, val, max]) => (
                         <div key={label} className="flex items-center gap-2">
-                          <span style={{ fontFamily: "'Owners Wide', sans-serif", fontSize: '8px', opacity: 0.4, width: '22px', letterSpacing: '0.5px' }}>{label}</span>
+                          <span style={{ fontFamily: "'Owners Wide', sans-serif", fontSize: '7px', opacity: 0.4, width: '20px', letterSpacing: '0.5px' }}>{label}</span>
                           <div style={{ flex: 1, height: 3, background: 'rgba(234,242,215,0.1)', borderRadius: 2, overflow: 'hidden' }}>
                             <div style={{ width: `${(val / max) * 100}%`, height: '100%', background: roleColor, borderRadius: 2 }} />
                           </div>
