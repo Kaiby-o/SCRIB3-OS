@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuthStore } from '../hooks/useAuth';
 import { getLevel, getLevelProgress } from '../lib/xp';
 import { getCapacityColor } from '../lib/bandwidth';
@@ -40,7 +40,9 @@ const QUICK_LINKS: { label: string; icon: string; route: string; comingSoon?: bo
 const FloatingWidget: React.FC = () => {
   const isMobile = useIsMobile();
   const navigate = useNavigate();
+  const location = useLocation();
   const { profile, role } = useAuthStore();
+  const isBattlePage = location.pathname.startsWith('/battle');
   const [expanded, setExpanded] = useState(false);
   const [docked, setDocked] = useState(false);
   const [dockSide, setDockSide] = useState<'left' | 'right'>('right');
@@ -49,6 +51,19 @@ const FloatingWidget: React.FC = () => {
   const [now, setNow] = useState(new Date());
   const [comingSoonToast, setComingSoonToast] = useState(false);
   const showComingSoon = () => { setComingSoonToast(true); setTimeout(() => setComingSoonToast(false), 1500); };
+  const prevStatusRef = useRef<StatusOption>('active');
+
+  // Auto-dock on battle page, set battlemode status, restore on leave
+  useEffect(() => {
+    if (isBattlePage) {
+      prevStatusRef.current = status;
+      setStatus('battlemode');
+      setDocked(true);
+      setExpanded(false);
+    } else if (status === 'battlemode') {
+      setStatus(prevStatusRef.current);
+    }
+  }, [isBattlePage]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Drag state
   const [isDragging, setIsDragging] = useState(false);

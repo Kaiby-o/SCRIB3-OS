@@ -73,18 +73,29 @@ export const useBattleStore = create<BattleState>((set, get) => ({
     const { activePlayer, activeOpponent, rng, roundNumber } = get();
     if (!activePlayer || !activeOpponent) return;
 
+    // Fainted fighters can't act
+    if (activePlayer.isFainted) return;
+
     // AI selects move
     const opponentMove = selectAIMove(activeOpponent, activePlayer, rng);
 
-    // Resolve round
+    // Resolve round — but skip opponent turn if they fainted from player's move
     const result = resolveRound(activePlayer, activeOpponent, move, opponentMove, rng, roundNumber + 1);
 
-    // Collect all messages
-    const messages = [
-      ...result.playerResult.messages,
-      ...(result.opponentResult?.messages ?? []),
-      ...result.statusMessages,
-    ];
+    // Build sequential message queue:
+    // Player move → damage → status, then Opponent move → damage → status
+    const messages: string[] = [];
+
+    // Player's turn messages
+    messages.push(...result.playerResult.messages);
+
+    // Only show opponent's turn if they didn't faint from player's attack
+    if (!result.playerResult.defenderFainted && result.opponentResult) {
+      messages.push(...result.opponentResult.messages);
+    }
+
+    // Status tick messages
+    messages.push(...result.statusMessages);
 
     // Check for faint → switch or victory/defeat
     let nextPhase: BattlePhase = 'TEXT';
