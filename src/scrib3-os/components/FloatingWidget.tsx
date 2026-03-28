@@ -320,11 +320,7 @@ const FloatingWidget: React.FC = () => {
           </div>
         </div>
 
-        {/* Right column: time + date — top-aligned with name */}
-        <div className="flex flex-col items-end" style={{ flexShrink: 0 }}>
-          <span style={{ fontFamily: "'Owners Wide', sans-serif", fontSize: '14px', color: '#EAF2D7', fontWeight: 600, lineHeight: 1.1 }}>{timeStr}</span>
-          <span style={{ fontFamily: "'Owners Wide', sans-serif", fontSize: '10px', color: 'rgba(234,242,215,0.4)', marginTop: '2px' }}>{dateStr}</span>
-        </div>
+        {/* Time/date removed — available as clock widget */}
       </div>
 
       {/* Divider */}

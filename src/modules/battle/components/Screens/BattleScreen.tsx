@@ -33,14 +33,9 @@ const BattleScreen: React.FC = () => {
     initBattle(teamSelectStore.playerTeam, teamSelectStore.opponentTeam);
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
-  // Background music — starts when fighters slide in (INTRO phase)
-  // User already clicked "Fight →" on team select, so autoplay is unlocked
+  // Background music — starts immediately when fighters slide in
   useEffect(() => {
-    if (phase === 'INTRO') {
-      // Small delay to sync with enter animations
-      const t = setTimeout(() => startBattleMusic(), 200);
-      return () => clearTimeout(t);
-    }
+    if (phase === 'INTRO') startBattleMusic();
   }, [phase]); // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
@@ -108,7 +103,7 @@ const BattleScreen: React.FC = () => {
   const opponentFilter = activeOpponent.activeStatuses.map((s) => STATUS_FILTERS[s.id]).filter(Boolean).join(' ') || 'none';
 
   return (
-    <div style={{ minHeight: '100vh', background: '#EAF2D7', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', position: 'relative' }}>
+    <div style={{ minHeight: '100vh', background: '#EAF2D7', display: 'flex', flexDirection: 'column', alignItems: 'center', position: 'relative', paddingTop: '5vh', overflow: 'auto' }}>
       {/* Top controls */}
       <div style={{ position: 'absolute', top: 12, right: 16, zIndex: 20, display: 'flex', gap: '8px', alignItems: 'center' }}>
         <button onClick={handleMuteToggle} style={{ fontFamily: "'Owners Wide', sans-serif", fontSize: '16px', background: 'none', border: 'none', cursor: 'pointer', opacity: 0.4 }}>
