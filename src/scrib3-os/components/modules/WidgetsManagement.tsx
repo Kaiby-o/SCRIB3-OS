@@ -3,10 +3,13 @@
 import React from 'react';
 import { mockTeam, availabilityColors } from '../../lib/team';
 import { mockEngagements, getHealthTier } from '../../lib/engagementHealth';
-import { mockBandwidthDigest, getCapacityColor } from '../../lib/bandwidth';
+import { mockEstimates, buildDigest, getCapacityColor } from '../../lib/bandwidth';
 import { mockScopeWatch, frequencyColors } from '../../lib/scopeWatch';
-import { mockVendors, mockInvoices } from '../../lib/vendors';
+import { mockInvoices } from '../../lib/vendors';
+import { mockProjects } from '../../lib/projects';
 import { getLevel, getLevelProgress } from '../../lib/xp';
+
+const mockBandwidthDigest = buildDigest(mockEstimates, '2026-03-24');
 
 const L: React.FC<{ children: React.ReactNode }> = ({ children }) => (
   <span style={{ fontFamily: "'Owners Wide', sans-serif", fontSize: '11px', letterSpacing: '1px', textTransform: 'uppercase', opacity: 0.45 }}>{children}</span>
@@ -35,7 +38,7 @@ export const BandwidthDigestContent: React.FC = () => {
   return (
     <div className="flex flex-col gap-1">
       <div className="flex items-center gap-3 mb-2"><V>{Math.round(digest.teamAvgCapacity)}%</V><L>avg capacity</L></div>
-      {digest.submissions.slice(0, 4).map((s) => (
+      {digest.submissions.slice(0, 4).map((s: { teamMemberName: string; capacityPct: number }) => (
         <div key={s.teamMemberName} className="flex items-center justify-between" style={{ padding: '6px 0', borderBottom: '0.5px solid rgba(0,0,0,0.06)' }}>
           <span style={{ fontFamily: "'Owners Wide', sans-serif", fontSize: '12px', flex: 1 }}>{s.teamMemberName}</span>
           <Bar pct={s.capacityPct} color={getCapacityColor(s.capacityPct)} />
@@ -115,12 +118,11 @@ export const ActionItemsWidgetContent: React.FC = () => (
 
 /* ===== M7 — Pre-Alignment Queue ===== */
 export const PreAlignmentQueueContent: React.FC = () => {
-  const { mockProjects } = require('../../lib/projects');
-  const missing = mockProjects.filter((p: { preAlignmentComplete: boolean; status: string }) => !p.preAlignmentComplete && p.status !== 'Completed');
+  const missing = mockProjects.filter((p) => !p.preAlignmentComplete && p.status !== 'Completed');
   return (
     <div className="flex flex-col gap-1">
       <div className="flex items-center gap-3 mb-2"><V>{missing.length}</V><L>missing alignment</L></div>
-      {missing.map((p: { id: string; code: string; clientName: string }) => (
+      {missing.map((p) => (
         <R key={p.id} left={<><Dot color="#E67E22" />{p.code} — {p.clientName}</>} right="Blocked" />
       ))}
     </div>
@@ -238,8 +240,8 @@ export const LabourCostContent: React.FC = () => {
   const digest = mockBandwidthDigest;
   return (
     <div className="flex flex-col gap-1">
-      <div className="flex items-center gap-3 mb-2"><V lg>${(digest.submissions.reduce((a, s) => a + s.totalCost, 0) / 1000).toFixed(0)}K</V><L>weekly cost</L></div>
-      {digest.submissions.slice(0, 4).map((s) => (
+      <div className="flex items-center gap-3 mb-2"><V lg>${(digest.submissions.reduce((a: number, s: { totalCost: number }) => a + s.totalCost, 0) / 1000).toFixed(0)}K</V><L>weekly cost</L></div>
+      {digest.submissions.slice(0, 4).map((s: { teamMemberName: string; totalCost: number }) => (
         <R key={s.teamMemberName} left={s.teamMemberName} right={`$${s.totalCost.toLocaleString()}`} />
       ))}
     </div>
