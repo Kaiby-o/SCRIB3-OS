@@ -3,7 +3,7 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import OSLanding from './scrib3-os/pages/LandingPage';
 import OSDashboard from './scrib3-os/pages/DashboardPage';
 import OSProfile from './scrib3-os/pages/ProfilePage';
-import OSClientList from './scrib3-os/pages/ClientListPage';
+
 import OSClientOnboard from './scrib3-os/pages/ClientOnboardPage';
 import OSFinanceOverview from './scrib3-os/pages/FinanceOverviewPage';
 import OSFinanceDetail from './scrib3-os/pages/FinanceDetailPage';
@@ -30,6 +30,7 @@ import OSShoutouts from './scrib3-os/pages/ShoutoutsPage';
 import OSFeedback from './scrib3-os/pages/FeedbackPage';
 import OSSystemsMap from './scrib3-os/pages/SystemsMapPage';
 import OSChat from './scrib3-os/pages/ChatPage';
+import OSClientDirectory from './scrib3-os/pages/ClientDirectoryPage';
 import { AuthGuard, RoleGuard } from './scrib3-os/components/AuthGuard';
 import FloatingWidget from './scrib3-os/components/FloatingWidget';
 import { NavOverlayProvider } from './scrib3-os/components/NavOverlay';
@@ -87,7 +88,7 @@ export default function App() {
           element={
             <AuthGuard>
               <RoleGuard allowed={['admin', 'team', 'csuite']}>
-                <OSClientList />
+                <OSClientDirectory />
               </RoleGuard>
             </AuthGuard>
           }
