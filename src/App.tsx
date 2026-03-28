@@ -40,6 +40,7 @@ const OSSystemsMap = lazy(() => import('./scrib3-os/pages/SystemsMapPage'));
 const OSChat = lazy(() => import('./scrib3-os/pages/ChatPage'));
 const OSClientDirectory = lazy(() => import('./scrib3-os/pages/ClientDirectoryPage'));
 const OSProfDevHub = lazy(() => import('./scrib3-os/pages/ProfDevHubPage'));
+const BattleModule = lazy(() => import('./modules/battle/index'));
 
 // DEVICE layer — heaviest chunk (Phaser 3, D3.js)
 const DeviceDashboard = lazy(() => import('./scrib3-device/pages/DashboardPage'));
@@ -108,6 +109,7 @@ export default function App() {
         <Route path="/approvals" element={<AuthGuard><RoleGuard allowed={['admin', 'team', 'csuite']}><OSApprovals /></RoleGuard></AuthGuard>} />
         <Route path="/tasks" element={<AuthGuard><OSTasks /></AuthGuard>} />
         <Route path="/settings" element={<AuthGuard><OSSettings /></AuthGuard>} />
+        <Route path="/battle/*" element={<AuthGuard><BattleModule /></AuthGuard>} />
 
         {/* ===== SCRIB3-DEVICE routes (admin only) ===== */}
         <Route path="/device" element={<AuthGuard><RoleGuard allowed={['admin']}><DeviceDashboard /></RoleGuard></AuthGuard>} />

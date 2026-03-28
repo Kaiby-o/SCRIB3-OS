@@ -17,11 +17,12 @@ function useIsMobile() {
 const easing = 'cubic-bezier(0.22, 0.61, 0.36, 1)';
 const ICON_BASE = 'https://dzufyjiczbgsvjyinpks.supabase.co/storage/v1/object/public/Icons/';
 
-type StatusOption = 'active' | 'away' | 'busy';
+type StatusOption = 'active' | 'away' | 'busy' | 'battlemode';
 const STATUS_OPTIONS: { key: StatusOption; label: string; color: string }[] = [
   { key: 'active', label: 'Active', color: '#27AE60' },
   { key: 'away', label: 'Away', color: '#F1C40F' },
   { key: 'busy', label: 'Busy', color: '#E67E22' },
+  { key: 'battlemode', label: 'Battle Mode', color: '#E53935' },
 ];
 
 const QUICK_LINKS: { label: string; icon: string; route: string; comingSoon?: boolean }[] = [
@@ -285,7 +286,7 @@ const FloatingWidget: React.FC = () => {
               {statusDropdown && (
                 <div style={{ position: 'absolute', bottom: 16, left: -20, background: '#1A1A1A', borderRadius: '10.258px', padding: '6px', zIndex: 50, minWidth: '100px' }}>
                   {STATUS_OPTIONS.map((opt) => (
-                    <button key={opt.key} onClick={() => { setStatus(opt.key); setStatusDropdown(false); }} className="flex items-center gap-2"
+                    <button key={opt.key} onClick={() => { setStatus(opt.key); setStatusDropdown(false); if (opt.key === 'battlemode') navigate('/battle'); }} className="flex items-center gap-2"
                       style={{ background: status === opt.key ? 'rgba(234,242,215,0.08)' : 'transparent', border: 'none', cursor: 'pointer', padding: '6px 10px', borderRadius: '6px', width: '100%' }}>
                       <div style={{ width: 6, height: 6, borderRadius: '50%', background: opt.color }} />
                       <span style={{ fontFamily: "'Owners Wide', sans-serif", fontSize: '10px', color: '#EAF2D7', letterSpacing: '0.5px', textTransform: 'uppercase' }}>{opt.label}</span>

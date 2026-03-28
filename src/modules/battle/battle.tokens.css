@@ -1,0 +1,353 @@
+/* ===== SCRIB3 Battle Design Tokens ===== */
+
+:root {
+  --battle-bg-dark:       #0A0A0A;
+  --battle-bg-mid:        #111118;
+  --battle-pink:          #D7ABC5;
+  --battle-mint:          #EAF2D7;
+  --battle-blue-grey:     #6E93C3;
+  --battle-olive:         #7B7554;
+  --hp-high:              #4CAF50;
+  --hp-mid:               #F5C542;
+  --hp-low:               #E53935;
+  --hp-bg:                #1A1A24;
+  --nameplate-bg:         rgba(10, 10, 10, 0.92);
+  --nameplate-border:     #D7ABC5;
+  --nameplate-text:       #F0ECF4;
+  --textbox-bg:           rgba(12, 12, 18, 0.97);
+  --textbox-border:       #D7ABC5;
+  --textbox-text:         #F0ECF4;
+  --move-special-border:  #D7ABC5;
+  --move-basic-border:    #6E93C3;
+  --move-defense-border:  #EAF2D7;
+  --move-disabled:        #2A2A2A;
+  --font-display:         'Owners Wide', sans-serif;
+  --font-mono:            'Space Mono', monospace;
+}
+
+/* ===== Arena ===== */
+
+.battle-arena {
+  background: linear-gradient(180deg, var(--battle-bg-mid) 0%, var(--battle-bg-dark) 100%);
+  position: relative;
+  overflow: hidden;
+}
+
+.battle-arena::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(215, 171, 197, 0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(215, 171, 197, 0.04) 1px, transparent 1px);
+  background-size: 40px 40px;
+  pointer-events: none;
+}
+
+/* ===== Battle Scene Grid ===== */
+
+.battle-scene {
+  display: grid;
+  grid-template-rows: 62% 38%;
+  width: 100%;
+  max-width: 960px;
+  aspect-ratio: 16 / 9;
+  margin: 0 auto;
+  position: relative;
+}
+
+/* ===== Sprites ===== */
+
+.battle-sprite {
+  image-rendering: pixelated;
+  image-rendering: -moz-crisp-edges;
+  image-rendering: crisp-edges;
+}
+
+.battle-sprite-back {
+  width: 320px;
+  height: 320px;
+}
+
+.battle-sprite-front {
+  width: 256px;
+  height: 256px;
+}
+
+/* ===== Platform Shadows ===== */
+
+.battle-platform {
+  width: 200px;
+  height: 24px;
+  background: radial-gradient(ellipse, rgba(215, 171, 197, 0.15) 0%, transparent 70%);
+  border-radius: 50%;
+}
+
+/* ===== Nameplates ===== */
+
+.battle-nameplate {
+  background: var(--nameplate-bg);
+  border: 1px solid var(--nameplate-border);
+  border-radius: 8px;
+  padding: 10px 16px;
+  color: var(--nameplate-text);
+  min-width: 220px;
+}
+
+.battle-nameplate-name {
+  font-family: var(--font-display);
+  font-size: 14px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.battle-nameplate-level {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  opacity: 0.5;
+}
+
+/* ===== HP Bar ===== */
+
+.battle-hp-bar-container {
+  height: 8px;
+  background: var(--hp-bg);
+  border-radius: 4px;
+  overflow: hidden;
+  position: relative;
+}
+
+.battle-hp-bar-fill {
+  height: 100%;
+  border-radius: 4px;
+  transition: width 800ms ease-in-out, background-color 400ms;
+}
+
+.battle-hp-bar-fill[data-level="high"] { background: var(--hp-high); }
+.battle-hp-bar-fill[data-level="mid"] { background: var(--hp-mid); }
+.battle-hp-bar-fill[data-level="low"] {
+  background: var(--hp-low);
+  animation: hp-pulse 1s ease-in-out infinite;
+}
+
+@keyframes hp-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.7; }
+}
+
+.battle-hp-label {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: rgba(240, 236, 244, 0.5);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.battle-hp-numbers {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  color: var(--nameplate-text);
+}
+
+/* ===== EXP Bar ===== */
+
+.battle-exp-bar {
+  height: 3px;
+  background: var(--hp-bg);
+  border-radius: 2px;
+  overflow: hidden;
+  margin-top: 4px;
+}
+
+.battle-exp-bar-fill {
+  height: 100%;
+  background: var(--battle-blue-grey);
+  border-radius: 2px;
+}
+
+/* ===== Text Box ===== */
+
+.battle-textbox {
+  background: var(--textbox-bg);
+  border-top: 1px solid var(--textbox-border);
+  padding: 16px 24px;
+  color: var(--textbox-text);
+  font-family: var(--font-display);
+  font-size: 15px;
+  line-height: 1.6;
+  min-height: 80px;
+  position: relative;
+  cursor: pointer;
+}
+
+.battle-textbox-cursor {
+  display: inline-block;
+  animation: textbox-blink 800ms step-end infinite;
+}
+
+@keyframes textbox-blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}
+
+/* ===== Move List ===== */
+
+.battle-move-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 16px;
+  border: 1px solid var(--move-basic-border);
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background 150ms, border-color 150ms;
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.battle-move-item:hover:not([data-disabled="true"]) {
+  background: rgba(215, 171, 197, 0.08);
+}
+
+.battle-move-item[data-category="special"] { border-color: var(--move-special-border); }
+.battle-move-item[data-category="defensive"] { border-color: var(--move-defense-border); }
+.battle-move-item[data-disabled="true"] {
+  border-color: var(--move-disabled);
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+.battle-move-name {
+  font-family: var(--font-display);
+  font-size: 13px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--nameplate-text);
+  flex: 1;
+}
+
+.battle-move-category {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  padding: 2px 6px;
+  border-radius: 3px;
+}
+
+.battle-move-category[data-cat="special"] { background: rgba(215, 171, 197, 0.2); color: var(--battle-pink); }
+.battle-move-category[data-cat="basic"] { background: rgba(110, 147, 195, 0.2); color: var(--battle-blue-grey); }
+.battle-move-category[data-cat="defensive"] { background: rgba(234, 242, 215, 0.15); color: var(--battle-mint); }
+
+.battle-move-cooldown {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--hp-low);
+  opacity: 0.8;
+}
+
+/* ===== Status Badge ===== */
+
+.battle-status-badge {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  padding: 2px 6px;
+  border-radius: 3px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  background: rgba(229, 57, 53, 0.2);
+  color: var(--hp-low);
+  white-space: nowrap;
+}
+
+/* ===== Battle Menu ===== */
+
+.battle-menu {
+  display: flex;
+  gap: 8px;
+  padding: 12px 24px;
+}
+
+.battle-menu-btn {
+  font-family: var(--font-display);
+  font-size: 13px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  padding: 10px 24px;
+  border-radius: 6px;
+  border: 1px solid var(--battle-pink);
+  background: transparent;
+  color: var(--battle-pink);
+  cursor: pointer;
+  transition: background 150ms;
+}
+
+.battle-menu-btn:hover {
+  background: rgba(215, 171, 197, 0.1);
+}
+
+.battle-menu-btn[data-primary="true"] {
+  background: var(--battle-pink);
+  color: var(--battle-bg-dark);
+}
+
+/* ===== Party Panel ===== */
+
+.battle-party-slot {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 14px;
+  border: 1px solid rgba(215, 171, 197, 0.2);
+  border-radius: 6px;
+  background: rgba(10, 10, 10, 0.6);
+  cursor: pointer;
+  transition: border-color 150ms;
+}
+
+.battle-party-slot:hover { border-color: var(--battle-pink); }
+.battle-party-slot[data-active="true"] { border-color: var(--battle-pink); background: rgba(215, 171, 197, 0.08); }
+.battle-party-slot[data-fainted="true"] { opacity: 0.3; cursor: not-allowed; }
+
+/* ===== Team Select ===== */
+
+.battle-fighter-card {
+  border: 1px solid rgba(215, 171, 197, 0.15);
+  border-radius: 8px;
+  padding: 16px;
+  background: rgba(10, 10, 10, 0.8);
+  cursor: pointer;
+  transition: border-color 200ms, box-shadow 200ms;
+}
+
+.battle-fighter-card:hover { border-color: var(--battle-pink); }
+.battle-fighter-card[data-selected="true"] {
+  border-color: var(--battle-pink);
+  box-shadow: 0 0 16px rgba(215, 171, 197, 0.2);
+}
+
+/* ===== Victory / Defeat ===== */
+
+.battle-result-title {
+  font-family: var(--font-display);
+  font-size: 48px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 4px;
+  text-align: center;
+}
+
+/* ===== Responsive ===== */
+
+@media (max-width: 640px) {
+  .battle-scene {
+    aspect-ratio: auto;
+    min-height: 100vh;
+    grid-template-rows: 55% 45%;
+  }
+
+  .battle-sprite-back { width: 180px; height: 180px; }
+  .battle-sprite-front { width: 140px; height: 140px; }
+  .battle-nameplate { min-width: auto; padding: 8px 12px; }
+  .battle-textbox { font-size: 13px; padding: 12px 16px; }
+}
