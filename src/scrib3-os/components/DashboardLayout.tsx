@@ -4,13 +4,14 @@ import RGL from 'react-grid-layout';
 const GridLayout = RGL as any;
 import 'react-grid-layout/css/styles.css';
 import 'react-resizable/css/styles.css';
-import PillNav from './PillNav';
 import ModulePanel from './ModulePanel';
 import LogoScrib3 from './LogoScrib3';
 import BurgerButton from './BurgerButton';
 import { dashboardConfigs, type UserRole } from '../config/dashboardConfig';
 import { useAuthStore } from '../hooks/useAuth';
 import { moduleContentMap } from './modules/ModuleContent';
+
+const ICON_BASE = 'https://dzufyjiczbgsvjyinpks.supabase.co/storage/v1/object/public/Icons/';
 
 /* ------------------------------------------------------------------ */
 /*  Layout helpers                                                     */
@@ -97,14 +98,18 @@ const DashboardLayout: React.FC = () => {
   );
 
   const visibleIds = visibleModules.map((m) => m.id);
-  const visibleKey = visibleIds.join(',');
   const [layout, setLayout] = useState<LayoutItem[]>(() => getLayout(role, visibleIds));
 
-  // Update layout when visible modules change
+  // Only rebuild layout when role changes or widgets are added/removed (not on every render)
+  const prevIdsRef = React.useRef(visibleIds.join(','));
   useEffect(() => {
-    setLayout(getLayout(role, visibleIds));
+    const key = visibleIds.join(',');
+    if (key !== prevIdsRef.current) {
+      prevIdsRef.current = key;
+      setLayout(getLayout(role, visibleIds));
+    }
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [role, visibleKey]);
+  }, [role, visibleIds.length]);
 
   const handleLayoutChange = useCallback((newLayout: LayoutItem[]) => {
     setLayout(newLayout);
@@ -137,7 +142,7 @@ const DashboardLayout: React.FC = () => {
         style={{ height: '85px', padding: '0 40px', background: 'var(--bg-primary)' }}
       >
         <LogoScrib3 height={18} color="var(--text-primary)" />
-        <span style={{ fontFamily: "'Kaio', sans-serif", fontWeight: 800, fontSize: '16px', textTransform: 'uppercase' }}>Dashboard</span>
+        <img src={ICON_BASE + 'favicon.svg'} alt="" style={{ height: 18, width: 18, filter: 'brightness(0)' }} />
         <div className="flex items-center gap-2">
           {hasWidgets && (
             <button onClick={handleResetLayout}

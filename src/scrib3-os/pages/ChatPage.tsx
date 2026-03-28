@@ -87,6 +87,10 @@ const ChatPage: React.FC = () => {
   const [mentionDropdown, setMentionDropdown] = useState(false);
   const [mentionFilter, setMentionFilter] = useState('');
   const [mentionCursorPos, setMentionCursorPos] = useState(0);
+  const [showNewChannel, setShowNewChannel] = useState(false);
+  const [newChannelName, setNewChannelName] = useState('');
+  const [newChannelMembers, setNewChannelMembers] = useState<string[]>([]);
+  const [showNewDM, setShowNewDM] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -266,16 +270,88 @@ const ChatPage: React.FC = () => {
       <div className="flex" style={{ height: 'calc(100vh - 86px)', marginTop: '86px' }}>
         {/* Sidebar */}
         <div style={{ width: '240px', borderRight: '0.733px solid var(--border-default)', overflow: 'auto', padding: '16px 0', flexShrink: 0 }}>
-          <div style={{ padding: '0 16px', marginBottom: '16px' }}>
+          <div className="flex items-center justify-between" style={{ padding: '0 16px', marginBottom: '8px' }}>
             <span style={{ fontFamily: "'Kaio', sans-serif", fontWeight: 800, fontSize: '12px', textTransform: 'uppercase', opacity: 0.4 }}>Channels</span>
+            <button onClick={() => setShowNewChannel(!showNewChannel)} style={{ fontFamily: "'Owners Wide', sans-serif", fontSize: '16px', background: 'none', border: 'none', cursor: 'pointer', opacity: 0.3, padding: '0 4px', lineHeight: 1 }} title="New channel">+</button>
           </div>
+
+          {showNewChannel && (
+            <div style={{ padding: '0 12px', marginBottom: '12px' }}>
+              <input value={newChannelName} onChange={(e) => setNewChannelName(e.target.value)} placeholder="Channel name..."
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' && newChannelName.trim()) {
+                    const slug = newChannelName.trim().toLowerCase().replace(/\s+/g, '-');
+                    setChannels((prev) => [...prev, { id: slug, name: newChannelName.trim(), type: 'channel', unread: 0 }]);
+                    setMessages((prev) => ({ ...prev, [slug]: [] }));
+                    setActiveChannel(slug);
+                    setNewChannelName(''); setShowNewChannel(false);
+                  }
+                  if (e.key === 'Escape') setShowNewChannel(false);
+                }}
+                style={{ fontFamily: "'Owners Wide', sans-serif", fontSize: '12px', width: '100%', background: 'var(--bg-surface)', border: '0.733px solid var(--border-default)', borderRadius: '6px', padding: '6px 10px', outline: 'none', marginBottom: '6px' }} />
+              {/* Add members */}
+              <span style={{ fontFamily: "'Owners Wide', sans-serif", fontSize: '9px', letterSpacing: '1px', textTransform: 'uppercase', opacity: 0.4, display: 'block', marginBottom: '4px' }}>Add Members</span>
+              <div className="flex gap-1 flex-wrap" style={{ marginBottom: '6px' }}>
+                {newChannelMembers.map((m) => (
+                  <span key={m} style={{ fontFamily: "'Owners Wide', sans-serif", fontSize: '10px', padding: '2px 8px', borderRadius: '75.641px', background: 'rgba(215,171,197,0.15)', border: '1px solid rgba(215,171,197,0.3)' }}>{m}</span>
+                ))}
+              </div>
+              <select onChange={(e) => { if (e.target.value && !newChannelMembers.includes(e.target.value)) setNewChannelMembers([...newChannelMembers, e.target.value]); e.target.value = ''; }}
+                style={{ fontFamily: "'Owners Wide', sans-serif", fontSize: '11px', width: '100%', background: 'var(--bg-surface)', border: '0.733px solid var(--border-default)', borderRadius: '6px', padding: '4px 8px', outline: 'none', cursor: 'pointer', appearance: 'none' as const }}>
+                <option value="">Select member...</option>
+                {mockTeam.filter((m) => m.name !== myName && !newChannelMembers.includes(m.name)).map((m) => (
+                  <option key={m.id} value={m.name}>{m.name}</option>
+                ))}
+              </select>
+              <button onClick={() => {
+                if (newChannelName.trim()) {
+                  const slug = newChannelName.trim().toLowerCase().replace(/\s+/g, '-');
+                  setChannels((prev) => [...prev, { id: slug, name: newChannelName.trim(), type: 'channel', unread: 0 }]);
+                  setMessages((prev) => ({ ...prev, [slug]: [] }));
+                  setActiveChannel(slug);
+                  setNewChannelName(''); setNewChannelMembers([]); setShowNewChannel(false);
+                }
+              }}
+                style={{ fontFamily: "'Owners Wide', sans-serif", fontSize: '10px', letterSpacing: '1px', textTransform: 'uppercase', padding: '4px 12px', borderRadius: '75.641px', border: 'none', background: '#000', color: '#EAF2D7', cursor: 'pointer', marginTop: '6px' }}>
+                Create
+              </button>
+            </div>
+          )}
+
           {channels.filter((c) => c.type === 'channel').map((ch) => (
             <ChannelItem key={ch.id} channel={ch} active={activeChannel === ch.id} onClick={() => handleSelectChannel(ch.id)} />
           ))}
 
-          <div style={{ padding: '16px 16px 8px', marginTop: '8px' }}>
+          <div className="flex items-center justify-between" style={{ padding: '16px 16px 8px', marginTop: '8px' }}>
             <span style={{ fontFamily: "'Kaio', sans-serif", fontWeight: 800, fontSize: '12px', textTransform: 'uppercase', opacity: 0.4 }}>Direct Messages</span>
+            <button onClick={() => setShowNewDM(!showNewDM)} style={{ fontFamily: "'Owners Wide', sans-serif", fontSize: '16px', background: 'none', border: 'none', cursor: 'pointer', opacity: 0.3, padding: '0 4px', lineHeight: 1 }} title="New message">+</button>
           </div>
+
+          {showNewDM && (
+            <div style={{ padding: '0 12px', marginBottom: '8px' }}>
+              <select onChange={(e) => {
+                if (e.target.value) {
+                  const member = mockTeam.find((m) => m.id === e.target.value);
+                  if (member) {
+                    const dmId = `dm-${member.id}`;
+                    if (!channels.find((c) => c.id === dmId)) {
+                      setChannels((prev) => [...prev, { id: dmId, name: member.name, type: 'dm', unread: 0 }]);
+                      setMessages((prev) => ({ ...prev, [dmId]: [] }));
+                    }
+                    setActiveChannel(dmId);
+                    setShowNewDM(false);
+                  }
+                }
+              }}
+                style={{ fontFamily: "'Owners Wide', sans-serif", fontSize: '12px', width: '100%', background: 'var(--bg-surface)', border: '0.733px solid var(--border-default)', borderRadius: '6px', padding: '6px 10px', outline: 'none', cursor: 'pointer', appearance: 'none' as const }}>
+                <option value="">Select teammate...</option>
+                {mockTeam.filter((m) => m.name !== myName).map((m) => (
+                  <option key={m.id} value={m.id}>{m.name} — {m.title}</option>
+                ))}
+              </select>
+            </div>
+          )}
+
           {channels.filter((c) => c.type === 'dm').map((ch) => (
             <ChannelItem key={ch.id} channel={ch} active={activeChannel === ch.id} onClick={() => handleSelectChannel(ch.id)} />
           ))}

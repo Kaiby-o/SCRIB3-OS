@@ -42,6 +42,7 @@ const SEED_USERS: SeedUser[] = [
   { email: 'sixtyne@scrib3.co', display_name: 'Sixtyne Perez', role: 'csuite' },
   { email: 'ck@scrib3.co', display_name: 'CK', role: 'team' },
   { email: 'nick@scrib3.co', display_name: 'Nick Mitchell', role: 'csuite' },
+  { email: 'testuser@scrib3.co', display_name: 'Test User', role: 'team' },
 ];
 
 function prompt(question: string): Promise<string> {

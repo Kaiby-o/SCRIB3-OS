@@ -203,6 +203,13 @@ export async function fetchWorkflowStates(): Promise<LinearState[]> {
   return data.workflowStates.nodes.sort((a, b) => a.position - b.position);
 }
 
+export async function fetchTeamId(): Promise<string> {
+  const data = await linearQuery<{ teams: { nodes: { id: string }[] } }>(`
+    query { teams(first: 1) { nodes { id } } }
+  `);
+  return data.teams.nodes[0]?.id ?? '';
+}
+
 export async function fetchLinearUsers(): Promise<LinearUser[]> {
   const data = await linearQuery<{ users: { nodes: LinearUser[] } }>(TEAM_MEMBERS_QUERY);
   return data.users.nodes;

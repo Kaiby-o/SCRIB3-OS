@@ -4,7 +4,7 @@ import LogoScrib3 from '../components/LogoScrib3';
 import BurgerButton from '../components/BurgerButton';
 import { mockTeam } from '../lib/team';
 import {
-  fetchIssues, fetchIssueDetail, fetchWorkflowStates, fetchLinearUsers,
+  fetchIssues, fetchIssueDetail, fetchWorkflowStates, fetchLinearUsers, fetchTeamId, createIssue,
   updateIssueState, updateIssueAssignee, updateIssuePriority, updateIssueDueDate, addComment,
   type LinearIssue, type LinearState, type LinearLabel, type LinearUser,
   PRIORITY_LABELS,
@@ -103,6 +103,12 @@ const TasksPage: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [selectedIssue, setSelectedIssue] = useState<LinearIssue | null>(null);
   const [collapsedStates, setCollapsedStates] = useState<Set<string>>(new Set());
+  const [showNewIssue, setShowNewIssue] = useState(false);
+  const [newTitle, setNewTitle] = useState('');
+  const [newDesc, setNewDesc] = useState('');
+  const [newPriority, setNewPriority] = useState(3);
+  const [newAssignee, setNewAssignee] = useState('');
+  const [creating, setCreating] = useState(false);
 
   const loadData = useCallback(async () => {
     try {
@@ -142,11 +148,65 @@ const TasksPage: React.FC = () => {
         <button onClick={() => navigate('/dashboard')} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}><LogoScrib3 height={18} color="var(--text-primary)" /></button>
         <div className="flex items-center gap-3">
           <span style={{ fontFamily: "'Kaio', sans-serif", fontWeight: 800, fontSize: '16px', textTransform: 'uppercase' }}>Tasks</span>
-          <span style={{ fontFamily: "'Owners Wide', sans-serif", fontSize: '10px', opacity: 0.3 }}>{issues.length} issues · Live</span>
+          <span style={{ fontFamily: "'Owners Wide', sans-serif", fontSize: '11px', opacity: 0.3 }}>{issues.length} issues · Live</span>
         </div>
-        <button onClick={() => navigate('/dashboard')} style={{ fontFamily: "'Owners Wide', sans-serif", fontSize: '12px', letterSpacing: '1px', textTransform: 'uppercase', color: 'var(--text-primary)', opacity: 0.5, background: 'none', border: 'none', cursor: 'pointer' }}>&larr; Dashboard</button>
+        <div className="flex items-center gap-3">
+          <button onClick={() => setShowNewIssue(true)} style={{ fontFamily: "'Owners Wide', sans-serif", fontSize: '12px', letterSpacing: '1px', textTransform: 'uppercase', padding: '8px 18px', borderRadius: '75.641px', border: 'none', background: '#000', color: '#EAF2D7', cursor: 'pointer' }}>+ New Issue</button>
       <BurgerButton />
+        </div>
       </header>
+
+      {/* New issue modal */}
+      {showNewIssue && (
+        <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.3)', zIndex: 50, display: 'flex', alignItems: 'center', justifyContent: 'center' }} onClick={() => setShowNewIssue(false)}>
+          <div onClick={(e) => e.stopPropagation()} style={{ background: 'var(--bg-primary)', border: '0.733px solid var(--border-default)', borderRadius: '10.258px', padding: '32px', width: '480px', maxWidth: '90vw' }}>
+            <h3 style={{ fontFamily: "'Kaio', sans-serif", fontWeight: 800, fontSize: '18px', textTransform: 'uppercase', margin: '0 0 20px 0' }}>New Issue</h3>
+            <div className="flex flex-col gap-3">
+              <div>
+                <span style={{ fontFamily: "'Owners Wide', sans-serif", fontSize: '10px', letterSpacing: '1px', textTransform: 'uppercase', opacity: 0.4, display: 'block', marginBottom: '6px' }}>Title</span>
+                <input value={newTitle} onChange={(e) => setNewTitle(e.target.value)} placeholder="Issue title..."
+                  style={{ fontFamily: "'Owners Wide', sans-serif", fontSize: '14px', width: '100%', background: '#EAF2D7', border: '0.733px solid var(--border-default)', borderRadius: '10.258px', padding: '10px 16px', outline: 'none' }} />
+              </div>
+              <div>
+                <span style={{ fontFamily: "'Owners Wide', sans-serif", fontSize: '10px', letterSpacing: '1px', textTransform: 'uppercase', opacity: 0.4, display: 'block', marginBottom: '6px' }}>Description</span>
+                <textarea value={newDesc} onChange={(e) => setNewDesc(e.target.value)} placeholder="Describe the issue..." rows={3}
+                  style={{ fontFamily: "'Owners Wide', sans-serif", fontSize: '14px', width: '100%', background: '#EAF2D7', border: '0.733px solid var(--border-default)', borderRadius: '10.258px', padding: '10px 16px', outline: 'none', resize: 'vertical' }} />
+              </div>
+              <div className="flex gap-3">
+                <div style={{ flex: 1 }}>
+                  <span style={{ fontFamily: "'Owners Wide', sans-serif", fontSize: '10px', letterSpacing: '1px', textTransform: 'uppercase', opacity: 0.4, display: 'block', marginBottom: '6px' }}>Priority</span>
+                  <StyledSelect value={String(newPriority)} onChange={(v) => setNewPriority(Number(v))}
+                    options={[0,1,2,3,4].map((p) => ({ value: String(p), label: PRIORITY_LABELS[p]?.label ?? 'None' }))} />
+                </div>
+                <div style={{ flex: 1 }}>
+                  <span style={{ fontFamily: "'Owners Wide', sans-serif", fontSize: '10px', letterSpacing: '1px', textTransform: 'uppercase', opacity: 0.4, display: 'block', marginBottom: '6px' }}>Assignee</span>
+                  <StyledSelect value={newAssignee} onChange={setNewAssignee}
+                    options={[{ value: '', label: 'Unassigned' }, ...linearUsers.map((u) => ({ value: u.id, label: u.name }))]} />
+                </div>
+              </div>
+              <div className="flex gap-2" style={{ marginTop: '8px' }}>
+                <button disabled={!newTitle.trim() || creating} onClick={async () => {
+                  setCreating(true);
+                  try {
+                    const teamId = await fetchTeamId();
+                    await createIssue({ title: newTitle.trim(), description: newDesc.trim() || undefined, priority: newPriority, assigneeId: newAssignee || undefined, teamId });
+                    setShowNewIssue(false); setNewTitle(''); setNewDesc(''); setNewPriority(3); setNewAssignee('');
+                    loadData();
+                  } catch { /* ignore */ }
+                  setCreating(false);
+                }}
+                  style={{ fontFamily: "'Owners Wide', sans-serif", fontSize: '12px', letterSpacing: '1px', textTransform: 'uppercase', padding: '10px 24px', borderRadius: '75.641px', border: 'none', background: newTitle.trim() ? '#000' : 'rgba(0,0,0,0.1)', color: '#EAF2D7', cursor: newTitle.trim() ? 'pointer' : 'default' }}>
+                  {creating ? 'Creating...' : 'Create Issue'}
+                </button>
+                <button onClick={() => setShowNewIssue(false)}
+                  style={{ fontFamily: "'Owners Wide', sans-serif", fontSize: '12px', letterSpacing: '1px', textTransform: 'uppercase', padding: '10px 24px', borderRadius: '75.641px', border: '1px solid var(--border-default)', background: 'transparent', cursor: 'pointer' }}>
+                  Cancel
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
 
       {loading ? (
         <div className="flex items-center justify-center" style={{ marginTop: '86px', flex: 1 }}><span style={{ fontFamily: "'Owners Wide', sans-serif", fontSize: 14, opacity: 0.4, textTransform: 'uppercase', letterSpacing: '1px' }}>Loading from Linear...</span></div>
@@ -240,8 +300,8 @@ const IssueRowNested: React.FC<{ issue: LinearIssue; allIssues: LinearIssue[]; s
         <div onClick={onClick} className="flex items-center" style={{ padding: '8px 12px', flex: 1, borderRadius: 6, cursor: 'pointer', background: selected ? 'var(--bg-surface)' : 'transparent', border: selected ? '0.733px solid var(--border-default)' : '0.733px solid transparent', transition: `background 100ms ${easing}` }}
           onMouseEnter={(e) => { if (!selected) e.currentTarget.style.background = 'var(--bg-surface)'; }} onMouseLeave={(e) => { if (!selected) e.currentTarget.style.background = 'transparent'; }}>
           <PriorityDot priority={issue.priority} />
-          <span style={{ width: 75, fontFamily: "'Owners Wide', sans-serif", fontSize: 10, opacity: 0.35, flexShrink: 0, marginLeft: 8 }}>{issue.identifier}</span>
-          <span style={{ flex: 1, fontFamily: "'Owners Wide', sans-serif", fontSize: 13, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{issue.title}</span>
+          <span style={{ width: 75, fontFamily: "'Owners Wide', sans-serif", fontSize: 11, opacity: 0.35, flexShrink: 0, marginLeft: 8 }}>{issue.identifier}</span>
+          <span style={{ flex: 1, fontFamily: "'Owners Wide', sans-serif", fontSize: 14, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{issue.title}</span>
           {sc > 0 && <span style={{ fontFamily: "'Owners Wide', sans-serif", fontSize: 10, opacity: 0.4, marginLeft: 8, flexShrink: 0 }}>{sd}/{sc}</span>}
           <div className="flex gap-1" style={{ marginLeft: 12, flexShrink: 0 }}>{issue.labels.nodes.slice(0, 3).map((l) => <LabelBadge key={l.id} label={l} />)}</div>
           {issue.assignee && <Avatar name={issue.assignee.name} email={issue.assignee.email} url={issue.assignee.avatarUrl} size={22} style={{ marginLeft: 8 }} />}
