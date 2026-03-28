@@ -37,12 +37,12 @@ const BattleScreen: React.FC = () => {
   // Audio management
   const startAudio = useCallback(() => {
     try {
-      const intro = new Audio('/battle/audio/pkmn.mp3');
+      const intro = new Audio('/battle/audio/pkmn.wav');
       intro.volume = muted ? 0 : 0.4;
       audioRef.current = intro;
       intro.play().catch(() => {});
       intro.onended = () => {
-        const loop = new Audio('/battle/audio/pkmnrpt.mp3');
+        const loop = new Audio('/battle/audio/pkmnrpt.wav');
         loop.volume = muted ? 0 : 0.4;
         loop.loop = true;
         loopAudioRef.current = loop;
