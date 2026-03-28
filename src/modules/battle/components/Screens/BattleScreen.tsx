@@ -33,20 +33,19 @@ const BattleScreen: React.FC = () => {
     initBattle(teamSelectStore.playerTeam, teamSelectStore.opponentTeam);
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
-  // Background music — start on first interaction (browser autoplay policy)
-  const musicStartedRef = React.useRef(false);
-  const tryStartMusic = useCallback(() => {
-    if (!musicStartedRef.current) {
-      musicStartedRef.current = true;
-      startBattleMusic();
+  // Background music — starts when fighters slide in (INTRO phase)
+  // User already clicked "Fight →" on team select, so autoplay is unlocked
+  useEffect(() => {
+    if (phase === 'INTRO') {
+      // Small delay to sync with enter animations
+      const t = setTimeout(() => startBattleMusic(), 200);
+      return () => clearTimeout(t);
     }
-  }, []);
+  }, [phase]); // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
-    // Try on intro, but may be blocked by autoplay policy
-    if (phase === 'INTRO') tryStartMusic();
     return () => { stopBattleMusic(); };
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+  }, []);
 
   // Mute toggle
   const handleMuteToggle = useCallback(() => {
@@ -79,7 +78,6 @@ const BattleScreen: React.FC = () => {
   }
 
   const handleTextAdvance = () => {
-    tryStartMusic(); // Ensure music starts on first user interaction
     if (!isComplete) { skip(); return; }
     advanceText();
   };
