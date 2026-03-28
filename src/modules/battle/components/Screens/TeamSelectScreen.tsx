@@ -88,7 +88,7 @@ const TeamSelectScreen: React.FC = () => {
                 {/* Name */}
                 <div style={{ textAlign: 'center', marginBottom: '8px' }}>
                   <span style={{ fontFamily: 'var(--font-display)', fontSize: '12px', fontWeight: 600, textTransform: 'uppercase', display: 'block', color: 'var(--battle-mint)' }}>{fighter.name}</span>
-                  <span style={{ fontFamily: 'var(--font-mono, monospace)', fontSize: '9px', opacity: 0.4 }}>{fighter.title}</span>
+                  <span style={{ fontFamily: 'var(--font-mono, monospace)', fontSize: '9px', opacity: 0.4 }}>{fighter.role}</span>
                 </div>
 
                 {/* Stat bars */}

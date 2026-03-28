@@ -11,25 +11,25 @@ import { hpPercent, hpLevel, damageDots, spritePath, statusBadgeText } from '../
 import { isOnCooldown } from '../../engine/CooldownTracker';
 import { hasStatus } from '../../engine/StatusEngine';
 import { FIGHTER_LEVEL } from '../../data/battleConfig';
-import type { Move, BattleFighter } from '../../data/battleTypes';
+import type { Move } from '../../data/battleTypes';
 
 const BattleScreen: React.FC = () => {
   const navigate = useNavigate();
-  const { playerTeam: selPlayerTeam, opponentTeam: selOpponentTeam } = useTeamSelectStore();
+  const teamSelectStore = useTeamSelectStore();
   const {
-    phase, activePlayer, activeOpponent, playerTeam, opponentTeam,
+    phase, activePlayer, activeOpponent, playerTeam,
     currentText, textQueue, roundNumber, battleSpeed,
-    initBattle, selectMove, advanceText, switchFighter, flee, setPhase, setBattleSpeed,
+    initBattle, selectMove, advanceText, switchFighter, flee, setBattleSpeed,
   } = useBattleStore();
-  const { playerRef, opponentRef, screenRef, playAttack, playHit, playFaint, playScreenFlash, playEnter } = useAnimations();
+  const { playerRef, opponentRef, screenRef, playAttack, playHit, playEnter } = useAnimations();
   const { displayed, isComplete, skip } = useTypewriter(currentText, battleSpeed === 'fast' ? 5 : 30);
   const [showMoves, setShowMoves] = useState(false);
   const [showParty, setShowParty] = useState(false);
 
   // Init battle on mount
   useEffect(() => {
-    if (selPlayerTeam.length === 0) { navigate('/battle/team-select'); return; }
-    initBattle(selPlayerTeam, selOpponentTeam);
+    if (teamSelectStore.playerTeam.length === 0) { navigate('/battle/team-select'); return; }
+    initBattle(teamSelectStore.playerTeam, teamSelectStore.opponentTeam);
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Play enter animations on phase change
