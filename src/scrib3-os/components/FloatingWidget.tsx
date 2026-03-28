@@ -354,7 +354,7 @@ const FloatingWidget: React.FC = () => {
         <BurgerHandle size={18} />
         <button
           onClick={(e) => { e.stopPropagation(); setExpanded(false); setPosition(null); }}
-          style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'rgba(234,242,215,0.4)', fontSize: '12px', padding: '2px', transition: `color 150ms ${easing}` }}
+          style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'rgba(234,242,215,0.4)', fontSize: '12px', padding: '12px 10px', margin: '-8px -6px -8px 0', transition: `color 150ms ${easing}` }}
           onMouseEnter={(e) => (e.currentTarget.style.color = '#EAF2D7')}
           onMouseLeave={(e) => (e.currentTarget.style.color = 'rgba(234,242,215,0.4)')}
         >

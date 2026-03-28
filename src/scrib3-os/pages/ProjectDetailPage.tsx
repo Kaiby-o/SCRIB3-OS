@@ -9,7 +9,7 @@ const ProjectDetailPage: React.FC = () => {
   const { code } = useParams<{ code: string }>();
   const navigate = useNavigate();
   const project = mockProjects.find((p) => p.code === code);
-  const [activeTab, setActiveTab] = useState<'overview' | 'workflow' | 'alignment'>('overview');
+  const [activeTab, setActiveTab] = useState<'overview' | 'documents' | 'workflow' | 'alignment'>('overview');
 
   if (!project) {
     return (
@@ -66,7 +66,7 @@ const ProjectDetailPage: React.FC = () => {
 
         {/* Tabs */}
         <div className="flex gap-2" style={{ marginBottom: '24px' }}>
-          {([['overview', 'Overview'], ['workflow', 'Workflow'], ['alignment', 'Alignment']] as const).map(([key, label]) => (
+          {([['overview', 'Overview'], ['documents', 'Documents'], ['workflow', 'Workflow'], ['alignment', 'Alignment']] as const).map(([key, label]) => (
             <Pill key={key} label={label} active={activeTab === key} onClick={() => setActiveTab(key)} />
           ))}
         </div>
@@ -103,6 +103,21 @@ const ProjectDetailPage: React.FC = () => {
                 {project.freelancers.length > 0 && project.freelancers.map((f) => (
                   <span key={f} style={{ fontFamily: "'Owners Wide', sans-serif", fontSize: '12px', padding: '6px 14px', borderRadius: '75.641px', border: '0.733px solid var(--border-default)', opacity: 0.6 }}>{f} (vendor)</span>
                 ))}
+              </div>
+            </Section>
+          </>
+        )}
+
+        {activeTab === 'documents' && (
+          <>
+            <Section title="Project Documents">
+              <div className="flex flex-col gap-3">
+                <DocRow label="Master Service Agreement (MSA)" url={project.sowUrl} />
+                <DocRow label="Statement of Work (SOW)" url={project.sowUrl} />
+                <DocRow label="Project Brief" url={project.briefStatus === 'Complete' ? '#' : ''} status={project.briefStatus} />
+                <DocRow label="Client Markdown File" url={project.clientSlug ? `/clients/${project.clientSlug}/hub` : ''} internal />
+                <DocRow label="Linear Board" url={project.linearBoardUrl} />
+                {project.clientSlug && <DocRow label="Client Portal" url={`/portal/${project.clientSlug}`} internal />}
               </div>
             </Section>
           </>
@@ -170,6 +185,33 @@ const InfoCard: React.FC<{ label: string; value: string }> = ({ label, value }) 
     <span style={{ fontFamily: "'Owners Wide', sans-serif", fontSize: '13px' }}>{value}</span>
   </div>
 );
+
+const DocRow: React.FC<{ label: string; url: string; status?: string; internal?: boolean }> = ({ label, url, status, internal }) => {
+  const navigate = useNavigate();
+  const hasUrl = url && url !== '#' && url !== '';
+  return (
+    <div className="flex items-center justify-between" style={{ padding: '14px 20px', border: '0.733px solid var(--border-default)', borderRadius: '10.258px' }}>
+      <div className="flex items-center gap-3">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--text-primary)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ opacity: 0.4, flexShrink: 0 }}>
+          <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z" /><polyline points="14 2 14 8 20 8" />
+        </svg>
+        <span style={{ fontFamily: "'Owners Wide', sans-serif", fontSize: '13px' }}>{label}</span>
+        {status && (
+          <span style={{ fontFamily: "'Owners Wide', sans-serif", fontSize: '9px', letterSpacing: '1px', textTransform: 'uppercase', padding: '2px 8px', borderRadius: '75.641px', background: status === 'Complete' ? 'rgba(39,174,96,0.1)' : 'rgba(241,196,15,0.1)', border: `1px solid ${status === 'Complete' ? 'rgba(39,174,96,0.3)' : 'rgba(241,196,15,0.3)'}` }}>
+            {status}
+          </span>
+        )}
+      </div>
+      {hasUrl ? (
+        <button onClick={() => internal ? navigate(url) : window.open(url, '_blank')} style={{ fontFamily: "'Owners Wide', sans-serif", fontSize: '10px', letterSpacing: '1px', textTransform: 'uppercase', padding: '5px 14px', borderRadius: '75.641px', border: '1px solid var(--border-default)', background: 'transparent', cursor: 'pointer', opacity: 0.6 }}>
+          {internal ? 'Open' : 'View'}
+        </button>
+      ) : (
+        <span style={{ fontFamily: "'Owners Wide', sans-serif", fontSize: '10px', opacity: 0.3, textTransform: 'uppercase', letterSpacing: '1px' }}>Not uploaded</span>
+      )}
+    </div>
+  );
+};
 
 const Pill: React.FC<{ label: string; active: boolean; onClick: () => void }> = ({ label, active, onClick }) => (
   <button onClick={onClick} style={{

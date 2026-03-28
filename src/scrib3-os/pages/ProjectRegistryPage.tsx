@@ -94,7 +94,7 @@ const ProjectRegistryPage: React.FC = () => {
             <TH width="8%">Brief</TH>
           </div>
           {filtered.map((p) => (
-            <ProjectRow key={p.id} project={p} />
+            <ProjectRow key={p.id} project={p} onClick={() => navigate(`/projects/${p.code}`)} />
           ))}
           {filtered.length === 0 && (
             <div className="flex items-center justify-center" style={{ padding: '48px', opacity: 0.4 }}>
@@ -107,8 +107,8 @@ const ProjectRegistryPage: React.FC = () => {
   );
 };
 
-const ProjectRow: React.FC<{ project: Project }> = ({ project: p }) => (
-  <div className="flex items-center" style={{ padding: '14px 24px', borderBottom: '0.5px solid rgba(0,0,0,0.06)', transition: 'background 0.15s' }}
+const ProjectRow: React.FC<{ project: Project; onClick?: () => void }> = ({ project: p, onClick }) => (
+  <div onClick={onClick} className="flex items-center" style={{ padding: '14px 24px', borderBottom: '0.5px solid rgba(0,0,0,0.06)', transition: 'background 0.15s', cursor: 'pointer' }}
     onMouseEnter={(e) => (e.currentTarget.style.background = 'var(--bg-surface)')} onMouseLeave={(e) => (e.currentTarget.style.background = 'transparent')}>
     <div style={{ width: '9%' }}>
       <span style={{ fontFamily: "'Kaio', sans-serif", fontWeight: 800, fontSize: '12px', textTransform: 'uppercase' }}>{p.code}</span>

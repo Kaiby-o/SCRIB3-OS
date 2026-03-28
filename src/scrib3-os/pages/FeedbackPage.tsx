@@ -323,6 +323,17 @@ const SelfAssessmentTab: React.FC = () => {
 
 const CallNotesTab: React.FC = () => {
   const [adding, setAdding] = useState(false);
+  const [expandedNote, setExpandedNote] = useState<string | null>(null);
+  const [editingNote, setEditingNote] = useState<Record<string, CallNote>>({});
+  const [checkedItems, setCheckedItems] = useState<Set<string>>(new Set());
+
+  const toggleCheck = (key: string) => {
+    setCheckedItems((prev) => {
+      const next = new Set(prev);
+      if (next.has(key)) { next.delete(key); } else { next.add(key); }
+      return next;
+    });
+  };
 
   return (
     <>
@@ -334,7 +345,7 @@ const CallNotesTab: React.FC = () => {
       </div>
 
       <p style={{ fontFamily: "'Owners Wide', sans-serif", fontSize: '12px', opacity: 0.5, marginBottom: '16px' }}>
-        1:1 Agenda structure: SOLVE (main blocker) → STRENGTHEN (development area) → SCALE (happiness 1-10) → Topics → Start/Stop/Continue
+        1:1 Agenda structure: SOLVE (main blocker) → STRENGTHEN (development area) → SCALE (happiness 1-10) → Topics → Start/Stop/Continue. Click a card to expand.
       </p>
 
       {adding && (
@@ -354,36 +365,77 @@ const CallNotesTab: React.FC = () => {
       )}
 
       <div className="flex flex-col gap-3">
-        {mockCallNotes.map((cn) => (
-          <div key={cn.id} style={{ border: '0.733px solid var(--border-default)', borderRadius: '10.258px', padding: '20px' }}>
-            <div className="flex items-center justify-between" style={{ marginBottom: '8px' }}>
-              <div className="flex items-center gap-2">
-                <span style={{ fontFamily: "'Kaio', sans-serif", fontWeight: 800, fontSize: '12px', textTransform: 'uppercase' }}>{cn.date}</span>
-                <span style={{ fontFamily: "'Owners Wide', sans-serif", fontSize: '11px', opacity: 0.5 }}>{cn.participants}</span>
+        {mockCallNotes.map((cn) => {
+          const isExpanded = expandedNote === cn.id;
+          const editing = editingNote[cn.id];
+          return (
+            <div key={cn.id} style={{ border: '0.733px solid var(--border-default)', borderRadius: '10.258px', padding: isExpanded ? '24px' : '16px 20px', cursor: isExpanded ? 'default' : 'pointer', transition: 'all 0.2s' }}
+              onClick={() => { if (!isExpanded) setExpandedNote(cn.id); }}>
+              <div className="flex items-center justify-between" style={{ marginBottom: isExpanded ? '16px' : 0 }}>
+                <div className="flex items-center gap-2">
+                  <svg width="10" height="10" viewBox="0 0 10 10" fill="var(--text-primary)" style={{ transform: isExpanded ? 'rotate(90deg)' : '', transition: 'transform 150ms', opacity: 0.3 }}><polygon points="0,0 10,5 0,10" /></svg>
+                  <span style={{ fontFamily: "'Kaio', sans-serif", fontWeight: 800, fontSize: '12px', textTransform: 'uppercase' }}>{cn.date}</span>
+                  <span style={{ fontFamily: "'Owners Wide', sans-serif", fontSize: '11px', opacity: 0.5 }}>{cn.participants}</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  {isExpanded && (
+                    <button onClick={(e) => { e.stopPropagation(); setExpandedNote(null); }} style={{ fontFamily: "'Owners Wide', sans-serif", fontSize: '10px', opacity: 0.4, background: 'none', border: 'none', cursor: 'pointer' }}>Collapse</button>
+                  )}
+                  {cn.recordingUrl !== '#' && (
+                    <a href={cn.recordingUrl} target="_blank" rel="noopener noreferrer" onClick={(e) => e.stopPropagation()} style={{ fontFamily: "'Owners Wide', sans-serif", fontSize: '10px', opacity: 0.4, textDecoration: 'underline' }}>Recording</a>
+                  )}
+                </div>
               </div>
-              {cn.recordingUrl !== '#' && (
-                <a href={cn.recordingUrl} target="_blank" rel="noopener noreferrer" style={{ fontFamily: "'Owners Wide', sans-serif", fontSize: '10px', opacity: 0.4, textDecoration: 'underline' }}>Recording</a>
+
+              {isExpanded && (
+                <>
+                  <div style={{ marginBottom: '12px' }}>
+                    <Label>Agenda</Label>
+                    {editing ? (
+                      <textarea value={editing.agenda} onChange={(e) => setEditingNote({ ...editingNote, [cn.id]: { ...editing, agenda: e.target.value } })} rows={4} style={textareaStyle} />
+                    ) : (
+                      <p style={{ fontFamily: "'Owners Wide', sans-serif", fontSize: '12px', lineHeight: 1.5, margin: 0, whiteSpace: 'pre-wrap', opacity: 0.6 }}>{cn.agenda}</p>
+                    )}
+                  </div>
+                  <div style={{ marginBottom: '12px' }}>
+                    <Label>Summary</Label>
+                    {editing ? (
+                      <textarea value={editing.summary} onChange={(e) => setEditingNote({ ...editingNote, [cn.id]: { ...editing, summary: e.target.value } })} rows={2} style={textareaStyle} />
+                    ) : (
+                      <p style={{ fontFamily: "'Owners Wide', sans-serif", fontSize: '12px', lineHeight: 1.5, margin: 0, opacity: 0.7 }}>{cn.summary}</p>
+                    )}
+                  </div>
+                  <div style={{ marginBottom: '16px' }}>
+                    <Label>Action Items</Label>
+                    {cn.actionItems.map((ai, i) => {
+                      const key = `${cn.id}-${i}`;
+                      const checked = checkedItems.has(key);
+                      return (
+                        <div key={i} className="flex items-center gap-2" style={{ padding: '6px 0' }}>
+                          <button onClick={(e) => { e.stopPropagation(); toggleCheck(key); }}
+                            style={{ width: 18, height: 18, borderRadius: 4, border: checked ? 'none' : '1.5px solid var(--border-default)', background: checked ? '#27AE60' : 'transparent', cursor: 'pointer', flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 0 }}>
+                            {checked && <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 6L5 9L10 3" stroke="#fff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" /></svg>}
+                          </button>
+                          <span style={{ fontFamily: "'Owners Wide', sans-serif", fontSize: '12px', textDecoration: checked ? 'line-through' : 'none', opacity: checked ? 0.4 : 1 }}>{ai}</span>
+                          {checked && <span style={{ fontFamily: "'Owners Wide', sans-serif", fontSize: '9px', color: '#27AE60', letterSpacing: '1px' }}>+10 XP</span>}
+                        </div>
+                      );
+                    })}
+                  </div>
+                  <div className="flex gap-2">
+                    {editing ? (
+                      <button onClick={(e) => { e.stopPropagation(); setEditingNote((prev) => { const n = { ...prev }; delete n[cn.id]; return n; }); }}
+                        style={{ fontFamily: "'Owners Wide', sans-serif", fontSize: '11px', letterSpacing: '1px', textTransform: 'uppercase', padding: '6px 16px', borderRadius: '75.641px', border: 'none', background: '#D7ABC5', color: '#000', cursor: 'pointer' }}>Save</button>
+                    ) : (
+                      <button onClick={(e) => { e.stopPropagation(); setEditingNote({ ...editingNote, [cn.id]: { ...cn } }); }}
+                        style={{ fontFamily: "'Owners Wide', sans-serif", fontSize: '11px', letterSpacing: '1px', textTransform: 'uppercase', padding: '6px 16px', borderRadius: '75.641px', border: '1px solid var(--border-default)', background: 'transparent', cursor: 'pointer', opacity: 0.5 }}>Edit Notes</button>
+                    )}
+                  </div>
+                </>
               )}
             </div>
-            <div style={{ marginBottom: '8px' }}>
-              <Label>Agenda</Label>
-              <p style={{ fontFamily: "'Owners Wide', sans-serif", fontSize: '12px', lineHeight: 1.5, margin: 0, whiteSpace: 'pre-wrap', opacity: 0.6 }}>{cn.agenda}</p>
-            </div>
-            <div style={{ marginBottom: '8px' }}>
-              <Label>Summary</Label>
-              <p style={{ fontFamily: "'Owners Wide', sans-serif", fontSize: '12px', lineHeight: 1.5, margin: 0, opacity: 0.7 }}>{cn.summary}</p>
-            </div>
-            <div>
-              <Label>Action Items</Label>
-              {cn.actionItems.map((ai, i) => (
-                <div key={i} className="flex items-center gap-2" style={{ padding: '4px 0' }}>
-                  <div style={{ width: 14, height: 14, borderRadius: 3, border: '1px solid var(--border-default)', flexShrink: 0 }} />
-                  <span style={{ fontFamily: "'Owners Wide', sans-serif", fontSize: '12px' }}>{ai}</span>
-                </div>
-              ))}
-            </div>
-          </div>
-        ))}
+          );
+        })}
       </div>
     </>
   );
@@ -395,30 +447,55 @@ const CallNotesTab: React.FC = () => {
 
 const ActionsTab: React.FC = () => {
   const statusColors: Record<string, string> = { pending: '#F1C40F', in_progress: '#6E93C3', complete: '#27AE60' };
+  const [completedActions, setCompletedActions] = useState<Set<string>>(() => new Set(mockActions.filter((a) => a.status === 'complete').map((a) => a.id)));
+  const [xpGained, setXpGained] = useState(0);
+
+  const toggleAction = (id: string) => {
+    setCompletedActions((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) { next.delete(id); setXpGained((x) => x - 10); }
+      else { next.add(id); setXpGained((x) => x + 10); }
+      return next;
+    });
+  };
 
   return (
     <>
-      <h3 style={{ fontFamily: "'Kaio', sans-serif", fontWeight: 800, fontSize: '16px', textTransform: 'uppercase', margin: '0 0 8px 0' }}>Action Items</h3>
+      <div className="flex items-center justify-between" style={{ marginBottom: '8px' }}>
+        <h3 style={{ fontFamily: "'Kaio', sans-serif", fontWeight: 800, fontSize: '16px', textTransform: 'uppercase', margin: 0 }}>Action Items</h3>
+        {xpGained !== 0 && (
+          <span style={{ fontFamily: "'Kaio', sans-serif", fontWeight: 800, fontSize: '14px', color: xpGained > 0 ? '#27AE60' : '#E74C3C' }}>
+            {xpGained > 0 ? '+' : ''}{xpGained} XP
+          </span>
+        )}
+      </div>
       <p style={{ fontFamily: "'Owners Wide', sans-serif", fontSize: '12px', opacity: 0.5, marginBottom: '16px' }}>
-        Actions generated from feedback, 1:1 sessions, and self assessments. Complete these to level up.
+        Actions generated from feedback, 1:1 sessions, and self assessments. Check the box to complete (+10 XP).
       </p>
 
       <div className="flex flex-col gap-3">
-        {mockActions.map((a) => (
-          <div key={a.id} className="flex items-center justify-between" style={{ padding: '14px 20px', border: '0.733px solid var(--border-default)', borderRadius: '10.258px' }}>
-            <div style={{ flex: 1 }}>
-              <span style={{ fontFamily: "'Owners Wide', sans-serif", fontSize: '13px', display: 'block' }}>{a.title}</span>
-              <span style={{ fontFamily: "'Owners Wide', sans-serif", fontSize: '10px', opacity: 0.4, display: 'block', marginTop: '2px' }}>Source: {a.source}</span>
-              {a.linkedGoal && <span style={{ fontFamily: "'Owners Wide', sans-serif", fontSize: '10px', color: '#D7ABC5', display: 'block', marginTop: '2px' }}>Goal: {a.linkedGoal}</span>}
+        {mockActions.map((a) => {
+          const isComplete = completedActions.has(a.id);
+          return (
+            <div key={a.id} className="flex items-center gap-3" style={{ padding: '14px 20px', border: '0.733px solid var(--border-default)', borderRadius: '10.258px', opacity: isComplete ? 0.6 : 1 }}>
+              <button onClick={() => toggleAction(a.id)}
+                style={{ width: 22, height: 22, borderRadius: 5, border: isComplete ? 'none' : '2px solid var(--border-default)', background: isComplete ? '#27AE60' : 'transparent', cursor: 'pointer', flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 0 }}>
+                {isComplete && <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M2 7L5.5 10.5L12 3.5" stroke="#fff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" /></svg>}
+              </button>
+              <div style={{ flex: 1 }}>
+                <span style={{ fontFamily: "'Owners Wide', sans-serif", fontSize: '13px', display: 'block', textDecoration: isComplete ? 'line-through' : 'none' }}>{a.title}</span>
+                <span style={{ fontFamily: "'Owners Wide', sans-serif", fontSize: '10px', opacity: 0.4, display: 'block', marginTop: '2px' }}>Source: {a.source}</span>
+                {a.linkedGoal && <span style={{ fontFamily: "'Owners Wide', sans-serif", fontSize: '10px', color: '#D7ABC5', display: 'block', marginTop: '2px' }}>Goal: {a.linkedGoal}</span>}
+              </div>
+              <div className="flex items-center gap-3">
+                <span style={{ fontFamily: "'Owners Wide', sans-serif", fontSize: '10px', opacity: 0.4 }}>Due: {a.dueDate}</span>
+                <span style={{ fontFamily: "'Owners Wide', sans-serif", fontSize: '10px', letterSpacing: '1px', textTransform: 'uppercase', padding: '3px 10px', borderRadius: '75.641px', background: `${isComplete ? statusColors.complete : statusColors[a.status]}20`, border: `1px solid ${isComplete ? statusColors.complete : statusColors[a.status]}40` }}>
+                  {isComplete ? 'complete' : a.status.replace('_', ' ')}
+                </span>
+              </div>
             </div>
-            <div className="flex items-center gap-3">
-              <span style={{ fontFamily: "'Owners Wide', sans-serif", fontSize: '10px', opacity: 0.4 }}>Due: {a.dueDate}</span>
-              <span style={{ fontFamily: "'Owners Wide', sans-serif", fontSize: '10px', letterSpacing: '1px', textTransform: 'uppercase', padding: '3px 10px', borderRadius: '75.641px', background: `${statusColors[a.status]}20`, border: `1px solid ${statusColors[a.status]}40` }}>
-                {a.status.replace('_', ' ')}
-              </span>
-            </div>
-          </div>
-        ))}
+          );
+        })}
       </div>
     </>
   );

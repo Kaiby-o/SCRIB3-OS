@@ -168,6 +168,7 @@ const DashboardLayout: React.FC = () => {
               resizeHandles={['se', 'sw', 'ne', 'nw', 'e', 'w', 's', 'n']}
               compactType="vertical"
               useCSSTransforms
+              transformScale={1}
             >
               {visibleModules.map((mod) => {
                 const Content = moduleContentMap[mod.id];

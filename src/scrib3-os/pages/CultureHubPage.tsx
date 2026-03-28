@@ -114,7 +114,8 @@ const LeaderboardTab: React.FC<{ navigate: ReturnType<typeof useNavigate> }> = (
       {/* Rest */}
       <div style={{ border: '0.733px solid var(--border-default)', borderRadius: '10.258px', overflow: 'hidden' }}>
         {rest.map((m, i) => (
-          <div key={m.id} className="flex items-center" style={{ padding: '10px 24px', borderBottom: '0.5px solid rgba(0,0,0,0.06)' }}>
+          <div key={m.id} onClick={() => navigate(`/team/${m.id}`)} className="flex items-center" style={{ padding: '10px 24px', borderBottom: '0.5px solid rgba(0,0,0,0.06)', cursor: 'pointer', transition: 'background 0.15s' }}
+            onMouseEnter={(e) => (e.currentTarget.style.background = 'var(--bg-surface)')} onMouseLeave={(e) => (e.currentTarget.style.background = 'transparent')}>
             <span style={{ width: '8%', fontFamily: "'Owners Wide', sans-serif", fontSize: '12px', opacity: 0.4 }}>#{i + 4}</span>
             <span style={{ width: '30%', fontFamily: "'Kaio', sans-serif", fontWeight: 800, fontSize: '12px', textTransform: 'uppercase' }}>{m.name}</span>
             <span style={{ width: '25%', fontFamily: "'Owners Wide', sans-serif", fontSize: '11px', opacity: 0.5 }}>{m.title}</span>

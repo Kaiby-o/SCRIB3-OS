@@ -217,6 +217,58 @@ html:has(.os-root) #root {
   opacity: 0.5;
 }
 
+/* All 8 resize handles — visible from every edge/corner */
+.react-grid-item > .react-resizable-handle-n {
+  top: -4px; left: 50%; transform: translateX(-50%); width: 40px; height: 8px; cursor: n-resize;
+}
+.react-grid-item > .react-resizable-handle-s {
+  bottom: -4px; left: 50%; transform: translateX(-50%); width: 40px; height: 8px; cursor: s-resize;
+}
+.react-grid-item > .react-resizable-handle-e {
+  right: -4px; top: 50%; transform: translateY(-50%); width: 8px; height: 40px; cursor: e-resize;
+}
+.react-grid-item > .react-resizable-handle-w {
+  left: -4px; top: 50%; transform: translateY(-50%); width: 8px; height: 40px; cursor: w-resize;
+}
+.react-grid-item > .react-resizable-handle-ne {
+  top: -4px; right: -4px; width: 12px; height: 12px; cursor: ne-resize;
+}
+.react-grid-item > .react-resizable-handle-nw {
+  top: -4px; left: -4px; width: 12px; height: 12px; cursor: nw-resize;
+}
+.react-grid-item > .react-resizable-handle-se {
+  bottom: -4px; right: -4px; width: 12px; height: 12px; cursor: se-resize;
+}
+.react-grid-item > .react-resizable-handle-sw {
+  bottom: -4px; left: -4px; width: 12px; height: 12px; cursor: sw-resize;
+}
+.react-grid-item > .react-resizable-handle-n::after,
+.react-grid-item > .react-resizable-handle-s::after,
+.react-grid-item > .react-resizable-handle-e::after,
+.react-grid-item > .react-resizable-handle-w::after,
+.react-grid-item > .react-resizable-handle-ne::after,
+.react-grid-item > .react-resizable-handle-nw::after,
+.react-grid-item > .react-resizable-handle-se::after,
+.react-grid-item > .react-resizable-handle-sw::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border: none !important;
+  background: var(--text-primary);
+  opacity: 0.12;
+  border-radius: 2px;
+}
+.react-grid-item > .react-resizable-handle-n:hover::after,
+.react-grid-item > .react-resizable-handle-s:hover::after,
+.react-grid-item > .react-resizable-handle-e:hover::after,
+.react-grid-item > .react-resizable-handle-w:hover::after,
+.react-grid-item > .react-resizable-handle-ne:hover::after,
+.react-grid-item > .react-resizable-handle-nw:hover::after,
+.react-grid-item > .react-resizable-handle-se:hover::after,
+.react-grid-item > .react-resizable-handle-sw:hover::after {
+  opacity: 0.35;
+}
+
 .react-grid-item.react-draggable-dragging {
   z-index: 20;
   opacity: 0.9;

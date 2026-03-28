@@ -8,7 +8,7 @@ import { supabase } from '../lib/supabase';
 
 /* ------------------------------------------------------------------ */
 /*  In-App Chat System                                                 */
-/*  Channels: #general, #design, #dev, #pr, + DMs                     */
+/*  Channels: #general, #brand, #dev, #pr, #accounts + DMs            */
 /* ------------------------------------------------------------------ */
 
 interface ChatMessage {
@@ -18,6 +18,8 @@ interface ChatMessage {
   senderAvatar?: string;
   content: string;
   timestamp: string;
+  reactions?: Record<string, string[]>; // emoji → list of user names
+  threadCount?: number;
 }
 
 interface Channel {
@@ -27,7 +29,9 @@ interface Channel {
   unread: number;
 }
 
-const channels: Channel[] = [
+const EMOJI_OPTIONS = ['👍', '❤️', '🔥', '👀', '✅', '💯'];
+
+const initialChannels: Channel[] = [
   { id: 'general', name: 'general', type: 'channel', unread: 3 },
   { id: 'brand', name: 'brand', type: 'channel', unread: 1 },
   { id: 'pr', name: 'pr', type: 'channel', unread: 0 },
@@ -76,12 +80,30 @@ const ChatPage: React.FC = () => {
   const [activeChannel, setActiveChannel] = useState('general');
   const [newMessage, setNewMessage] = useState('');
   const [messages, setMessages] = useState(mockMessages);
+  const [channels, setChannels] = useState(initialChannels);
+  const [hoveredMsg, setHoveredMsg] = useState<string | null>(null);
+  const [emojiPickerMsg, setEmojiPickerMsg] = useState<string | null>(null);
+  const [replyTo, setReplyTo] = useState<ChatMessage | null>(null);
+  const [mentionDropdown, setMentionDropdown] = useState(false);
+  const [mentionFilter, setMentionFilter] = useState('');
+  const [mentionCursorPos, setMentionCursorPos] = useState(0);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const currentChannel = channels.find((c) => c.id === activeChannel);
   const channelMessages = messages[activeChannel] ?? [];
+  const myName = profile?.display_name ?? 'You';
 
-  // Load messages from Supabase for active channel
+  // Clear unread when switching channels
+  const handleSelectChannel = useCallback((channelId: string) => {
+    setActiveChannel(channelId);
+    setChannels((prev) => prev.map((c) => c.id === channelId ? { ...c, unread: 0 } : c));
+    setReplyTo(null);
+    setEmojiPickerMsg(null);
+  }, []);
+
+  // Load messages from Supabase
   const loadMessages = useCallback(async (channelId: string) => {
     try {
       const { data } = await supabase
@@ -136,27 +158,98 @@ const ChatPage: React.FC = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [channelMessages.length, activeChannel]);
 
+  // @mention handling
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const val = e.target.value;
+    setNewMessage(val);
+
+    const cursorPos = e.target.selectionStart ?? val.length;
+    setMentionCursorPos(cursorPos);
+    const textBeforeCursor = val.slice(0, cursorPos);
+    const atMatch = textBeforeCursor.match(/@(\w*)$/);
+
+    if (atMatch) {
+      setMentionFilter(atMatch[1].toLowerCase());
+      setMentionDropdown(true);
+    } else {
+      setMentionDropdown(false);
+    }
+  };
+
+  const insertMention = (name: string) => {
+    const textBeforeCursor = newMessage.slice(0, mentionCursorPos);
+    const atMatch = textBeforeCursor.match(/@(\w*)$/);
+    if (atMatch) {
+      const before = textBeforeCursor.slice(0, atMatch.index);
+      const after = newMessage.slice(mentionCursorPos);
+      setNewMessage(`${before}@${name} ${after}`);
+    }
+    setMentionDropdown(false);
+    inputRef.current?.focus();
+  };
+
+  const filteredMentions = mockTeam.filter((m) =>
+    m.name.toLowerCase().includes(mentionFilter) && m.name !== myName
+  ).slice(0, 6);
+
+  // Add emoji reaction
+  const addReaction = (msgId: string, emoji: string) => {
+    setMessages((prev) => {
+      const channelMsgs = [...(prev[activeChannel] ?? [])];
+      const idx = channelMsgs.findIndex((m) => m.id === msgId);
+      if (idx === -1) return prev;
+      const msg = { ...channelMsgs[idx] };
+      const reactions = { ...(msg.reactions ?? {}) };
+      const users = [...(reactions[emoji] ?? [])];
+      const userIdx = users.indexOf(myName);
+      if (userIdx >= 0) users.splice(userIdx, 1);
+      else users.push(myName);
+      if (users.length > 0) reactions[emoji] = users;
+      else delete reactions[emoji];
+      msg.reactions = reactions;
+      channelMsgs[idx] = msg;
+      return { ...prev, [activeChannel]: channelMsgs };
+    });
+    setEmojiPickerMsg(null);
+  };
+
   const sendMessage = async () => {
     if (!newMessage.trim()) return;
     const content = newMessage.trim();
     setNewMessage('');
+    setReplyTo(null);
 
-    // Optimistic local update
     const tempMsg: ChatMessage = {
       id: `temp-${Date.now()}`,
       channelId: activeChannel,
-      senderName: profile?.display_name ?? 'You',
-      content,
+      senderName: myName,
+      content: replyTo ? `↩ Replying to ${replyTo.senderName}: "${replyTo.content.slice(0, 50)}${replyTo.content.length > 50 ? '...' : ''}"\n\n${content}` : content,
       timestamp: new Date().toISOString(),
     };
     setMessages((prev) => ({ ...prev, [activeChannel]: [...(prev[activeChannel] ?? []), tempMsg] }));
 
-    // Write to Supabase (real-time subscription will also fire)
     void supabase.from('chat_messages').insert({
       channel_id: activeChannel,
       sender_id: profile?.id ?? null,
-      sender_name: profile?.display_name ?? 'Unknown',
-      content,
+      sender_name: myName,
+      content: tempMsg.content,
+    });
+  };
+
+  const handleFileClick = () => fileInputRef.current?.click();
+
+  // Render message content with @mentions highlighted
+  const renderContent = (text: string) => {
+    const parts = text.split(/(@\w[\w\s]*?)(?=\s|$)/g);
+    return parts.map((part, i) => {
+      if (part.startsWith('@')) {
+        const name = part.slice(1).trim();
+        const member = mockTeam.find((m) => m.name.toLowerCase() === name.toLowerCase());
+        if (member) {
+          return <span key={i} style={{ background: 'rgba(215,171,197,0.2)', borderRadius: 4, padding: '0 4px', fontWeight: 600, color: '#D7ABC5', cursor: 'pointer' }} onClick={() => navigate(`/team/${member.id}`)}>{part}</span>;
+        }
+      }
+      return part;
     });
   };
 
@@ -171,26 +264,25 @@ const ChatPage: React.FC = () => {
       </header>
 
       <div className="flex" style={{ height: 'calc(100vh - 86px)', marginTop: '86px' }}>
-        {/* Sidebar — channel list */}
+        {/* Sidebar */}
         <div style={{ width: '240px', borderRight: '0.733px solid var(--border-default)', overflow: 'auto', padding: '16px 0', flexShrink: 0 }}>
           <div style={{ padding: '0 16px', marginBottom: '16px' }}>
             <span style={{ fontFamily: "'Kaio', sans-serif", fontWeight: 800, fontSize: '12px', textTransform: 'uppercase', opacity: 0.4 }}>Channels</span>
           </div>
           {channels.filter((c) => c.type === 'channel').map((ch) => (
-            <ChannelItem key={ch.id} channel={ch} active={activeChannel === ch.id} onClick={() => setActiveChannel(ch.id)} />
+            <ChannelItem key={ch.id} channel={ch} active={activeChannel === ch.id} onClick={() => handleSelectChannel(ch.id)} />
           ))}
 
           <div style={{ padding: '16px 16px 8px', marginTop: '8px' }}>
             <span style={{ fontFamily: "'Kaio', sans-serif", fontWeight: 800, fontSize: '12px', textTransform: 'uppercase', opacity: 0.4 }}>Direct Messages</span>
           </div>
           {channels.filter((c) => c.type === 'dm').map((ch) => (
-            <ChannelItem key={ch.id} channel={ch} active={activeChannel === ch.id} onClick={() => setActiveChannel(ch.id)} />
+            <ChannelItem key={ch.id} channel={ch} active={activeChannel === ch.id} onClick={() => handleSelectChannel(ch.id)} />
           ))}
         </div>
 
         {/* Chat area */}
         <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
-          {/* Channel header */}
           <div style={{ padding: '12px 24px', borderBottom: '0.5px solid rgba(0,0,0,0.06)', flexShrink: 0 }}>
             <span style={{ fontFamily: "'Kaio', sans-serif", fontWeight: 800, fontSize: '14px', textTransform: 'uppercase' }}>
               {currentChannel?.type === 'channel' ? '#' : ''}{currentChannel?.name}
@@ -206,21 +298,70 @@ const ChatPage: React.FC = () => {
             ) : (
               channelMessages.map((msg) => {
                 const member = mockTeam.find((m) => m.name === msg.senderName);
+                const isHovered = hoveredMsg === msg.id;
                 return (
-                  <div key={msg.id} className="flex gap-3" style={{ marginBottom: '16px' }}>
-                    <div style={{ width: 36, height: 36, borderRadius: '50%', background: '#333', overflow: 'hidden', flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  <div key={msg.id} className="flex gap-3" style={{ marginBottom: '16px', position: 'relative' }}
+                    onMouseEnter={() => setHoveredMsg(msg.id)} onMouseLeave={() => { setHoveredMsg(null); if (emojiPickerMsg === msg.id) return; }}>
+                    {/* Clickable avatar → profile */}
+                    <div
+                      onClick={() => member && navigate(`/team/${member.id}`)}
+                      style={{ width: 36, height: 36, borderRadius: '50%', background: '#333', overflow: 'hidden', flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: member ? 'pointer' : 'default' }}>
                       {member?.avatarUrl ? <img src={member.avatarUrl} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} /> :
                         <span style={{ color: '#EAF2D7', fontFamily: "'Kaio', sans-serif", fontWeight: 900, fontSize: '12px' }}>{getInitials(msg.senderName)}</span>}
                     </div>
                     <div style={{ flex: 1 }}>
                       <div className="flex items-center gap-2" style={{ marginBottom: '2px' }}>
-                        <span style={{ fontFamily: "'Kaio', sans-serif", fontWeight: 800, fontSize: '12px', textTransform: 'uppercase' }}>{msg.senderName}</span>
+                        <span
+                          onClick={() => member && navigate(`/team/${member.id}`)}
+                          style={{ fontFamily: "'Kaio', sans-serif", fontWeight: 800, fontSize: '12px', textTransform: 'uppercase', cursor: member ? 'pointer' : 'default' }}>{msg.senderName}</span>
                         <span style={{ fontFamily: "'Owners Wide', sans-serif", fontSize: '10px', opacity: 0.35 }}>
                           {new Date(msg.timestamp).toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' })}
                         </span>
                       </div>
-                      <p style={{ fontFamily: "'Owners Wide', sans-serif", fontSize: '13px', lineHeight: 1.6, margin: 0 }}>{msg.content}</p>
+                      <p style={{ fontFamily: "'Owners Wide', sans-serif", fontSize: '13px', lineHeight: 1.6, margin: 0, whiteSpace: 'pre-wrap' }}>{renderContent(msg.content)}</p>
+
+                      {/* Reactions */}
+                      {msg.reactions && Object.keys(msg.reactions).length > 0 && (
+                        <div className="flex gap-1 flex-wrap" style={{ marginTop: '4px' }}>
+                          {Object.entries(msg.reactions).map(([emoji, users]) => (
+                            <button key={emoji} onClick={() => addReaction(msg.id, emoji)}
+                              style={{ fontFamily: "'Owners Wide', sans-serif", fontSize: '11px', padding: '1px 6px', borderRadius: '75.641px', border: users.includes(myName) ? '1px solid #D7ABC5' : '1px solid rgba(0,0,0,0.1)', background: users.includes(myName) ? 'rgba(215,171,197,0.1)' : 'transparent', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '2px' }}>
+                              {emoji} <span style={{ fontSize: '10px', opacity: 0.6 }}>{users.length}</span>
+                            </button>
+                          ))}
+                        </div>
+                      )}
                     </div>
+
+                    {/* Message actions toolbar */}
+                    {isHovered && (
+                      <div className="flex items-center gap-1" style={{ position: 'absolute', top: -4, right: 0, background: 'var(--bg-primary)', border: '0.733px solid var(--border-default)', borderRadius: '6px', padding: '2px 4px', boxShadow: '0 2px 8px rgba(0,0,0,0.08)' }}>
+                        <button onClick={() => setEmojiPickerMsg(emojiPickerMsg === msg.id ? null : msg.id)} title="React"
+                          style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: '14px', padding: '4px 6px', borderRadius: '4px' }}
+                          onMouseEnter={(e) => (e.currentTarget.style.background = 'var(--bg-surface)')} onMouseLeave={(e) => (e.currentTarget.style.background = 'transparent')}>
+                          😀
+                        </button>
+                        <button onClick={() => { setReplyTo(msg); inputRef.current?.focus(); }} title="Reply"
+                          style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: '12px', padding: '4px 6px', borderRadius: '4px', fontFamily: "'Owners Wide', sans-serif", opacity: 0.5 }}
+                          onMouseEnter={(e) => { e.currentTarget.style.background = 'var(--bg-surface)'; e.currentTarget.style.opacity = '1'; }}
+                          onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.opacity = '0.5'; }}>
+                          ↩
+                        </button>
+                      </div>
+                    )}
+
+                    {/* Emoji picker */}
+                    {emojiPickerMsg === msg.id && (
+                      <div className="flex gap-1" style={{ position: 'absolute', top: -4, right: 70, background: 'var(--bg-primary)', border: '0.733px solid var(--border-default)', borderRadius: '8px', padding: '4px 6px', boxShadow: '0 2px 12px rgba(0,0,0,0.12)', zIndex: 5 }}>
+                        {EMOJI_OPTIONS.map((emoji) => (
+                          <button key={emoji} onClick={() => addReaction(msg.id, emoji)}
+                            style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: '16px', padding: '4px', borderRadius: '4px' }}
+                            onMouseEnter={(e) => (e.currentTarget.style.background = 'var(--bg-surface)')} onMouseLeave={(e) => (e.currentTarget.style.background = 'transparent')}>
+                            {emoji}
+                          </button>
+                        ))}
+                      </div>
+                    )}
                   </div>
                 );
               })
@@ -228,14 +369,55 @@ const ChatPage: React.FC = () => {
             <div ref={messagesEndRef} />
           </div>
 
+          {/* Reply indicator */}
+          {replyTo && (
+            <div className="flex items-center justify-between" style={{ padding: '8px 24px', borderTop: '0.5px solid rgba(0,0,0,0.06)', background: 'var(--bg-surface)' }}>
+              <span style={{ fontFamily: "'Owners Wide', sans-serif", fontSize: '11px', opacity: 0.6 }}>
+                Replying to <strong>{replyTo.senderName}</strong>: {replyTo.content.slice(0, 60)}{replyTo.content.length > 60 ? '...' : ''}
+              </span>
+              <button onClick={() => setReplyTo(null)} style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: '14px', opacity: 0.4, padding: '2px 6px' }}>&times;</button>
+            </div>
+          )}
+
           {/* Message input */}
-          <div style={{ padding: '12px 24px', borderTop: '0.733px solid var(--border-default)', flexShrink: 0 }}>
-            <div className="flex gap-2">
+          <div style={{ padding: '12px 24px', borderTop: '0.733px solid var(--border-default)', flexShrink: 0, position: 'relative' }}>
+            {/* @mention dropdown */}
+            {mentionDropdown && filteredMentions.length > 0 && (
+              <div style={{ position: 'absolute', bottom: '100%', left: 24, background: 'var(--bg-primary)', border: '0.733px solid var(--border-default)', borderRadius: '10.258px', padding: '4px', boxShadow: '0 4px 16px rgba(0,0,0,0.12)', zIndex: 10, minWidth: '200px' }}>
+                {filteredMentions.map((m) => (
+                  <button key={m.id} onClick={() => insertMention(m.name)} className="flex items-center gap-2"
+                    style={{ width: '100%', padding: '8px 12px', background: 'transparent', border: 'none', cursor: 'pointer', borderRadius: '6px', textAlign: 'left' }}
+                    onMouseEnter={(e) => (e.currentTarget.style.background = 'var(--bg-surface)')} onMouseLeave={(e) => (e.currentTarget.style.background = 'transparent')}>
+                    <div style={{ width: 24, height: 24, borderRadius: '50%', background: '#333', overflow: 'hidden', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                      {m.avatarUrl ? <img src={m.avatarUrl} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} /> :
+                        <span style={{ color: '#EAF2D7', fontFamily: "'Kaio', sans-serif", fontWeight: 900, fontSize: '9px' }}>{getInitials(m.name)}</span>}
+                    </div>
+                    <span style={{ fontFamily: "'Owners Wide', sans-serif", fontSize: '12px' }}>{m.name}</span>
+                    <span style={{ fontFamily: "'Owners Wide', sans-serif", fontSize: '10px', opacity: 0.4, marginLeft: 'auto' }}>{m.title}</span>
+                  </button>
+                ))}
+              </div>
+            )}
+
+            <div className="flex gap-2 items-center">
+              {/* Paperclip for file attach */}
+              <button onClick={handleFileClick} title="Attach file"
+                style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '8px', opacity: 0.4, flexShrink: 0 }}
+                onMouseEnter={(e) => (e.currentTarget.style.opacity = '0.8')} onMouseLeave={(e) => (e.currentTarget.style.opacity = '0.4')}>
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--text-primary)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M21.44 11.05l-9.19 9.19a6 6 0 01-8.49-8.49l9.19-9.19a4 4 0 015.66 5.66l-9.2 9.19a2 2 0 01-2.83-2.83l8.49-8.48" />
+                </svg>
+              </button>
+              <input type="file" ref={fileInputRef} style={{ display: 'none' }} onChange={() => { /* TODO: Supabase Storage upload */ }} />
               <input
+                ref={inputRef}
                 value={newMessage}
-                onChange={(e) => setNewMessage(e.target.value)}
-                onKeyDown={(e) => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); } }}
-                placeholder={`Message ${currentChannel?.type === 'channel' ? '#' : ''}${currentChannel?.name ?? ''}...`}
+                onChange={handleInputChange}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' && !e.shiftKey && !mentionDropdown) { e.preventDefault(); sendMessage(); }
+                  if (e.key === 'Escape') { setMentionDropdown(false); setReplyTo(null); }
+                }}
+                placeholder={`Message ${currentChannel?.type === 'channel' ? '#' : ''}${currentChannel?.name ?? ''}... (type @ to mention)`}
                 style={{ fontFamily: "'Owners Wide', sans-serif", fontSize: '13px', flex: 1, background: 'var(--bg-surface)', border: '0.733px solid var(--border-default)', borderRadius: '75.641px', padding: '10px 20px', color: 'var(--text-primary)', outline: 'none' }}
               />
               <button onClick={sendMessage} disabled={!newMessage.trim()}

@@ -5,6 +5,9 @@ import BurgerButton from '../components/BurgerButton';
 import { supabase } from '../lib/supabase';
 import { useAuthStore } from '../hooks/useAuth';
 import { mockTeam } from '../lib/team';
+import { getLevel, getLevelProgress } from '../lib/xp';
+
+const ICON_BASE = 'https://dzufyjiczbgsvjyinpks.supabase.co/storage/v1/object/public/Icons/';
 
 interface ProfileData {
   id: string;
@@ -140,6 +143,52 @@ const ProfilePage: React.FC = () => {
                 </div>
               </div>
             </div>
+
+            {/* XP + Bandwidth bar — prominent at top */}
+            {(() => {
+              const xp = profile.xp ?? 0;
+              const level = getLevel(xp);
+              const progress = getLevelProgress(xp);
+              const bw = mockMember?.bandwidthPct ?? 0;
+              return (
+                <div className="flex gap-4" style={{ marginBottom: '16px' }}>
+                  <div style={{ flex: 1, background: 'var(--bg-surface)', border: '0.733px solid var(--border-default)', borderRadius: '10.258px', padding: '14px 18px' }}>
+                    <div className="flex items-center justify-between" style={{ marginBottom: '6px' }}>
+                      <span style={{ fontFamily: "'Owners Wide', sans-serif", fontSize: '10px', letterSpacing: '1px', textTransform: 'uppercase', opacity: 0.4 }}>XP — Lvl {level.level} {level.name}</span>
+                      <span style={{ fontFamily: "'Kaio', sans-serif", fontWeight: 800, fontSize: '16px' }}>{xp}</span>
+                    </div>
+                    <div style={{ height: 5, background: 'rgba(0,0,0,0.08)', borderRadius: 3, overflow: 'hidden' }}>
+                      <div style={{ width: `${progress}%`, height: '100%', background: '#D7ABC5', borderRadius: 3 }} />
+                    </div>
+                  </div>
+                  <div style={{ flex: 1, background: 'var(--bg-surface)', border: '0.733px solid var(--border-default)', borderRadius: '10.258px', padding: '14px 18px' }}>
+                    <div className="flex items-center justify-between" style={{ marginBottom: '6px' }}>
+                      <span style={{ fontFamily: "'Owners Wide', sans-serif", fontSize: '10px', letterSpacing: '1px', textTransform: 'uppercase', opacity: 0.4 }}>Bandwidth</span>
+                      <span style={{ fontFamily: "'Kaio', sans-serif", fontWeight: 800, fontSize: '16px' }}>{bw}%</span>
+                    </div>
+                    <div style={{ height: 5, background: 'rgba(0,0,0,0.08)', borderRadius: 3, overflow: 'hidden' }}>
+                      <div style={{ width: `${bw}%`, height: '100%', background: bw > 85 ? '#E74C3C' : bw > 60 ? '#E67E22' : '#27AE60', borderRadius: 3 }} />
+                    </div>
+                  </div>
+                </div>
+              );
+            })()}
+
+            {/* Quick actions: Chat + Dapps */}
+            {!isOwnProfile && (
+              <div className="flex gap-2" style={{ marginBottom: '16px' }}>
+                <button onClick={() => navigate('/chat')} className="flex items-center gap-2"
+                  style={{ fontFamily: "'Owners Wide', sans-serif", fontSize: '11px', letterSpacing: '1px', textTransform: 'uppercase', padding: '8px 16px', borderRadius: '75.641px', border: '1px solid var(--border-default)', background: 'transparent', cursor: 'pointer' }}>
+                  <img src={ICON_BASE + 'chat.svg'} alt="" style={{ width: 16, height: 16 }} />
+                  Message
+                </button>
+                <button onClick={() => navigate('/dapps')} className="flex items-center gap-2"
+                  style={{ fontFamily: "'Owners Wide', sans-serif", fontSize: '11px', letterSpacing: '1px', textTransform: 'uppercase', padding: '8px 16px', borderRadius: '75.641px', border: '1px solid var(--border-default)', background: 'transparent', cursor: 'pointer' }}>
+                  <img src={ICON_BASE + 'dapps.svg'} alt="" style={{ width: 16, height: 16 }} />
+                  Dapp
+                </button>
+              </div>
+            )}
 
             {/* Social links as capsules — email + socials + add button */}
             <div className="flex gap-2 flex-wrap" style={{ marginBottom: '24px' }}>
