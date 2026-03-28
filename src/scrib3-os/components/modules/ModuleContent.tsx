@@ -1,6 +1,10 @@
 import React from 'react';
 import { mockEngagements, getHealthTier } from '../../lib/engagementHealth';
 
+// New widgets
+import { ClockWeatherContent, QuickLinksContent, AnnouncementsContent, RecentActivityContent, UpcomingEventsContent, SearchContent, MyProjectsWidgetContent, TaskQueueWidgetContent, DeliverableTrackerContent, BrandQuickRefContent, ContentCalendarContent, CultureSnippetContent } from './WidgetsGeneral';
+import { BandwidthDigestContent, PendingApprovalsContent, TeamAvailabilityContent, ScopeWatchAlertsContent, OneOnOneUpcomingContent, ActionItemsWidgetContent, PreAlignmentQueueContent, TeamXPProgressContent, ClientHealthScorecardContent, RevenueTrackerContent, AtRiskClientsContent, InvoicePipelineContent, OutstandingPaymentsContent, ProjectPLContent, LabourCostContent, ForecastSimulatorContent, XPLeaderboardMiniContent, RecentDappsContent, HappinessPulseContent, ClientAnnouncementsContent, ClientActivityContent, ClientEventsContent, ClientNotificationsContent, ClientSearchContent, ClientContentCalendarContent, ClientActionItemsContent } from './WidgetsManagement';
+
 /* ------------------------------------------------------------------ */
 /*  Shared micro-components for module panel content                   */
 /* ------------------------------------------------------------------ */
@@ -490,4 +494,48 @@ export const moduleContentMap: Record<string, React.FC> = {
   'utilisation': TeamUtilisationContent,
   'client-health': ClientHealthContent,
   'metrics': KeyMetricsContent,
+  // General
+  'clock-weather': ClockWeatherContent,
+  'quick-links': QuickLinksContent,
+  'announcements': AnnouncementsContent,
+  'recent-activity': RecentActivityContent,
+  'upcoming-events': UpcomingEventsContent,
+  'search': SearchContent,
+  // Creative
+  'my-projects-widget': MyProjectsWidgetContent,
+  'task-queue-widget': TaskQueueWidgetContent,
+  'deliverable-tracker': DeliverableTrackerContent,
+  'brand-quick-ref': BrandQuickRefContent,
+  'content-calendar': ContentCalendarContent,
+  'culture-snippet': CultureSnippetContent,
+  // Management
+  'bandwidth-digest': BandwidthDigestContent,
+  'pending-approvals': PendingApprovalsContent,
+  'team-availability': TeamAvailabilityContent,
+  'scope-watch-alerts': ScopeWatchAlertsContent,
+  'oneone-upcoming': OneOnOneUpcomingContent,
+  'action-items-widget': ActionItemsWidgetContent,
+  'pre-alignment-queue': PreAlignmentQueueContent,
+  'team-xp-progress': TeamXPProgressContent,
+  // Finances
+  'client-health-scorecard': ClientHealthScorecardContent,
+  'revenue-tracker': RevenueTrackerContent,
+  'at-risk-clients': AtRiskClientsContent,
+  'invoice-pipeline': InvoicePipelineContent,
+  'outstanding-payments': OutstandingPaymentsContent,
+  'project-pl': ProjectPLContent,
+  'labour-cost': LabourCostContent,
+  'forecast-simulator': ForecastSimulatorContent,
+  // Culture
+  'xp-leaderboard-mini': XPLeaderboardMiniContent,
+  'recent-dapps': RecentDappsContent,
+  'happiness-pulse': HappinessPulseContent,
+  // Client Portal
+  'client-announcements': ClientAnnouncementsContent,
+  'client-activity': ClientActivityContent,
+  'client-events': ClientEventsContent,
+  'client-notifications': ClientNotificationsContent,
+  'client-search': ClientSearchContent,
+  'client-content-calendar': ClientContentCalendarContent,
+  'client-action-items': ClientActionItemsContent,
 };
