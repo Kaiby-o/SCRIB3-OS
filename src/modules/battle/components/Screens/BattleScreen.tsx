@@ -1,11 +1,12 @@
 // ===== Battle Screen =====
 
-import React, { useEffect, useState, useRef, useCallback } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useBattleStore } from '../../store/battleStore';
 import { useTeamSelectStore } from '../../store/teamSelectStore';
 import { useTypewriter } from '../../hooks/useTypewriter';
 import { useAnimations, STATUS_FILTERS } from '../../hooks/useAnimations';
+import { startBattleMusic, stopBattleMusic, fadeBattleMusic, updateMusicVolume, playMoveSound, playEventSound } from '../../hooks/useBattleAudio';
 import { hpPercent, hpLevel, damageDots, spritePath, statusBadgeText } from '../../utils/formatters';
 import { isOnCooldown } from '../../engine/CooldownTracker';
 import { hasStatus } from '../../engine/StatusEngine';
@@ -25,8 +26,6 @@ const BattleScreen: React.FC = () => {
   const [showMoves, setShowMoves] = useState(false);
   const [showParty, setShowParty] = useState(false);
   const [muted, setMuted] = useState(false);
-  const audioRef = useRef<HTMLAudioElement | null>(null);
-  const loopAudioRef = useRef<HTMLAudioElement | null>(null);
 
   // Init battle
   useEffect(() => {
@@ -34,47 +33,25 @@ const BattleScreen: React.FC = () => {
     initBattle(teamSelectStore.playerTeam, teamSelectStore.opponentTeam);
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
-  // Audio management
-  const startAudio = useCallback(() => {
-    try {
-      const intro = new Audio('/battle/audio/pkmn.wav');
-      intro.volume = muted ? 0 : 0.4;
-      audioRef.current = intro;
-      intro.play().catch(() => {});
-      intro.onended = () => {
-        const loop = new Audio('/battle/audio/pkmnrpt.wav');
-        loop.volume = muted ? 0 : 0.4;
-        loop.loop = true;
-        loopAudioRef.current = loop;
-        loop.play().catch(() => {});
-      };
-    } catch { /* no audio files yet */ }
-  }, [muted]);
-
+  // Background music
   useEffect(() => {
-    if (phase === 'INTRO') startAudio();
-    return () => {
-      audioRef.current?.pause();
-      loopAudioRef.current?.pause();
-    };
+    if (phase === 'INTRO') startBattleMusic();
+    return () => { stopBattleMusic(); };
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Mute toggle
-  useEffect(() => {
-    if (audioRef.current) audioRef.current.volume = muted ? 0 : 0.4;
-    if (loopAudioRef.current) loopAudioRef.current.volume = muted ? 0 : 0.4;
+  const handleMuteToggle = useCallback(() => {
+    const newMuted = !muted;
+    setMuted(newMuted);
+    updateMusicVolume(newMuted);
   }, [muted]);
 
-  // Fade out audio on victory/defeat
+  // Fade out on end
   useEffect(() => {
     if (phase === 'VICTORY' || phase === 'DEFEAT' || phase === 'FLED') {
-      const audio = loopAudioRef.current ?? audioRef.current;
-      if (audio) {
-        const fade = setInterval(() => {
-          if (audio.volume > 0.05) audio.volume = Math.max(0, audio.volume - 0.05);
-          else { audio.pause(); clearInterval(fade); }
-        }, 100);
-      }
+      fadeBattleMusic();
+      if (phase === 'VICTORY') playEventSound('heal');
+      if (phase === 'DEFEAT') playEventSound('faint');
     }
   }, [phase]);
 
@@ -99,12 +76,13 @@ const BattleScreen: React.FC = () => {
 
   const handleMoveSelect = async (move: Move) => {
     setShowMoves(false);
+    playMoveSound(move.id, move.category);
     if (move.category === 'defensive') {
-      // Defensive: brief guard animation
       const el = playerRef.current;
       if (el) await el.animate([{ transform: 'scale(1)' }, { transform: 'scale(1.05)' }, { transform: 'scale(1)' }], { duration: 300 }).finished;
     } else {
       await playAttack('player');
+      playEventSound('normalHit');
       await playHit('opponent');
     }
     selectMove(move);
@@ -125,7 +103,7 @@ const BattleScreen: React.FC = () => {
     <div style={{ minHeight: '100vh', background: '#EAF2D7', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', position: 'relative' }}>
       {/* Top controls */}
       <div style={{ position: 'absolute', top: 12, right: 16, zIndex: 20, display: 'flex', gap: '8px', alignItems: 'center' }}>
-        <button onClick={() => setMuted(!muted)} style={{ fontFamily: "'Owners Wide', sans-serif", fontSize: '16px', background: 'none', border: 'none', cursor: 'pointer', opacity: 0.4 }}>
+        <button onClick={handleMuteToggle} style={{ fontFamily: "'Owners Wide', sans-serif", fontSize: '16px', background: 'none', border: 'none', cursor: 'pointer', opacity: 0.4 }}>
           {muted ? '🔇' : '🔊'}
         </button>
         <button onClick={() => setBattleSpeed(battleSpeed === 'normal' ? 'fast' : 'normal')}
@@ -135,7 +113,7 @@ const BattleScreen: React.FC = () => {
       </div>
 
       {/* Forfeit button */}
-      <button onClick={() => { audioRef.current?.pause(); loopAudioRef.current?.pause(); navigate('/battle'); }}
+      <button onClick={() => { stopBattleMusic(); navigate('/battle'); }}
         style={{ position: 'absolute', top: 12, left: 16, fontFamily: "'Owners Wide', sans-serif", fontSize: '10px', letterSpacing: '1.5px', textTransform: 'uppercase', padding: '6px 16px', borderRadius: '75.641px', border: '1px solid rgba(0,0,0,0.15)', background: 'transparent', color: '#000', cursor: 'pointer', opacity: 0.4, zIndex: 20 }}>
         Forfeit
       </button>
