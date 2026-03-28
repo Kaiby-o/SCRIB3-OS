@@ -13,10 +13,49 @@ import {
 const easing = 'cubic-bezier(0.22, 0.61, 0.36, 1)';
 
 
-// Map Linear user email → Supabase avatar
-function getAvatarForEmail(email: string): string | null {
-  const member = mockTeam.find((m) => m.email === email);
-  return member?.avatarUrl ?? null;
+// Map Linear user → Supabase avatar (prefer name match, then email)
+function getSupabaseAvatar(name?: string, email?: string): string | null {
+  if (name) {
+    const byName = mockTeam.find((m) => m.name.toLowerCase() === name.toLowerCase() || name.toLowerCase().startsWith(m.name.toLowerCase()));
+    if (byName?.avatarUrl) return byName.avatarUrl;
+  }
+  if (email) {
+    const byEmail = mockTeam.find((m) => m.email === email);
+    if (byEmail?.avatarUrl) return byEmail.avatarUrl;
+  }
+  return null;
+}
+
+// Render Linear markdown description with clickable links
+function renderDescription(text: string): React.ReactNode[] {
+  // Match markdown links [text](url) and bare URLs
+  const parts: React.ReactNode[] = [];
+  const regex = /\[([^\]]+)\]\(([^)]+)\)|(https?:\/\/[^\s)<>]+)/g;
+  let lastIndex = 0;
+  let match: RegExpExecArray | null;
+  let key = 0;
+
+  while ((match = regex.exec(text)) !== null) {
+    if (match.index > lastIndex) {
+      parts.push(text.slice(lastIndex, match.index));
+    }
+    if (match[1] && match[2]) {
+      // Markdown link
+      parts.push(
+        <a key={key++} href={match[2]} target="_blank" rel="noopener noreferrer"
+          style={{ color: '#6E93C3', textDecoration: 'underline', wordBreak: 'break-all' }}>{match[1]}</a>
+      );
+    } else if (match[3]) {
+      // Bare URL
+      parts.push(
+        <a key={key++} href={match[3]} target="_blank" rel="noopener noreferrer"
+          style={{ color: '#6E93C3', textDecoration: 'underline', wordBreak: 'break-all' }}>{match[3]}</a>
+      );
+    }
+    lastIndex = match.index + match[0].length;
+  }
+  if (lastIndex < text.length) parts.push(text.slice(lastIndex));
+  return parts;
 }
 
 /* Priority dot */
@@ -27,7 +66,9 @@ const PriorityDot: React.FC<{ priority: number; size?: number }> = ({ priority, 
 
 /* Mini avatar */
 const Avatar: React.FC<{ name: string; email?: string; url?: string | null; size?: number; style?: React.CSSProperties }> = ({ name, email, url, size = 22, style: s }) => {
-  const avatarUrl = url || (email ? getAvatarForEmail(email) : null);
+  // Always prefer Supabase avatar over Linear avatar
+  const supabaseAvatar = getSupabaseAvatar(name, email);
+  const avatarUrl = supabaseAvatar || url || null;
   return (
     <div style={{ width: size, height: size, borderRadius: '50%', background: '#333', overflow: 'hidden', flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', ...s }}>
       {avatarUrl ? <img src={avatarUrl} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} /> :
@@ -140,10 +181,38 @@ const TasksPage: React.FC = () => {
           {selectedIssue && (
             <DetailPanel issue={selectedIssue} states={uniqueStates} users={linearUsers}
               onClose={() => setSelectedIssue(null)}
-              onStateChange={async (sid) => { await updateIssueState(selectedIssue.id, sid); loadData(); }}
-              onAssigneeChange={async (uid) => { await updateIssueAssignee(selectedIssue.id, uid); loadData(); }}
-              onPriorityChange={async (p) => { await updateIssuePriority(selectedIssue.id, p); loadData(); }}
-              onDueDateChange={async (d) => { await updateIssueDueDate(selectedIssue.id, d); loadData(); }}
+              onStateChange={async (sid) => {
+                const newState = states.find((s) => s.id === sid);
+                if (newState) {
+                  const updated = { ...selectedIssue, state: newState };
+                  setSelectedIssue(updated);
+                  setIssues((prev) => prev.map((i) => i.id === selectedIssue.id ? updated : i));
+                }
+                await updateIssueState(selectedIssue.id, sid);
+                loadData();
+              }}
+              onAssigneeChange={async (uid) => {
+                const newAssignee = uid ? linearUsers.find((u) => u.id === uid) ?? null : null;
+                const updated = { ...selectedIssue, assignee: newAssignee };
+                setSelectedIssue(updated);
+                setIssues((prev) => prev.map((i) => i.id === selectedIssue.id ? updated : i));
+                await updateIssueAssignee(selectedIssue.id, uid);
+                loadData();
+              }}
+              onPriorityChange={async (p) => {
+                const updated = { ...selectedIssue, priority: p };
+                setSelectedIssue(updated);
+                setIssues((prev) => prev.map((i) => i.id === selectedIssue.id ? updated : i));
+                await updateIssuePriority(selectedIssue.id, p);
+                loadData();
+              }}
+              onDueDateChange={async (d) => {
+                const updated = { ...selectedIssue, dueDate: d };
+                setSelectedIssue(updated);
+                setIssues((prev) => prev.map((i) => i.id === selectedIssue.id ? updated : i));
+                await updateIssueDueDate(selectedIssue.id, d);
+                loadData();
+              }}
               onSubIssueClick={(child) => openIssue(child)}
               onComment={async (body) => { await addComment(selectedIssue.id, body); setSelectedIssue(await fetchIssueDetail(selectedIssue.id)); }} />
           )}
@@ -228,7 +297,7 @@ const DetailPanel: React.FC<{
       {/* Scrollable content — independent from left panel */}
       <div style={{ flex: 1, overflow: 'auto', padding: 24 }}>
         <h2 style={{ fontFamily: "'Kaio', sans-serif", fontWeight: 800, fontSize: 20, textTransform: 'uppercase', lineHeight: 1.1, margin: '0 0 16px' }}>{issue.title}</h2>
-        {issue.description && <p style={{ fontFamily: "'Owners Wide', sans-serif", fontSize: 13, lineHeight: 1.6, opacity: 0.7, marginBottom: 24, whiteSpace: 'pre-wrap' }}>{issue.description}</p>}
+        {issue.description && <p style={{ fontFamily: "'Owners Wide', sans-serif", fontSize: 13, lineHeight: 1.6, opacity: 0.7, marginBottom: 24, whiteSpace: 'pre-wrap' }}>{renderDescription(issue.description)}</p>}
 
         {/* Editable properties */}
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, marginBottom: 24 }}>
