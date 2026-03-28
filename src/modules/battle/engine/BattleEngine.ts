@@ -1,6 +1,6 @@
 // ===== Battle Engine — Turn Resolver =====
 
-import type { BattleFighter, Move, TurnResult, RoundResult } from '../data/battleTypes';
+import type { BattleFighter, Move, TurnResult, RoundResult, StatusID } from '../data/battleTypes';
 import { calculateDamage } from '../utils/damageCalc';
 import { applyStatus, clearStatus, hasStatus, isIncapacitated, tickStatuses, getEffectiveStats } from './StatusEngine';
 import { setCooldown, decrementCooldowns } from './CooldownTracker';
