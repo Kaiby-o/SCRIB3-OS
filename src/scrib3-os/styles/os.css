@@ -199,13 +199,22 @@ html:has(.os-root) #root {
   border-radius: 10.258px !important;
 }
 
+.react-grid-item > .react-resizable-handle {
+  opacity: 0;
+  transition: opacity 0.15s;
+}
+
+.react-grid-item:hover > .react-resizable-handle {
+  opacity: 1;
+}
+
 .react-grid-item > .react-resizable-handle::after {
   border-color: var(--text-primary) !important;
-  opacity: 0.15;
+  opacity: 0.2;
 }
 
 .react-grid-item > .react-resizable-handle:hover::after {
-  opacity: 0.4;
+  opacity: 0.5;
 }
 
 .react-grid-item.react-draggable-dragging {

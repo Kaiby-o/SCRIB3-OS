@@ -31,6 +31,7 @@ import OSFeedback from './scrib3-os/pages/FeedbackPage';
 import OSSystemsMap from './scrib3-os/pages/SystemsMapPage';
 import OSChat from './scrib3-os/pages/ChatPage';
 import OSClientDirectory from './scrib3-os/pages/ClientDirectoryPage';
+import OSProfDevHub from './scrib3-os/pages/ProfDevHubPage';
 import { AuthGuard, RoleGuard } from './scrib3-os/components/AuthGuard';
 import FloatingWidget from './scrib3-os/components/FloatingWidget';
 import { NavOverlayProvider } from './scrib3-os/components/NavOverlay';
@@ -281,6 +282,14 @@ export default function App() {
               <RoleGuard allowed={['admin', 'team', 'csuite']}>
                 <OSProjectDetail />
               </RoleGuard>
+            </AuthGuard>
+          }
+        />
+        <Route
+          path="/profdev"
+          element={
+            <AuthGuard>
+              <OSProfDevHub />
             </AuthGuard>
           }
         />

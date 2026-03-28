@@ -165,6 +165,7 @@ const DashboardLayout: React.FC = () => {
               // eslint-disable-next-line @typescript-eslint/no-explicit-any
               onLayoutChange={(l: any) => handleLayoutChange(l as LayoutItem[])}
               draggableHandle=".module-drag-handle"
+              resizeHandles={['se', 'sw', 'ne', 'nw', 'e', 'w', 's', 'n']}
               compactType="vertical"
               useCSSTransforms
             >
