@@ -17,40 +17,10 @@ export interface ActiveStatus {
   sourceMove?: string;
 }
 
-export interface Fighter {
-  id: string;
-  name: string;
-  title: string;
-  role: string;
-  statTier: string;
-  roleColor: string;
-  moves: Move[];
-}
+// Re-export Fighter and Move from fighters.ts for consistency
+export type { Fighter, Move } from './fighters';
 
-export interface Move {
-  id: string;
-  name: string;
-  category: 'special' | 'basic' | 'defensive';
-  damage: string; // DamageTier
-  cooldown: number;
-  description: string;
-  narrativeOnUse: string;
-  narrativeOnHit?: string;
-  effect?: MoveEffect;
-}
-
-export interface MoveEffect {
-  status?: StatusID;
-  statusDuration?: number;
-  statusValue?: number;
-  selfStatus?: StatusID;
-  selfStatusDuration?: number;
-  selfHealPercent?: number;
-  bypassCounters?: boolean;
-  bypassDefensiveBuffs?: boolean;
-  dmgReductionPercent?: number;
-  special?: string; // custom effect handler ID
-}
+// MoveEffect is defined in fighters.ts as MoveEffect
 
 export interface BattleFighter extends Fighter {
   currentHP: number;
@@ -94,7 +64,8 @@ export interface RoundResult {
   roundNumber: number;
 }
 
-export function initBattleFighter(fighter: Fighter, stats: { hp: number; atk: number; def: number; spd: number }): BattleFighter {
+export function initBattleFighter(fighter: Fighter, statsOverride?: { hp: number; atk: number; def: number; spd: number }): BattleFighter {
+  const stats = statsOverride ?? fighter.stats;
   return {
     ...fighter,
     currentHP: stats.hp,

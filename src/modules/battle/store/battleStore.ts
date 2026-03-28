@@ -3,7 +3,6 @@
 import { create } from 'zustand';
 import type { BattleFighter, BattlePhase, Move, Fighter, RoundResult } from '../data/battleTypes';
 import { initBattleFighter } from '../data/battleTypes';
-import { ROLE_STAT_TIERS } from '../data/battleConfig';
 import { resolveRound } from '../engine/BattleEngine';
 import { selectAIMove } from '../engine/AIOpponent';
 import { createRNG } from '../utils/rng';
@@ -32,8 +31,7 @@ interface BattleState {
 }
 
 function toBattleFighter(f: Fighter): BattleFighter {
-  const tier = ROLE_STAT_TIERS[f.statTier] ?? ROLE_STAT_TIERS.SPECIALIST;
-  return initBattleFighter(f, tier);
+  return initBattleFighter(f);
 }
 
 export const useBattleStore = create<BattleState>((set, get) => ({
