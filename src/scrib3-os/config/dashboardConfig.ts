@@ -27,7 +27,7 @@ export interface DashboardConfig {
 
 const teamConfig: DashboardConfig = {
   headerLabel: 'TEAM DASHBOARD',
-  pillNavItems: ['Overview', 'Projects', 'Tasks', 'Comms'],
+  pillNavItems: [],
   categories: [
     { label: 'TEAM', subItems: ['Search Team', 'Directory', 'Feedback', 'Prof Dev', 'Office', 'Dapps'] },
     { label: 'UNITS', subItems: ['Accounts', 'C-Suite', 'Brand', 'Media', 'Ops', 'PR'] },
@@ -37,10 +37,47 @@ const teamConfig: DashboardConfig = {
     { label: 'TOOLS', subItems: ['Tools Directory', 'Systems Map'] },
   ],
   modules: [
-    { id: 'active-projects', label: 'ACTIVE PROJECTS', gridArea: 'projects', pillFilter: ['Overview', 'Projects'] },
-    { id: 'task-queue', label: 'TASK QUEUE', gridArea: 'tasks', pillFilter: ['Overview', 'Tasks'] },
-    { id: 'team-activity', label: 'TEAM ACTIVITY', gridArea: 'activity', pillFilter: ['Overview', 'Comms'] },
-    { id: 'comms', label: 'INTERNAL COMMS', gridArea: 'comms', pillFilter: ['Overview', 'Comms'] },
+    // Existing
+    { id: 'active-projects', label: 'ACTIVE PROJECTS', gridArea: 'projects' },
+    { id: 'task-queue', label: 'TASK QUEUE', gridArea: 'tasks' },
+    { id: 'team-activity', label: 'TEAM ACTIVITY', gridArea: 'activity' },
+    { id: 'comms', label: 'INTERNAL COMMS', gridArea: 'comms' },
+    // General
+    { id: 'clock-weather', label: 'CLOCK & WEATHER', gridArea: 'clock' },
+    { id: 'quick-links', label: 'QUICK LINKS', gridArea: 'links' },
+    { id: 'announcements', label: 'ANNOUNCEMENTS', gridArea: 'announce' },
+    { id: 'recent-activity', label: 'RECENT ACTIVITY', gridArea: 'feed' },
+    { id: 'upcoming-events', label: 'UPCOMING EVENTS', gridArea: 'events' },
+    { id: 'search', label: 'SEARCH', gridArea: 'search' },
+    // Creative
+    { id: 'my-projects-widget', label: 'MY PROJECTS', gridArea: 'myproj' },
+    { id: 'task-queue-widget', label: 'MY TASKS', gridArea: 'mytasks' },
+    { id: 'deliverable-tracker', label: 'DELIVERABLES', gridArea: 'deliv' },
+    { id: 'brand-quick-ref', label: 'BRAND QUICK REF', gridArea: 'brand' },
+    { id: 'content-calendar', label: 'CONTENT CALENDAR', gridArea: 'calendar' },
+    { id: 'culture-snippet', label: 'CULTURE SNIPPET', gridArea: 'culture' },
+    // Management
+    { id: 'bandwidth-digest', label: 'BANDWIDTH DIGEST', gridArea: 'bw' },
+    { id: 'pending-approvals', label: 'PENDING APPROVALS', gridArea: 'approvals' },
+    { id: 'team-availability', label: 'TEAM AVAILABILITY', gridArea: 'avail' },
+    { id: 'scope-watch-alerts', label: 'SCOPE WATCH', gridArea: 'scope' },
+    { id: 'oneone-upcoming', label: '1:1 UPCOMING', gridArea: 'oneone' },
+    { id: 'action-items-widget', label: 'ACTION ITEMS', gridArea: 'actions' },
+    { id: 'pre-alignment-queue', label: 'PRE-ALIGNMENT QUEUE', gridArea: 'align' },
+    { id: 'team-xp-progress', label: 'TEAM XP', gridArea: 'xp' },
+    // Finances
+    { id: 'client-health-scorecard', label: 'CLIENT HEALTH', gridArea: 'health' },
+    { id: 'revenue-tracker', label: 'REVENUE TRACKER', gridArea: 'rev' },
+    { id: 'at-risk-clients', label: 'AT-RISK CLIENTS', gridArea: 'risk' },
+    { id: 'invoice-pipeline', label: 'INVOICE PIPELINE', gridArea: 'inv' },
+    { id: 'outstanding-payments', label: 'OUTSTANDING PAYMENTS', gridArea: 'pay' },
+    { id: 'project-pl', label: 'PROJECT P&L', gridArea: 'pl' },
+    { id: 'labour-cost', label: 'LABOUR COST', gridArea: 'labour' },
+    { id: 'forecast-simulator', label: 'FORECAST', gridArea: 'forecast' },
+    // Culture
+    { id: 'xp-leaderboard-mini', label: 'XP LEADERBOARD', gridArea: 'leader' },
+    { id: 'recent-dapps', label: 'RECENT DAPPS', gridArea: 'dapps' },
+    { id: 'happiness-pulse', label: 'HAPPINESS PULSE', gridArea: 'happy' },
   ],
   gridTemplate: `
     "projects projects tasks"
@@ -51,7 +88,7 @@ const teamConfig: DashboardConfig = {
 
 const clientConfig: DashboardConfig = {
   headerLabel: 'CLIENT PORTAL',
-  pillNavItems: ['Overview', 'Deliverables', 'Timeline', 'Approvals'],
+  pillNavItems: [],
   categories: [
     { label: 'MY PROJECTS', subItems: ['Active', 'Completed'] },
     { label: 'DELIVERABLES', subItems: ['Pending', 'Approved', 'Archive'] },
@@ -65,6 +102,17 @@ const clientConfig: DashboardConfig = {
     { id: 'timeline', label: 'TIMELINE', gridArea: 'timeline' },
     { id: 'approvals', label: 'APPROVALS', gridArea: 'approvals' },
     { id: 'contact', label: 'CONTACT', gridArea: 'contact' },
+    // Client-accessible widgets
+    { id: 'clock-weather', label: 'CLOCK & WEATHER', gridArea: 'clock' },
+    { id: 'quick-links', label: 'QUICK LINKS', gridArea: 'links' },
+    { id: 'client-announcements', label: 'ANNOUNCEMENTS', gridArea: 'announce' },
+    { id: 'client-activity', label: 'ACTIVITY', gridArea: 'activity' },
+    { id: 'client-events', label: 'UPCOMING EVENTS', gridArea: 'events' },
+    { id: 'client-notifications', label: 'NOTIFICATIONS', gridArea: 'notif' },
+    { id: 'client-search', label: 'SEARCH', gridArea: 'search' },
+    { id: 'client-content-calendar', label: 'CONTENT CALENDAR', gridArea: 'calendar' },
+    { id: 'client-action-items', label: 'ACTION ITEMS', gridArea: 'actions' },
+    { id: 'search', label: 'SEARCH', gridArea: 'search2' },
   ],
   gridTemplate: `
     "projects projects deliverables"
@@ -76,7 +124,7 @@ const clientConfig: DashboardConfig = {
 
 const vendorConfig: DashboardConfig = {
   headerLabel: 'VENDOR PORTAL',
-  pillNavItems: ['Overview', 'Briefs', 'Files', 'Deadlines'],
+  pillNavItems: [],
   categories: [
     { label: 'BRIEFS', subItems: ['Active', 'Upcoming', 'Completed'] },
     { label: 'FILES', subItems: ['Upload', 'Downloads', 'Archive'] },
@@ -101,7 +149,7 @@ const vendorConfig: DashboardConfig = {
 
 const csuiteConfig: DashboardConfig = {
   headerLabel: 'EXECUTIVE DASHBOARD',
-  pillNavItems: ['Overview', 'Projects', 'Teams', 'Finance'],
+  pillNavItems: [],
   categories: [
     { label: 'OVERVIEW', subItems: ['Portfolio', 'Metrics', 'Reports'] },
     { label: 'TEAMS', subItems: ['Performance', 'Capacity', 'Hiring'] },
@@ -116,6 +164,8 @@ const csuiteConfig: DashboardConfig = {
     { id: 'utilisation', label: 'TEAM UTILISATION', gridArea: 'utilisation' },
     { id: 'client-health', label: 'CLIENT HEALTH', gridArea: 'health' },
     { id: 'metrics', label: 'KEY METRICS', gridArea: 'metrics' },
+    // Also gets all team widgets
+    ...teamConfig.modules.filter((m) => !['active-projects', 'task-queue', 'team-activity', 'comms'].includes(m.id)),
   ],
   gridTemplate: `
     "portfolio portfolio portfolio"
@@ -127,20 +177,11 @@ const csuiteConfig: DashboardConfig = {
 
 const adminConfig: DashboardConfig = {
   headerLabel: 'ADMIN DASHBOARD',
-  pillNavItems: ['Overview', 'Projects', 'Team', 'Tools'],
-  categories: [
-    { label: 'TEAM', subItems: ['Search Team', 'Directory', 'Feedback', 'Prof Dev', 'Office', 'Dapps'] },
-    { label: 'UNITS', subItems: ['Accounts', 'C-Suite', 'Brand', 'Media', 'Ops', 'PR'] },
-    { label: 'CLIENTS', subItems: ['Search Clients', 'Client Directory'] },
-    { label: 'PROJECTS', subItems: ['Search Projects', 'All Projects', 'Tasks'] },
-    { label: 'CULTURE', subItems: ['Proof of Excellence', 'Operating Principles', 'Culture Book'] },
-    { label: 'TOOLS', subItems: ['Tools Directory', 'Systems Map'] },
-  ],
+  pillNavItems: [],
+  categories: teamConfig.categories,
   modules: [
-    { id: 'active-projects', label: 'ACTIVE PROJECTS', gridArea: 'projects', pillFilter: ['Overview', 'Projects'] },
-    { id: 'task-queue', label: 'TASK QUEUE', gridArea: 'tasks', pillFilter: ['Overview', 'Projects'] },
-    { id: 'team-activity', label: 'TEAM ACTIVITY', gridArea: 'activity', pillFilter: ['Overview', 'Team'] },
-    { id: 'system-overview', label: 'SYSTEM OVERVIEW', gridArea: 'system', pillFilter: ['Overview', 'Tools'] },
+    ...teamConfig.modules,
+    { id: 'system-overview', label: 'SYSTEM OVERVIEW', gridArea: 'system' },
   ],
   gridTemplate: `
     "projects projects tasks"

@@ -76,6 +76,7 @@ const DashboardLayout: React.FC = () => {
   const config = dashboardConfigs[role];
   const [enabledWidgets, setEnabledWidgets] = useState<Set<string>>(() => getEnabledWidgets(role));
   const [width, setWidth] = useState(typeof window !== 'undefined' ? window.innerWidth - 48 : 1200);
+  const [showWidgetPicker, setShowWidgetPicker] = useState(false);
 
   // Listen for widget toggle changes from Settings page
   useEffect(() => {
@@ -125,6 +126,15 @@ const DashboardLayout: React.FC = () => {
     });
   }, [role]);
 
+  const handleAddWidget = useCallback((id: string) => {
+    setEnabledWidgets((prev) => {
+      const next = new Set(prev);
+      next.add(id);
+      saveEnabledWidgets(role, next);
+      return next;
+    });
+  }, [role]);
+
   const handleResetLayout = useCallback(() => {
     const allIds = config.modules.map((m) => m.id);
     setEnabledWidgets(new Set(allIds));
@@ -144,6 +154,10 @@ const DashboardLayout: React.FC = () => {
         <LogoScrib3 height={18} color="var(--text-primary)" />
         <img src={ICON_BASE + 'favicon.svg'} alt="" style={{ height: 18, width: 18, filter: 'brightness(0)' }} />
         <div className="flex items-center gap-2">
+          <button onClick={() => setShowWidgetPicker(!showWidgetPicker)}
+            style={{ fontFamily: "'Owners Wide', sans-serif", fontSize: '10px', letterSpacing: '1px', textTransform: 'uppercase', color: 'var(--text-primary)', opacity: 0.4, background: 'none', border: '1px solid var(--border-default)', borderRadius: '75.641px', padding: '4px 12px', cursor: 'pointer' }}>
+            + Add
+          </button>
           {hasWidgets && (
             <button onClick={handleResetLayout}
               style={{ fontFamily: "'Owners Wide', sans-serif", fontSize: '9px', letterSpacing: '1px', textTransform: 'uppercase', color: 'var(--text-primary)', opacity: 0.25, background: 'none', border: 'none', cursor: 'pointer' }}>
@@ -153,6 +167,31 @@ const DashboardLayout: React.FC = () => {
           <BurgerButton />
         </div>
       </header>
+
+      {/* Widget Picker Overlay */}
+      {showWidgetPicker && (
+        <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.3)', zIndex: 45, display: 'flex', alignItems: 'center', justifyContent: 'center' }} onClick={() => setShowWidgetPicker(false)}>
+          <div onClick={(e) => e.stopPropagation()} style={{ background: 'var(--bg-primary)', border: '0.733px solid var(--border-default)', borderRadius: '10.258px', padding: '24px', width: '500px', maxWidth: '90vw', maxHeight: '70vh', overflow: 'auto' }}>
+            <div className="flex items-center justify-between" style={{ marginBottom: '16px' }}>
+              <h3 style={{ fontFamily: "'Kaio', sans-serif", fontWeight: 800, fontSize: '16px', textTransform: 'uppercase', margin: 0 }}>Add Widget</h3>
+              <button onClick={() => setShowWidgetPicker(false)} style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: '18px', opacity: 0.4 }}>&times;</button>
+            </div>
+            <div className="flex flex-col gap-2">
+              {config.modules.filter((m) => !enabledWidgets.has(m.id)).map((mod) => (
+                <button key={mod.id} onClick={() => { handleAddWidget(mod.id); }} className="flex items-center justify-between"
+                  style={{ width: '100%', padding: '12px 16px', borderRadius: '10.258px', border: '0.733px solid var(--border-default)', background: 'transparent', cursor: 'pointer', textAlign: 'left', transition: 'background 0.15s' }}
+                  onMouseEnter={(e) => (e.currentTarget.style.background = 'var(--bg-surface)')} onMouseLeave={(e) => (e.currentTarget.style.background = 'transparent')}>
+                  <span style={{ fontFamily: "'Owners Wide', sans-serif", fontSize: '12px', letterSpacing: '1px', textTransform: 'uppercase' }}>{mod.label}</span>
+                  <span style={{ fontFamily: "'Owners Wide', sans-serif", fontSize: '10px', opacity: 0.4, textTransform: 'uppercase', letterSpacing: '1px' }}>+ Add</span>
+                </button>
+              ))}
+              {config.modules.filter((m) => !enabledWidgets.has(m.id)).length === 0 && (
+                <p style={{ fontFamily: "'Owners Wide', sans-serif", fontSize: '12px', opacity: 0.4, textAlign: 'center', padding: '16px' }}>All widgets are active</p>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
 
       <main style={{ paddingTop: 'calc(85px + 24px)', paddingLeft: '24px', paddingRight: '24px', paddingBottom: '140px' }}>
         {hasWidgets ? (
