@@ -4,6 +4,7 @@ import LogoScrib3 from '../components/LogoScrib3';
 import BurgerButton from '../components/BurgerButton';
 import { useAuthStore } from '../hooks/useAuth';
 import { mockTeam } from '../lib/team';
+import { supabase } from '../lib/supabase';
 
 /* ------------------------------------------------------------------ */
 /*  Feedback & Professional Development Hub                            */
@@ -164,7 +165,17 @@ const FeedbackLogTab: React.FC<{ currentUser: string }> = ({ currentUser }) => {
               <Label>Context</Label>
               <input value={context} onChange={(e) => setContext(e.target.value)} placeholder="e.g. Rootstock Brand Refresh, Q1 Sprint..." style={inputStyle} />
             </div>
-            <button onClick={() => { setGiving(false); setContent(''); setContext(''); setRecipient(''); }}
+            <button onClick={() => {
+                // Write to Supabase
+                void supabase.from('pd_instant_feedback').insert({
+                  date: new Date().toISOString().split('T')[0],
+                  type: fbType,
+                  content,
+                  context,
+                  source_type: 'peer',
+                });
+                setGiving(false); setContent(''); setContext(''); setRecipient('');
+              }}
               style={{ fontFamily: "'Owners Wide', sans-serif", fontSize: '12px', letterSpacing: '1px', textTransform: 'uppercase', padding: '10px 24px', borderRadius: '75.641px', border: 'none', background: '#D7ABC5', color: '#000', cursor: 'pointer', alignSelf: 'flex-start' }}>
               Submit Feedback
             </button>

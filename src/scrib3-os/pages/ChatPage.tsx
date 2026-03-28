@@ -1,9 +1,10 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import LogoScrib3 from '../components/LogoScrib3';
 import BurgerButton from '../components/BurgerButton';
 import { useAuthStore } from '../hooks/useAuth';
 import { mockTeam, getInitials } from '../lib/team';
+import { supabase } from '../lib/supabase';
 
 /* ------------------------------------------------------------------ */
 /*  In-App Chat System                                                 */
@@ -80,22 +81,83 @@ const ChatPage: React.FC = () => {
   const currentChannel = channels.find((c) => c.id === activeChannel);
   const channelMessages = messages[activeChannel] ?? [];
 
+  // Load messages from Supabase for active channel
+  const loadMessages = useCallback(async (channelId: string) => {
+    try {
+      const { data } = await supabase
+        .from('chat_messages')
+        .select('*')
+        .eq('channel_id', channelId)
+        .order('created_at', { ascending: true })
+        .limit(100);
+      if (data && data.length > 0) {
+        setMessages((prev) => ({
+          ...prev,
+          [channelId]: data.map((m: Record<string, unknown>) => ({
+            id: m.id as string,
+            channelId: m.channel_id as string,
+            senderName: (m.sender_name ?? '') as string,
+            content: (m.content ?? '') as string,
+            timestamp: (m.created_at ?? '') as string,
+          })),
+        }));
+      }
+    } catch { /* fall back to mock data */ }
+  }, []);
+
+  useEffect(() => { loadMessages(activeChannel); }, [activeChannel, loadMessages]);
+
+  // Real-time subscription
+  useEffect(() => {
+    const channel = supabase.channel(`chat-${activeChannel}`)
+      .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'chat_messages', filter: `channel_id=eq.${activeChannel}` },
+        (payload: { new: Record<string, unknown> }) => {
+          const m = payload.new;
+          const msg: ChatMessage = {
+            id: m.id as string,
+            channelId: m.channel_id as string,
+            senderName: (m.sender_name ?? '') as string,
+            content: (m.content ?? '') as string,
+            timestamp: (m.created_at ?? '') as string,
+          };
+          setMessages((prev) => {
+            const existing = prev[activeChannel] ?? [];
+            if (existing.find((e) => e.id === msg.id)) return prev;
+            return { ...prev, [activeChannel]: [...existing, msg] };
+          });
+        }
+      )
+      .subscribe();
+
+    return () => { supabase.removeChannel(channel); };
+  }, [activeChannel]);
+
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [channelMessages.length, activeChannel]);
 
-  const sendMessage = () => {
+  const sendMessage = async () => {
     if (!newMessage.trim()) return;
-    const msg: ChatMessage = {
-      id: `msg-${Date.now()}`,
+    const content = newMessage.trim();
+    setNewMessage('');
+
+    // Optimistic local update
+    const tempMsg: ChatMessage = {
+      id: `temp-${Date.now()}`,
       channelId: activeChannel,
       senderName: profile?.display_name ?? 'You',
-      senderAvatar: profile?.avatar_url ?? undefined,
-      content: newMessage.trim(),
+      content,
       timestamp: new Date().toISOString(),
     };
-    setMessages((prev) => ({ ...prev, [activeChannel]: [...(prev[activeChannel] ?? []), msg] }));
-    setNewMessage('');
+    setMessages((prev) => ({ ...prev, [activeChannel]: [...(prev[activeChannel] ?? []), tempMsg] }));
+
+    // Write to Supabase (real-time subscription will also fire)
+    void supabase.from('chat_messages').insert({
+      channel_id: activeChannel,
+      sender_id: profile?.id ?? null,
+      sender_name: profile?.display_name ?? 'Unknown',
+      content,
+    });
   };
 
   return (
