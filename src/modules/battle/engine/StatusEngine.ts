@@ -1,6 +1,6 @@
 // ===== Status Engine =====
 
-import type { BattleFighter, ActiveStatus, StatusID } from '../data/battleTypes';
+import type { BattleFighter, StatusID } from '../data/battleTypes';
 
 export function applyStatus(fighter: BattleFighter, statusId: StatusID, options: { duration?: number; sourceValue?: number; sourceMove?: string } = {}): BattleFighter {
   // Don't stack — reset timer if already active

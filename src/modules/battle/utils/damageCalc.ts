@@ -1,8 +1,7 @@
 // ===== Damage Calculator =====
 
 import { DAMAGE_VALUES, ACCURACY_BASE, CRIT_CHANCE, CRIT_MULTIPLIER, type DamageTier } from '../data/battleConfig';
-import type { BattleFighter } from '../data/battleTypes';
-import type { Move } from '../data/fighters';
+import type { BattleFighter, Move } from '../data/battleTypes';
 import { getEffectiveStats } from '../engine/StatusEngine';
 
 export interface DamageResult {
@@ -19,7 +18,7 @@ export function calculateDamage(
 ): DamageResult {
   const tier = (move.damage ?? 'none') as DamageTier;
   const baseRange = DAMAGE_VALUES[tier];
-  if (!baseRange || baseRange === 0) return { damage: 0, isCrit: false, missed: false };
+  if (!baseRange || typeof baseRange === 'number') return { damage: 0, isCrit: false, missed: false };
 
   const range = baseRange as { min: number; max: number };
   let damage = range.min + Math.floor(rng() * (range.max - range.min + 1));

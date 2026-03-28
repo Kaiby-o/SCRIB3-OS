@@ -1,14 +1,14 @@
 // ===== Battle Types =====
 
-export type StatusID =
-  | 'burn' | 'sleep' | 'paralysis' | 'confusion' | 'slow' | 'blind'
-  | 'stun' | 'silenced' | 'in_embargo' | 'compound_debt' | 'scandal'
-  | 'rumour' | 'paper_cut' | 'scope_creep' | 'press_scrutiny'
-  | 'hit_piece_blowback' | 'brand_violation'
-  | 'atk_up' | 'def_up' | 'spd_up' | 'atk_down' | 'def_down' | 'spd_down'
-  | 'dmg_reduction' | 'contractual' | 'calendar_blocked'
+import type { Fighter as BaseFighter, Move as BaseMove, FighterStats, StatusID as BaseStatusID } from './fighters';
+
+// Re-export for convenience
+export type Fighter = BaseFighter;
+export type Move = BaseMove;
+export type StatusID = BaseStatusID | 'dmg_reduction' | 'contractual' | 'calendar_blocked'
   | 'long_game_stored' | 'easing_curve_primed' | 'slow_burn_token'
-  | 'evergreen_shield' | 'managed_expectations';
+  | 'evergreen_shield' | 'managed_expectations'
+  | 'atk_up' | 'def_up' | 'spd_up' | 'atk_down' | 'def_down' | 'spd_down';
 
 export interface ActiveStatus {
   id: StatusID;
@@ -17,21 +17,26 @@ export interface ActiveStatus {
   sourceMove?: string;
 }
 
-// Re-export Fighter and Move from fighters.ts for consistency
-export type { Fighter, Move } from './fighters';
+export interface BattleFighter {
+  // From Fighter
+  id: string;
+  name: string;
+  role: string;
+  email: string;
+  timezone: string;
+  roleColor: string;
+  moves: BaseMove[];
 
-// MoveEffect is defined in fighters.ts as MoveEffect
-
-export interface BattleFighter extends Fighter {
+  // Battle state
   currentHP: number;
   maxHP: number;
-  stats: { hp: number; atk: number; def: number; spd: number };
+  stats: FighterStats;
   activeStatuses: ActiveStatus[];
   moveCooldowns: Record<string, number>;
   isFainted: boolean;
   isActive: boolean;
-  lastMove: Move | null;
-  lastDefensiveMove: Move | null;
+  lastMove: BaseMove | null;
+  lastDefensiveMove: BaseMove | null;
   lastMoveDamageDealt: number;
   turnsSurvived: number;
   chargingPatience: boolean;
@@ -49,7 +54,7 @@ export type BattlePhase =
 export interface TurnResult {
   attacker: BattleFighter;
   defender: BattleFighter;
-  move: Move;
+  move: BaseMove;
   damage: number;
   isCrit: boolean;
   missed: boolean;
@@ -64,13 +69,18 @@ export interface RoundResult {
   roundNumber: number;
 }
 
-export function initBattleFighter(fighter: Fighter, statsOverride?: { hp: number; atk: number; def: number; spd: number }): BattleFighter {
-  const stats = statsOverride ?? fighter.stats;
+export function initBattleFighter(fighter: BaseFighter): BattleFighter {
   return {
-    ...fighter,
-    currentHP: stats.hp,
-    maxHP: stats.hp,
-    stats: { ...stats },
+    id: fighter.id,
+    name: fighter.name,
+    role: fighter.role,
+    email: fighter.email,
+    timezone: fighter.timezone,
+    roleColor: fighter.roleColor,
+    moves: fighter.moves,
+    currentHP: fighter.stats.hp,
+    maxHP: fighter.stats.hp,
+    stats: { ...fighter.stats },
     activeStatuses: [],
     moveCooldowns: Object.fromEntries(fighter.moves.map((m) => [m.id, 0])),
     isFainted: false,

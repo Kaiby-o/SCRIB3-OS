@@ -1,6 +1,6 @@
 // ===== Battle Engine — Turn Resolver =====
 
-import type { BattleFighter, Move, TurnResult, RoundResult } from '../data/battleTypes';
+import type { BattleFighter, Move, TurnResult, RoundResult, StatusID } from '../data/battleTypes';
 import { calculateDamage } from '../utils/damageCalc';
 import { applyStatus, clearStatus, hasStatus, isIncapacitated, tickStatuses, getEffectiveStats } from './StatusEngine';
 import { setCooldown, decrementCooldowns } from './CooldownTracker';
@@ -13,7 +13,11 @@ export function resolveMove(
   rng: () => number,
 ): TurnResult {
   const messages: string[] = [];
-  messages.push(move.narrativeOnUse.replace('{name}', attacker.name).replace('{opponent}', defender.name));
+  if (move.narrativeOnUse) {
+    messages.push(move.narrativeOnUse.replace('{name}', attacker.name).replace('{opponent}', defender.name));
+  } else {
+    messages.push(`${attacker.name} used ${move.name}!`);
+  }
 
   // Check incapacitation
   const incap = isIncapacitated(attacker);
@@ -35,18 +39,18 @@ export function resolveMove(
   attacker.lastMove = move;
   if (move.category === 'defensive') attacker.lastDefensiveMove = move;
 
-  // --- Handle special mechanics ---
-  const special = move.effect?.special;
+  // --- Handle special mechanics by move ID ---
+  const moveId = move.id;
 
   // Nick Patience of a Fisherman
-  if (special === 'patience_of_a_fisherman') {
+  if (moveId === 'patience_of_a_fisherman') {
     attacker.chargingPatience = true;
     messages.push(`${attacker.name} is biding their time...`);
     return { attacker, defender, move, damage: 0, isCrit: false, missed: false, messages, defenderFainted: false };
   }
 
   // CK Slow Burn
-  if (special === 'slow_burn') {
+  if (moveId ==='slow_burn') {
     const multiplier = 1.2 + rng() * 0.8;
     attacker.slowBurnMultiplier = multiplier;
     applyStatus(attacker, 'slow_burn_token', { duration: 99 });
@@ -55,7 +59,7 @@ export function resolveMove(
   }
 
   // CK The Long Game
-  if (special === 'the_long_game') {
+  if (moveId ==='the_long_game') {
     attacker.longGameStoredDamage = 0;
     applyStatus(attacker, 'long_game_stored', { duration: 2 });
     messages.push(`${attacker.name} is playing the long game...`);
@@ -63,12 +67,12 @@ export function resolveMove(
   }
 
   // CK Creative Direction
-  if (special === 'creative_direction') {
+  if (moveId ==='creative_direction') {
     return resolveCKCreativeDirection(attacker, defender, rng, messages, move);
   }
 
   // Ishan Closing Argument
-  if (special === 'closing_argument') {
+  if (moveId ==='closing_argument') {
     const dmgResult = calculateDamage(attacker, defender, move, rng);
     if (!dmgResult.missed) {
       defender.currentHP = Math.max(0, defender.currentHP - dmgResult.damage);
@@ -82,7 +86,7 @@ export function resolveMove(
   }
 
   // Matt Under Embargo
-  if (special === 'under_embargo') {
+  if (moveId ==='under_embargo') {
     if (attacker.embargoUseCount > 0) {
       applyStatus(defender, 'press_scrutiny', { duration: 2 });
       messages.push(`Consecutive embargo! Press scrutiny applied instead.`);
@@ -96,21 +100,21 @@ export function resolveMove(
   }
 
   // Matt Off the Record
-  if (special === 'off_the_record') {
+  if (moveId ==='off_the_record') {
     attacker.damageReductionThisTurn = 0.60;
     messages.push(`${attacker.name} goes off the record — 60% damage reduction this turn!`);
     return { attacker, defender, move, damage: 0, isCrit: false, missed: false, messages, defenderFainted: false };
   }
 
   // Ross Duck Dive
-  if (special === 'duck_dive') {
+  if (moveId ==='duck_dive') {
     applyStatus(attacker, 'dmg_reduction', { duration: 1, sourceValue: 1.0 }); // Full evasion for basic/status
     messages.push(`${attacker.name} ducks and dives!`);
     return { attacker, defender, move, damage: 0, isCrit: false, missed: false, messages, defenderFainted: false };
   }
 
   // Ross Wipeout
-  if (special === 'wipeout') {
+  if (moveId ==='wipeout') {
     const dmgResult = calculateDamage(attacker, defender, move, rng);
     if (!dmgResult.missed) {
       defender.currentHP = Math.max(0, defender.currentHP - dmgResult.damage);
@@ -126,7 +130,7 @@ export function resolveMove(
   }
 
   // Stef Stitch
-  if (special === 'stitch') {
+  if (moveId ==='stitch') {
     const lastDamage = defender.lastMoveDamageDealt ?? 0;
     if (lastDamage === 0) {
       const fallback = randInt(rng, 8, 14);
@@ -144,7 +148,7 @@ export function resolveMove(
   }
 
   // Tolani Loop
-  if (special === 'loop') {
+  if (moveId ==='loop') {
     if (!attacker.lastDefensiveMove) {
       messages.push(`No defense to loop yet.`);
     } else {
@@ -155,14 +159,14 @@ export function resolveMove(
   }
 
   // Haley Calming Presence
-  if (special === 'calming_presence') {
+  if (moveId ==='calming_presence') {
     applyStatus(defender, 'sleep', { duration: 2 });
     messages.push(`${defender.name} fell asleep!`);
     return { attacker, defender, move, damage: 0, isCrit: false, missed: false, messages, defenderFainted: false };
   }
 
   // Taylor Orlando Magic
-  if (special === 'orlando_magic') {
+  if (moveId ==='orlando_magic') {
     const pool = ['confusion', 'slow', 'burn', 'blind', 'stun', 'paralysis'] as const;
     const randomStatus = randPick(rng, [...pool]);
     applyStatus(defender, randomStatus, { duration: 1 });
@@ -184,13 +188,13 @@ export function resolveMove(
   }
 
   // Self-status
-  if (move.effect?.selfStatus) {
-    applyStatus(attacker, move.effect.selfStatus, { duration: move.effect.selfStatusDuration ?? 2 });
+  if (move.effect?.applySelfStatus) {
+    applyStatus(attacker, move.effect.applySelfStatus as StatusID, { duration: move.effect.selfStatusDuration ?? 2 });
   }
 
   // Damage reduction
-  if (move.effect?.dmgReductionPercent) {
-    applyStatus(attacker, 'dmg_reduction', { duration: 1, sourceValue: move.effect.dmgReductionPercent });
+  if (move.effect?.damageReductionPercent) {
+    applyStatus(attacker, 'dmg_reduction' as StatusID, { duration: 1, sourceValue: move.effect.damageReductionPercent });
   }
 
   // Damage
@@ -220,9 +224,9 @@ export function resolveMove(
   }
 
   // Apply status to defender
-  if (move.effect?.status && !dmgResult.missed) {
-    applyStatus(defender, move.effect.status, { duration: move.effect.statusDuration ?? 2, sourceValue: move.effect.statusValue, sourceMove: move.id });
-    messages.push(`${defender.name} is now ${move.effect.status.replace(/_/g, ' ')}!`);
+  if (move.effect?.applyStatus && !dmgResult.missed) {
+    applyStatus(defender, move.effect.applyStatus as StatusID, { duration: move.effect.statusDuration ?? 2, sourceValue: move.effect.statusValue, sourceMove: move.id });
+    messages.push(`${defender.name} is now ${String(move.effect.applyStatus).replace(/_/g, ' ')}!`);
   }
 
   // Consume Slow Burn token
