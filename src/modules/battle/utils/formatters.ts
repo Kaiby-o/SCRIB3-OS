@@ -22,7 +22,7 @@ export function damageDots(tier: string): string {
 }
 
 export function spritePath(id: string, side: 'front' | 'back'): string {
-  return `https://dzufyjiczbgsvjyinpks.supabase.co/storage/v1/object/public/Sprites/${side}/${id}-${side}.png`;
+  return `/sprites/${side}/${id}-${side}.png`;
 }
 
 export function statusBadgeText(statusId: string): string {
