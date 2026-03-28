@@ -1,8 +1,8 @@
 /* ===== SCRIB3 Battle Design Tokens ===== */
 
 :root {
-  --battle-bg-dark:       #0A0A0A;
-  --battle-bg-mid:        #111118;
+  --battle-bg-dark:       #EAF2D7;
+  --battle-bg-mid:        #E2EACC;
   --battle-pink:          #D7ABC5;
   --battle-mint:          #EAF2D7;
   --battle-blue-grey:     #6E93C3;
@@ -11,12 +11,12 @@
   --hp-mid:               #F5C542;
   --hp-low:               #E53935;
   --hp-bg:                #1A1A24;
-  --nameplate-bg:         rgba(10, 10, 10, 0.92);
+  --nameplate-bg:         rgba(0, 0, 0, 0.88);
   --nameplate-border:     #D7ABC5;
-  --nameplate-text:       #F0ECF4;
-  --textbox-bg:           rgba(12, 12, 18, 0.97);
+  --nameplate-text:       #EAF2D7;
+  --textbox-bg:           rgba(0, 0, 0, 0.92);
   --textbox-border:       #D7ABC5;
-  --textbox-text:         #F0ECF4;
+  --textbox-text:         #EAF2D7;
   --move-special-border:  #D7ABC5;
   --move-basic-border:    #6E93C3;
   --move-defense-border:  #EAF2D7;
@@ -28,7 +28,7 @@
 /* ===== Arena ===== */
 
 .battle-arena {
-  background: linear-gradient(180deg, var(--battle-bg-mid) 0%, var(--battle-bg-dark) 100%);
+  background: var(--battle-bg-dark);
   position: relative;
   overflow: hidden;
 }
@@ -38,8 +38,8 @@
   position: absolute;
   inset: 0;
   background-image:
-    linear-gradient(rgba(215, 171, 197, 0.04) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(215, 171, 197, 0.04) 1px, transparent 1px);
+    linear-gradient(rgba(0, 0, 0, 0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0, 0, 0, 0.04) 1px, transparent 1px);
   background-size: 40px 40px;
   pointer-events: none;
 }
@@ -48,12 +48,15 @@
 
 .battle-scene {
   display: grid;
-  grid-template-rows: 62% 38%;
-  width: 100%;
-  max-width: 960px;
-  aspect-ratio: 16 / 9;
+  grid-template-rows: 1fr;
+  width: 60vh;
+  height: 60vh;
+  max-width: 90vw;
+  max-height: 60vh;
   margin: 0 auto;
   position: relative;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  border-radius: 10.258px;
 }
 
 /* ===== Sprites ===== */
@@ -169,16 +172,20 @@
 /* ===== Text Box ===== */
 
 .battle-textbox {
-  background: var(--textbox-bg);
-  border-top: 1px solid var(--textbox-border);
+  background: rgba(0, 0, 0, 0.88);
+  border: 1px solid rgba(215, 171, 197, 0.3);
+  border-radius: 10.258px;
   padding: 16px 24px;
-  color: var(--textbox-text);
+  color: #EAF2D7;
   font-family: var(--font-display);
-  font-size: 15px;
+  font-size: 14px;
   line-height: 1.6;
-  min-height: 80px;
+  min-height: 60px;
   position: relative;
   cursor: pointer;
+  max-width: 60vh;
+  margin: 12px auto;
+  text-align: center;
 }
 
 .battle-textbox-cursor {
@@ -198,15 +205,16 @@
   align-items: center;
   gap: 10px;
   padding: 10px 16px;
-  border: 1px solid var(--move-basic-border);
-  border-radius: 6px;
+  border: 1px solid rgba(0, 0, 0, 0.15);
+  border-radius: 75.641px;
   cursor: pointer;
   transition: background 150ms, border-color 150ms;
-  background: rgba(255, 255, 255, 0.03);
+  background: rgba(0, 0, 0, 0.03);
+  color: #000;
 }
 
 .battle-move-item:hover:not([data-disabled="true"]) {
-  background: rgba(215, 171, 197, 0.08);
+  background: rgba(0, 0, 0, 0.06);
 }
 
 .battle-move-item[data-category="special"] { border-color: var(--move-special-border); }
@@ -219,10 +227,10 @@
 
 .battle-move-name {
   font-family: var(--font-display);
-  font-size: 13px;
+  font-size: 12px;
   text-transform: uppercase;
-  letter-spacing: 0.5px;
-  color: var(--nameplate-text);
+  letter-spacing: 1.5px;
+  color: #000;
   flex: 1;
 }
 
@@ -268,26 +276,30 @@
   padding: 12px 24px;
 }
 
+.battle-menu {
+  justify-content: center;
+}
+
 .battle-menu-btn {
   font-family: var(--font-display);
   font-size: 13px;
   text-transform: uppercase;
-  letter-spacing: 1px;
-  padding: 10px 24px;
-  border-radius: 6px;
-  border: 1px solid var(--battle-pink);
+  letter-spacing: 1.5px;
+  padding: 10px 28px;
+  border-radius: 75.641px;
+  border: 1px solid #000;
   background: transparent;
-  color: var(--battle-pink);
+  color: #000;
   cursor: pointer;
   transition: background 150ms;
 }
 
 .battle-menu-btn:hover {
-  background: rgba(215, 171, 197, 0.1);
+  background: rgba(0, 0, 0, 0.06);
 }
 
 .battle-menu-btn[data-primary="true"] {
-  background: var(--battle-pink);
+  background: #000;
   color: var(--battle-bg-dark);
 }
 

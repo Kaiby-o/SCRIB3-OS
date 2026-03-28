@@ -20,10 +20,16 @@ export function useAnimations() {
   const playAttack = useCallback(async (side: 'player' | 'opponent') => {
     const el = side === 'player' ? playerRef.current : opponentRef.current;
     if (!el) return;
-    const dir = side === 'player' ? 80 : -80;
+    const dir = side === 'player' ? 60 : -60;
     await el.animate(
-      [{ transform: 'translateX(0px)' }, { transform: `translateX(${dir}px)` }, { transform: 'translateX(0px)' }],
-      { duration: 400, easing: 'ease-out' }
+      [
+        { transform: 'translateX(0) scale(1)', offset: 0 },
+        { transform: `translateX(${dir * 0.3}px) scale(1.05)`, offset: 0.3 },
+        { transform: `translateX(${dir}px) scale(1.08)`, offset: 0.5 },
+        { transform: `translateX(${dir * 0.5}px) scale(1)`, offset: 0.7 },
+        { transform: 'translateX(0) scale(1)', offset: 1 },
+      ],
+      { duration: 500, easing: 'ease-out' }
     ).finished;
   }, []);
 
@@ -43,9 +49,17 @@ export function useAnimations() {
   const playFaint = useCallback(async (side: 'player' | 'opponent') => {
     const el = side === 'player' ? playerRef.current : opponentRef.current;
     if (!el) return;
+    // Flash red, shake, then sink
     await el.animate(
-      [{ transform: 'translateY(0px)', opacity: 1 }, { transform: 'translateY(60px)', opacity: 0 }],
-      { duration: 700, fill: 'forwards', easing: 'ease-in' }
+      [
+        { filter: 'brightness(1)', transform: 'translateX(0) translateY(0)', opacity: 1, offset: 0 },
+        { filter: 'brightness(2) hue-rotate(340deg)', transform: 'translateX(-8px)', opacity: 1, offset: 0.15 },
+        { filter: 'brightness(1)', transform: 'translateX(8px)', opacity: 1, offset: 0.3 },
+        { filter: 'brightness(2) hue-rotate(340deg)', transform: 'translateX(-4px)', opacity: 0.8, offset: 0.45 },
+        { filter: 'brightness(1)', transform: 'translateX(0) translateY(10px)', opacity: 0.6, offset: 0.6 },
+        { filter: 'grayscale(1)', transform: 'translateY(60px)', opacity: 0, offset: 1 },
+      ],
+      { duration: 1200, fill: 'forwards', easing: 'ease-in' }
     ).finished;
   }, []);
 
@@ -67,12 +81,29 @@ export function useAnimations() {
     if (!el) return;
     const from = side === 'player' ? -200 : 200;
     await el.animate(
-      [{ transform: `translateX(${from}px)`, opacity: 0 }, { transform: 'translateX(0)', opacity: 1 }],
-      { duration: 500, easing: 'ease-out', fill: 'forwards' }
+      [
+        { transform: `translateX(${from}px) scale(0.8)`, opacity: 0, offset: 0 },
+        { transform: `translateX(${from * 0.2}px) scale(1.05)`, opacity: 0.8, offset: 0.6 },
+        { transform: 'translateX(0) scale(1)', opacity: 1, offset: 1 },
+      ],
+      { duration: 800, easing: 'cubic-bezier(0.22, 0.61, 0.36, 1)', fill: 'forwards' }
     ).finished;
   }, []);
 
-  return { playerRef, opponentRef, screenRef, playIdle, playAttack, playHit, playFaint, playScreenFlash, playEnter };
+  const playDefense = useCallback(async (side: 'player' | 'opponent') => {
+    const el = side === 'player' ? playerRef.current : opponentRef.current;
+    if (!el) return;
+    await el.animate(
+      [
+        { transform: 'scale(1)', filter: 'brightness(1)', offset: 0 },
+        { transform: 'scale(1.08)', filter: 'brightness(1.3) saturate(1.5)', offset: 0.4 },
+        { transform: 'scale(1)', filter: 'brightness(1)', offset: 1 },
+      ],
+      { duration: 400, easing: 'ease-out' }
+    ).finished;
+  }, []);
+
+  return { playerRef, opponentRef, screenRef, playIdle, playAttack, playHit, playFaint, playScreenFlash, playEnter, playDefense };
 }
 
 // Status visual filters applied directly to sprite style

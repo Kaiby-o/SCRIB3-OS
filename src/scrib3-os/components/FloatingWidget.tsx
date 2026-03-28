@@ -22,7 +22,7 @@ const STATUS_OPTIONS: { key: StatusOption; label: string; color: string }[] = [
   { key: 'active', label: 'Active', color: '#27AE60' },
   { key: 'away', label: 'Away', color: '#F1C40F' },
   { key: 'busy', label: 'Busy', color: '#E67E22' },
-  { key: 'battlemode', label: 'Battle Mode', color: '#E53935' },
+  { key: 'battlemode', label: 'Battle', color: '#E53935' },
 ];
 
 const QUICK_LINKS: { label: string; icon: string; route: string; comingSoon?: boolean }[] = [
