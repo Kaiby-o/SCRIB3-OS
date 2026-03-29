@@ -481,7 +481,7 @@ export default function AvatarCreatorPage() {
   if (!manifest) {
     return (
       <div style={pageStyle}>
-        <span style={{ color: '#4A5568', fontFamily: "'JetBrains Mono', monospace", fontSize: '12px' }}>
+        <span style={{ color: 'rgba(234, 242, 215, 0.5)', fontFamily: "'Owners Wide', sans-serif", fontSize: '12px' }}>
           LOADING CHARACTER DATA...
         </span>
       </div>
@@ -490,8 +490,9 @@ export default function AvatarCreatorPage() {
 
   return (
     <div style={pageStyle}>
-      {/* Header */}
+      {/* Header — VirtualOffice top-bar style */}
       <div style={headerStyle}>
+        <button onClick={() => navigate('/device')} style={backBtnStyle}>&larr; BACK</button>
         <span style={titleStyle}>CHARACTER CREATOR</span>
         <span style={subtitleStyle}>{username}</span>
       </div>
@@ -503,14 +504,7 @@ export default function AvatarCreatorPage() {
           <div style={previewFrameStyle}>
             <CompositedPreview manifest={manifest} selections={sel} scale={8} direction={0} animate />
           </div>
-
-          {/* Additional front previews at different scales */}
-          <div style={directionRowStyle}>
-            <div style={dirPreviewStyle}>
-              <CompositedPreview manifest={manifest} selections={sel} scale={3} direction={0} animate />
-              <span style={dirLabelStyle}>PREVIEW</span>
-            </div>
-          </div>
+          <span style={avatarNameStyle}>{username}</span>
 
           <div style={buttonRowStyle}>
             <button onClick={handleRandomize} style={secondaryBtnStyle}>RANDOMIZE</button>
@@ -559,7 +553,7 @@ export default function AvatarCreatorPage() {
         </div>
       </div>
 
-      <button onClick={() => navigate('/device')} style={skipStyle}>SKIP FOR NOW &rarr;</button>
+      {/* Back button moved to header */}
     </div>
   );
 }
@@ -622,7 +616,7 @@ function BodyTab({ manifest, sel, setSel }: TabProps) {
                 height: 48,
                 borderRadius: 8,
                 background: swatchColor,
-                border: sel.body === b.id ? '2px solid #63B3ED' : '2px solid rgba(255,255,255,0.15)',
+                border: sel.body === b.id ? '2px solid #D7ABC5' : '2px solid rgba(234, 242, 215, 0.15)',
                 boxSizing: 'border-box' as const,
               }} />
               <span style={cardLabelStyle}>{b.label}</span>
@@ -657,10 +651,10 @@ function EyesTab({ manifest, sel, setSel }: TabProps) {
               flexDirection: 'column' as const,
               alignItems: 'center',
               justifyContent: 'center',
-              background: 'rgba(255,255,255,0.06)',
+              background: 'rgba(234, 242, 215, 0.04)',
               borderRadius: 8,
               fontSize: '18px',
-              color: sel.eyes === e.id ? '#63B3ED' : '#A0AEC0',
+              color: sel.eyes === e.id ? '#D7ABC5' : 'rgba(234, 242, 215, 0.5)',
             }}>
               <span>{EYE_DECORATORS[i % EYE_DECORATORS.length]}</span>
             </div>
@@ -889,35 +883,69 @@ function AccessoriesTab({ manifest, sel, setSel }: TabProps) {
 const pageStyle: React.CSSProperties = {
   width: '100vw',
   minHeight: '100vh',
-  background: '#1A1A2E',
+  background: '#0D0D1A',
   display: 'flex',
   flexDirection: 'column',
   alignItems: 'center',
-  fontFamily: "'JetBrains Mono', monospace",
-  color: '#E2E8F0',
-  padding: '32px 20px',
+  fontFamily: "'Owners Wide', sans-serif",
+  color: '#EAF2D7',
+  padding: '0 20px 32px',
   boxSizing: 'border-box',
 };
 
 const headerStyle: React.CSSProperties = {
-  textAlign: 'center',
+  width: '100%',
+  height: '48px',
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  gap: '16px',
+  background: 'rgba(234, 242, 215, 0.04)',
+  backdropFilter: 'blur(12px)',
+  borderBottom: '1px solid rgba(234, 242, 215, 0.08)',
   marginBottom: '24px',
+  position: 'relative',
+};
+
+const backBtnStyle: React.CSSProperties = {
+  position: 'absolute',
+  left: '16px',
+  background: 'rgba(234, 242, 215, 0.04)',
+  border: '1px solid rgba(234, 242, 215, 0.08)',
+  borderRadius: '75.641px',
+  color: '#EAF2D7',
+  fontFamily: "'Owners Wide', sans-serif",
+  fontSize: '10px',
+  letterSpacing: '0.1em',
+  padding: '6px 16px',
+  cursor: 'pointer',
+  transition: 'all 300ms cubic-bezier(0.22, 0.61, 0.36, 1)',
 };
 
 const titleStyle: React.CSSProperties = {
   display: 'block',
-  fontFamily: "'OwnersWide', 'JetBrains Mono', monospace",
-  fontSize: '18px',
-  letterSpacing: '0.3em',
-  color: '#A0AEC0',
-  marginBottom: '6px',
+  fontFamily: "'Kaio', sans-serif",
+  fontWeight: 800,
+  fontSize: '16px',
+  letterSpacing: '0.15em',
+  color: '#EAF2D7',
+  textTransform: 'uppercase',
+  fontFeatureSettings: "'ordn' 1, 'dlig' 1",
 };
 
 const subtitleStyle: React.CSSProperties = {
-  display: 'block',
-  fontSize: '11px',
-  color: '#4A5568',
-  letterSpacing: '0.15em',
+  display: 'none',
+};
+
+const avatarNameStyle: React.CSSProperties = {
+  fontFamily: "'Kaio', sans-serif",
+  fontWeight: 800,
+  fontSize: '13px',
+  letterSpacing: '0.1em',
+  color: 'rgba(234, 242, 215, 0.5)',
+  textTransform: 'uppercase',
+  fontFeatureSettings: "'ordn' 1, 'dlig' 1",
+  marginTop: '-4px',
 };
 
 const contentStyle: React.CSSProperties = {
@@ -938,31 +966,13 @@ const previewColumnStyle: React.CSSProperties = {
 };
 
 const previewFrameStyle: React.CSSProperties = {
-  background: 'rgba(255,255,255,0.03)',
-  border: '1px solid rgba(255,255,255,0.08)',
-  borderRadius: '12px',
-  padding: '20px',
+  background: 'rgba(234, 242, 215, 0.04)',
+  border: '1px solid rgba(234, 242, 215, 0.08)',
+  borderRadius: '10.258px',
+  padding: '24px',
   display: 'flex',
   justifyContent: 'center',
   alignItems: 'center',
-};
-
-const directionRowStyle: React.CSSProperties = {
-  display: 'flex',
-  gap: '14px',
-};
-
-const dirPreviewStyle: React.CSSProperties = {
-  display: 'flex',
-  flexDirection: 'column',
-  alignItems: 'center',
-  gap: '4px',
-};
-
-const dirLabelStyle: React.CSSProperties = {
-  fontSize: '8px',
-  letterSpacing: '0.15em',
-  color: '#4A5568',
 };
 
 const buttonRowStyle: React.CSSProperties = {
@@ -972,27 +982,30 @@ const buttonRowStyle: React.CSSProperties = {
 };
 
 const primaryBtnStyle: React.CSSProperties = {
-  background: 'rgba(66, 153, 225, 0.25)',
-  border: '1px solid rgba(66, 153, 225, 0.5)',
-  borderRadius: '6px',
-  color: '#63B3ED',
-  fontFamily: "'OwnersWide', 'JetBrains Mono', monospace",
+  background: '#D7ABC5',
+  border: 'none',
+  borderRadius: '75.641px',
+  color: '#000000',
+  fontFamily: "'Owners Wide', sans-serif",
   fontSize: '11px',
+  fontWeight: 600,
   letterSpacing: '0.15em',
   padding: '10px 24px',
   cursor: 'pointer',
+  transition: 'all 300ms cubic-bezier(0.22, 0.61, 0.36, 1)',
 };
 
 const secondaryBtnStyle: React.CSSProperties = {
-  background: 'rgba(255,255,255,0.05)',
-  border: '1px solid rgba(255,255,255,0.1)',
-  borderRadius: '6px',
-  color: '#A0AEC0',
-  fontFamily: "'JetBrains Mono', monospace",
+  background: 'rgba(234, 242, 215, 0.04)',
+  border: '1px solid rgba(234, 242, 215, 0.08)',
+  borderRadius: '75.641px',
+  color: '#EAF2D7',
+  fontFamily: "'Owners Wide', sans-serif",
   fontSize: '10px',
   letterSpacing: '0.1em',
   padding: '10px 16px',
   cursor: 'pointer',
+  transition: 'all 300ms cubic-bezier(0.22, 0.61, 0.36, 1)',
 };
 
 const panelColumnStyle: React.CSSProperties = {
@@ -1007,7 +1020,7 @@ const tabBarStyle: React.CSSProperties = {
   display: 'flex',
   gap: '2px',
   marginBottom: '12px',
-  borderBottom: '1px solid rgba(255,255,255,0.08)',
+  borderBottom: '1px solid rgba(234, 242, 215, 0.08)',
   paddingBottom: '0',
 };
 
@@ -1015,18 +1028,18 @@ const tabStyle: React.CSSProperties = {
   background: 'none',
   border: 'none',
   borderBottom: '2px solid transparent',
-  color: '#4A5568',
-  fontFamily: "'JetBrains Mono', monospace",
+  color: 'rgba(234, 242, 215, 0.3)',
+  fontFamily: "'Owners Wide', sans-serif",
   fontSize: '9px',
   letterSpacing: '0.15em',
   padding: '8px 12px',
   cursor: 'pointer',
-  transition: 'all 150ms',
+  transition: 'all 300ms cubic-bezier(0.22, 0.61, 0.36, 1)',
 };
 
 const activeTabStyle: React.CSSProperties = {
-  color: '#63B3ED',
-  borderBottomColor: '#63B3ED',
+  color: '#D7ABC5',
+  borderBottomColor: '#D7ABC5',
 };
 
 const tabContentStyle: React.CSSProperties = {
@@ -1039,13 +1052,17 @@ const tabContentStyle: React.CSSProperties = {
 const sectionLabelStyle: React.CSSProperties = {
   fontSize: '9px',
   letterSpacing: '0.2em',
-  color: '#4A5568',
+  color: 'rgba(234, 242, 215, 0.5)',
+  fontFamily: "'Kaio', sans-serif",
+  fontWeight: 800,
+  textTransform: 'uppercase',
+  fontFeatureSettings: "'ordn' 1, 'dlig' 1",
   marginBottom: '10px',
 };
 
 const gridStyle: React.CSSProperties = {
   display: 'grid',
-  gridTemplateColumns: 'repeat(auto-fill, minmax(110px, 1fr))',
+  gridTemplateColumns: 'repeat(auto-fill, minmax(80px, 1fr))',
   gap: '6px',
 };
 
@@ -1056,16 +1073,16 @@ const colorGridStyle: React.CSSProperties = {
 };
 
 const cardStyle: React.CSSProperties = {
-  background: 'rgba(255,255,255,0.03)',
-  border: '2px solid rgba(255,255,255,0.08)',
-  borderRadius: '8px',
+  background: 'rgba(234, 242, 215, 0.04)',
+  border: '2px solid rgba(234, 242, 215, 0.08)',
+  borderRadius: '10.258px',
   padding: '6px',
   display: 'flex',
   flexDirection: 'column',
   alignItems: 'center',
   gap: '3px',
   cursor: 'pointer',
-  transition: 'all 150ms',
+  transition: 'all 300ms cubic-bezier(0.22, 0.61, 0.36, 1)',
   position: 'relative',
 };
 
@@ -1075,15 +1092,16 @@ const colorCardStyle: React.CSSProperties = {
 };
 
 const selectedCardStyle: React.CSSProperties = {
-  background: 'rgba(66, 153, 225, 0.15)',
-  borderColor: 'rgba(66, 153, 225, 0.5)',
-  boxShadow: '0 0 12px rgba(66, 153, 225, 0.2)',
+  background: 'rgba(215, 171, 197, 0.1)',
+  borderColor: '#D7ABC5',
+  boxShadow: 'none',
 };
 
 const cardLabelStyle: React.CSSProperties = {
   fontSize: '7px',
   letterSpacing: '0.1em',
-  color: '#A0AEC0',
+  color: 'rgba(234, 242, 215, 0.5)',
+  fontFamily: "'Owners Wide', sans-serif",
   textAlign: 'center',
   lineHeight: '1.2',
   maxWidth: '64px',
@@ -1097,18 +1115,7 @@ const checkStyle: React.CSSProperties = {
   top: '2px',
   right: '4px',
   fontSize: '10px',
-  color: '#63B3ED',
+  color: '#D7ABC5',
 };
 
-const skipStyle: React.CSSProperties = {
-  position: 'fixed',
-  bottom: '24px',
-  right: '24px',
-  background: 'none',
-  border: 'none',
-  color: '#4A5568',
-  fontFamily: "'JetBrains Mono', monospace",
-  fontSize: '10px',
-  letterSpacing: '0.1em',
-  cursor: 'pointer',
-};
+// skipStyle removed — back button now in header

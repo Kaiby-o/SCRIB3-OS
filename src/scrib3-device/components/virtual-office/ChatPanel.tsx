@@ -8,14 +8,10 @@ export default function ChatPanel() {
   const listRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
-  // Auto-scroll on new messages
   useEffect(() => {
-    if (listRef.current) {
-      listRef.current.scrollTop = listRef.current.scrollHeight;
-    }
+    if (listRef.current) listRef.current.scrollTop = listRef.current.scrollHeight;
   }, [messages.length]);
 
-  // Toggle with Enter when not focused
   useEffect(() => {
     const handleKey = (e: KeyboardEvent) => {
       if (e.key === 'Enter' && !chatFocused) {
@@ -46,47 +42,69 @@ export default function ChatPanel() {
   }, [input]);
 
   const handleKeyDown = useCallback((e: React.KeyboardEvent) => {
-    if (e.key === 'Enter') {
-      e.preventDefault();
-      handleSend();
-    }
-    if (e.key === 'Escape') {
-      inputRef.current?.blur();
-      useOfficeStore.getState().toggleChat();
-    }
+    if (e.key === 'Enter') { e.preventDefault(); handleSend(); }
+    if (e.key === 'Escape') { inputRef.current?.blur(); useOfficeStore.getState().toggleChat(); }
   }, [handleSend]);
 
+  // Toggle button (when chat is closed)
   if (!chatVisible) {
     return (
       <button
         onClick={() => useOfficeStore.getState().toggleChat()}
-        style={toggleButtonStyle}
+        style={{
+          position: 'fixed', bottom: '56px', right: '16px', zIndex: 960,
+          display: 'inline-flex', alignItems: 'center', gap: '6px',
+          background: 'rgba(0, 0, 0, 0.7)', backdropFilter: 'blur(8px)',
+          border: '1px solid rgba(234, 242, 215, 0.1)', borderRadius: '75.641px',
+          padding: '8px 16px', cursor: 'pointer',
+          fontFamily: "'Owners Wide', sans-serif", fontSize: '10px',
+          letterSpacing: '1px', textTransform: 'uppercase' as const,
+          color: 'rgba(234, 242, 215, 0.5)', transition: 'all 150ms',
+        }}
       >
-        CHAT [ENTER]
+        Chat · Enter
       </button>
     );
   }
 
   return (
-    <div style={containerStyle}>
-      <div style={headerStyle}>
-        <span>COMMS</span>
+    <div style={{
+      position: 'fixed', bottom: '56px', right: '16px', zIndex: 960,
+      width: '340px', height: '400px',
+      background: 'rgba(0, 0, 0, 0.8)', backdropFilter: 'blur(12px)',
+      border: '1px solid rgba(234, 242, 215, 0.08)', borderRadius: '10.258px',
+      display: 'flex', flexDirection: 'column',
+      overflow: 'hidden',
+    }}>
+      {/* Header */}
+      <div style={{
+        padding: '12px 16px',
+        borderBottom: '1px solid rgba(234, 242, 215, 0.06)',
+        display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+      }}>
+        <span style={{ fontFamily: "'Kaio', sans-serif", fontWeight: 800, fontSize: '11px', color: '#EAF2D7', textTransform: 'uppercase', letterSpacing: '1px' }}>
+          Office Chat
+        </span>
         <button
           onClick={() => useOfficeStore.getState().toggleChat()}
-          style={closeStyle}
-        >×</button>
+          style={{ background: 'none', border: 'none', color: 'rgba(234, 242, 215, 0.4)', fontSize: '16px', cursor: 'pointer', padding: '4px', minWidth: '28px', minHeight: '28px' }}
+        >&times;</button>
       </div>
 
-      <div ref={listRef} style={messagesStyle}>
+      {/* Messages */}
+      <div ref={listRef} style={{ flex: 1, overflowY: 'auto', padding: '12px 16px' }}>
         {messages.length === 0 && (
-          <div style={emptyStyle}>No messages yet. Say hello!</div>
+          <div style={{ color: 'rgba(234, 242, 215, 0.2)', textAlign: 'center', paddingTop: '60px', fontFamily: "'Owners Wide', sans-serif", fontSize: '12px' }}>
+            No messages yet
+          </div>
         )}
         {messages.map((msg) => (
           <MessageBubble key={msg.id} msg={msg} />
         ))}
       </div>
 
-      <div style={inputRowStyle}>
+      {/* Input */}
+      <div style={{ padding: '10px 12px', borderTop: '1px solid rgba(234, 242, 215, 0.06)', display: 'flex', gap: '8px' }}>
         <input
           ref={inputRef}
           value={input}
@@ -95,11 +113,27 @@ export default function ChatPanel() {
           onBlur={handleBlur}
           onKeyDown={handleKeyDown}
           placeholder="Type a message..."
-          style={inputStyle}
           maxLength={500}
           autoFocus
+          style={{
+            flex: 1,
+            background: 'rgba(234, 242, 215, 0.04)',
+            border: '1px solid rgba(234, 242, 215, 0.08)',
+            borderRadius: '75.641px',
+            padding: '8px 14px',
+            color: '#EAF2D7',
+            fontFamily: "'Owners Wide', sans-serif", fontSize: '12px',
+            outline: 'none',
+          }}
         />
-        <button onClick={handleSend} style={sendStyle}>→</button>
+        <button onClick={handleSend} style={{
+          background: '#D7ABC5', border: 'none', borderRadius: '50%',
+          width: '32px', height: '32px', cursor: 'pointer',
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+          flexShrink: 0, transition: 'opacity 150ms',
+        }}>
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M2 7H12M12 7L8 3M12 7L8 11" stroke="#000" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
+        </button>
       </div>
     </div>
   );
@@ -108,133 +142,12 @@ export default function ChatPanel() {
 function MessageBubble({ msg }: { msg: ChatMessage }) {
   const time = new Date(msg.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
   return (
-    <div style={bubbleStyle}>
-      <span style={nameStyle}>{msg.username}</span>
-      <span style={timeStyle}>{time}</span>
-      <div style={textStyle}>{msg.message}</div>
+    <div style={{ marginBottom: '12px' }}>
+      <div style={{ display: 'flex', alignItems: 'baseline', gap: '8px', marginBottom: '2px' }}>
+        <span style={{ fontFamily: "'Owners Wide', sans-serif", fontSize: '10px', fontWeight: 600, color: '#D7ABC5', letterSpacing: '0.5px' }}>{msg.username}</span>
+        <span style={{ fontFamily: "'Owners Wide', sans-serif", fontSize: '9px', color: 'rgba(234, 242, 215, 0.2)' }}>{time}</span>
+      </div>
+      <div style={{ fontFamily: "'Owners Wide', sans-serif", fontSize: '12px', color: 'rgba(234, 242, 215, 0.8)', lineHeight: '1.5', wordBreak: 'break-word' }}>{msg.message}</div>
     </div>
   );
 }
-
-const containerStyle: React.CSSProperties = {
-  position: 'fixed',
-  top: '268px',
-  right: '10px',
-  width: '320px',
-  bottom: '50px',
-  background: 'rgba(26, 26, 46, 0.95)',
-  border: '1px solid rgba(255,255,255,0.1)',
-  borderRadius: '8px',
-  display: 'flex',
-  flexDirection: 'column',
-  fontFamily: "'JetBrains Mono', monospace",
-  fontSize: '12px',
-  color: '#E8E0E0',
-  zIndex: 950,
-  backdropFilter: 'blur(8px)',
-};
-
-const headerStyle: React.CSSProperties = {
-  padding: '10px 14px',
-  borderBottom: '1px solid rgba(255,255,255,0.1)',
-  display: 'flex',
-  justifyContent: 'space-between',
-  alignItems: 'center',
-  fontSize: '10px',
-  letterSpacing: '0.2em',
-  color: '#A0AEC0',
-};
-
-const closeStyle: React.CSSProperties = {
-  background: 'none',
-  border: 'none',
-  color: '#A0AEC0',
-  fontSize: '16px',
-  cursor: 'pointer',
-  padding: '0 4px',
-};
-
-const messagesStyle: React.CSSProperties = {
-  flex: 1,
-  overflowY: 'auto',
-  padding: '8px 14px',
-};
-
-const emptyStyle: React.CSSProperties = {
-  color: '#4A5568',
-  textAlign: 'center',
-  paddingTop: '40px',
-  fontSize: '11px',
-};
-
-const bubbleStyle: React.CSSProperties = {
-  marginBottom: '8px',
-};
-
-const nameStyle: React.CSSProperties = {
-  color: '#63B3ED',
-  fontSize: '10px',
-  fontWeight: 'bold',
-  marginRight: '8px',
-};
-
-const timeStyle: React.CSSProperties = {
-  color: '#4A5568',
-  fontSize: '9px',
-};
-
-const textStyle: React.CSSProperties = {
-  color: '#E2E8F0',
-  marginTop: '2px',
-  lineHeight: '1.4',
-  wordBreak: 'break-word',
-};
-
-const inputRowStyle: React.CSSProperties = {
-  padding: '10px 14px',
-  borderTop: '1px solid rgba(255,255,255,0.1)',
-  display: 'flex',
-  gap: '8px',
-};
-
-const inputStyle: React.CSSProperties = {
-  flex: 1,
-  background: 'rgba(255,255,255,0.06)',
-  border: '1px solid rgba(255,255,255,0.1)',
-  borderRadius: '4px',
-  padding: '8px 10px',
-  color: '#E8E0E0',
-  fontFamily: "'JetBrains Mono', monospace",
-  fontSize: '12px',
-  outline: 'none',
-};
-
-const sendStyle: React.CSSProperties = {
-  background: 'rgba(66, 153, 225, 0.3)',
-  border: '1px solid rgba(66, 153, 225, 0.5)',
-  borderRadius: '4px',
-  color: '#63B3ED',
-  padding: '6px 12px',
-  cursor: 'pointer',
-  fontSize: '14px',
-  fontFamily: "'JetBrains Mono', monospace",
-};
-
-const toggleButtonStyle: React.CSSProperties = {
-  position: 'fixed',
-  top: '268px',       // Below the toolbar buttons (140px top + ~3 buttons * 42px each)
-  right: '10px',
-  width: '160px',
-  background: 'rgba(26, 26, 46, 0.85)',
-  border: '1px solid rgba(255,255,255,0.15)',
-  borderRadius: '4px',
-  color: '#A0AEC0',
-  fontFamily: "'JetBrains Mono', monospace",
-  fontSize: '10px',
-  letterSpacing: '0.12em',
-  padding: '10px 12px',
-  cursor: 'pointer',
-  zIndex: 950,
-  textAlign: 'center' as const,
-  boxSizing: 'border-box' as const,
-};

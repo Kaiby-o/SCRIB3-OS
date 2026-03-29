@@ -13,7 +13,7 @@ interface VirtualOfficeProps {
   onEditAvatar?: () => void;
 }
 
-export default function VirtualOffice({ bgMode, onClose, onEditAvatar }: VirtualOfficeProps) {
+export default function VirtualOffice({ onClose, onEditAvatar }: VirtualOfficeProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const gameRef = useRef<Phaser.Game | null>(null);
   const multiplayerRef = useRef<MultiplayerSystem | null>(null);
@@ -26,7 +26,6 @@ export default function VirtualOffice({ bgMode, onClose, onEditAvatar }: Virtual
   useEffect(() => {
     if (!containerRef.current || gameRef.current) return;
 
-    // Pass user info to Phaser via window (read by OfficeScene)
     (window as unknown as Record<string, unknown>).__OFFICE_USER__ = {
       userId: profile?.id ?? 'local',
       username: profile?.username ?? 'Player',
@@ -54,14 +53,12 @@ export default function VirtualOffice({ bgMode, onClose, onEditAvatar }: Virtual
     multiplayerRef.current = mp;
     mp.connect();
 
-    // Forward position updates to multiplayer
     const onMoved = (data: unknown) => {
       const { x, y, direction } = data as { x: number; y: number; direction: string };
       mp.broadcastPosition(x, y, direction);
     };
     bridge.on('player:moved', onMoved);
 
-    // Forward chat sends to multiplayer
     const onChat = (msg: unknown) => {
       mp.broadcastChat(msg as string);
     };
@@ -76,146 +73,98 @@ export default function VirtualOffice({ bgMode, onClose, onEditAvatar }: Virtual
   }, [sceneReady, profile]);
 
   return (
-    <div style={{ position: 'relative', width: '100%', height: '100%' }}>
-      {/* Phaser canvas container */}
-      <div
-        ref={containerRef}
-        style={{
-          width: '100%',
-          height: '100%',
-          background: bgMode === 'dark' ? '#1A1A2E' : '#E8E0E0',
-        }}
-      />
+    <div style={{ position: 'relative', width: '100%', height: '100%', background: '#0D0D1A' }}>
+      {/* Phaser canvas */}
+      <div ref={containerRef} style={{ width: '100%', height: '100%' }} />
 
-      {/* Right-side vertical toolbar */}
-      <div style={toolbarStyle}>
+      {/* ── Top bar ── */}
+      <div style={{
+        position: 'fixed', top: 0, left: 0, right: 0, zIndex: 960,
+        display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+        height: '48px', padding: '0 16px',
+        background: 'rgba(0, 0, 0, 0.7)',
+        backdropFilter: 'blur(8px)',
+        borderBottom: '1px solid rgba(234, 242, 215, 0.08)',
+      }}>
+        {/* Left: close */}
         {onClose && (
-          <button
-            onClick={onClose}
-            style={toolbarBtnStyle}
-            onMouseEnter={e => (e.currentTarget.style.opacity = '1')}
-            onMouseLeave={e => (e.currentTarget.style.opacity = '0.7')}
-          >
-            &larr; DEVICE
+          <button onClick={onClose} style={navBtnStyle}>
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M10 3L5 8L10 13" stroke="#EAF2D7" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
+            <span>Exit</span>
           </button>
         )}
 
-        <div style={onlineBoxStyle}>
-          <span style={dotStyle} />
-          {onlineCount + 1} ONLINE
+        {/* Center: title + online */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+          <span style={{ fontFamily: "'Kaio', sans-serif", fontWeight: 800, fontSize: '13px', color: '#EAF2D7', textTransform: 'uppercase', letterSpacing: '1px' }}>
+            SCRIB3 Office
+          </span>
+          <span style={{
+            display: 'inline-flex', alignItems: 'center', gap: '6px',
+            fontFamily: "'Owners Wide', sans-serif", fontSize: '10px', color: 'rgba(234, 242, 215, 0.5)',
+            letterSpacing: '1px', textTransform: 'uppercase',
+          }}>
+            <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#48BB78', boxShadow: '0 0 6px rgba(72,187,120,0.5)', flexShrink: 0 }} />
+            {onlineCount + 1} online
+          </span>
         </div>
 
-        {onEditAvatar && (
-          <button
-            onClick={onEditAvatar}
-            style={toolbarBtnStyle}
-            onMouseEnter={e => (e.currentTarget.style.opacity = '1')}
-            onMouseLeave={e => (e.currentTarget.style.opacity = '0.7')}
-          >
-            EDIT AVATAR
-          </button>
-        )}
-
-        {/* Chat toggle / panel injected here via ChatPanel's fixed positioning */}
+        {/* Right: avatar editor */}
+        <div style={{ display: 'flex', gap: '8px' }}>
+          {onEditAvatar && (
+            <button onClick={onEditAvatar} style={navBtnStyle}>
+              <span>Edit Avatar</span>
+            </button>
+          )}
+        </div>
       </div>
 
-      {/* Interaction prompt */}
+      {/* ── Interaction prompt ── */}
       {interactionPrompt && (
-        <div style={promptStyle}>
+        <div style={{
+          position: 'fixed', bottom: '80px', left: '50%', transform: 'translateX(-50%)',
+          background: 'rgba(0, 0, 0, 0.8)', backdropFilter: 'blur(8px)',
+          border: '1px solid rgba(234, 242, 215, 0.1)', borderRadius: '75.641px',
+          padding: '10px 24px',
+          fontFamily: "'Owners Wide', sans-serif", fontSize: '12px', color: '#EAF2D7',
+          letterSpacing: '0.5px', zIndex: 950,
+          animation: 'fadeInUp 200ms ease-out',
+        }}>
           {interactionPrompt}
         </div>
       )}
 
-      {/* Controls hint - bottom left */}
-      <div style={controlsStyle}>
-        WASD / ARROWS to move &middot; E to interact &middot; ENTER for chat
+      {/* ── Controls hint ── */}
+      <div style={{
+        position: 'fixed', bottom: '16px', left: '50%', transform: 'translateX(-50%)',
+        fontFamily: "'Owners Wide', sans-serif", fontSize: '10px',
+        color: 'rgba(234, 242, 215, 0.25)', letterSpacing: '1px',
+        textTransform: 'uppercase', zIndex: 950,
+      }}>
+        WASD to move &middot; E to interact &middot; 1-5 emotes &middot; Enter for chat
       </div>
 
-      {/* Chat panel */}
+      {/* ── Chat panel ── */}
       <ChatPanel />
+
+      <style>{`
+        @keyframes fadeInUp {
+          from { opacity: 0; transform: translateX(-50%) translateY(8px); }
+          to { opacity: 1; transform: translateX(-50%) translateY(0); }
+        }
+      `}</style>
     </div>
   );
 }
 
-/* ── Right-side vertical toolbar ── */
-const TOOLBAR_WIDTH = '160px';
-
-const toolbarStyle: React.CSSProperties = {
-  position: 'fixed',
-  top: '140px',           // Below minimap (minimap is ~120px + 10px margin)
-  right: '10px',
-  display: 'flex',
-  flexDirection: 'column',
-  gap: '6px',
-  width: TOOLBAR_WIDTH,
-  zIndex: 960,
-};
-
-const toolbarBtnStyle: React.CSSProperties = {
-  width: '100%',
-  background: 'rgba(26, 26, 46, 0.85)',
-  border: '1px solid rgba(255,255,255,0.15)',
-  borderRadius: '4px',
-  color: '#A0AEC0',
-  fontFamily: "'JetBrains Mono', monospace",
-  fontSize: '10px',
-  letterSpacing: '0.12em',
-  padding: '10px 12px',
-  cursor: 'pointer',
-  opacity: 0.7,
-  transition: 'opacity 200ms',
-  textAlign: 'center' as const,
-};
-
-const onlineBoxStyle: React.CSSProperties = {
-  width: '100%',
-  display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'center',
-  gap: '8px',
-  background: 'rgba(26, 26, 46, 0.85)',
-  border: '1px solid rgba(255,255,255,0.15)',
-  borderRadius: '4px',
-  fontFamily: "'JetBrains Mono', monospace",
-  fontSize: '10px',
-  letterSpacing: '0.12em',
-  color: '#A0AEC0',
-  padding: '10px 12px',
-  boxSizing: 'border-box' as const,
-};
-
-const dotStyle: React.CSSProperties = {
-  width: '8px',
-  height: '8px',
-  borderRadius: '50%',
-  background: '#48BB78',
-  boxShadow: '0 0 6px rgba(72, 187, 120, 0.6)',
-  flexShrink: 0,
-};
-
-const promptStyle: React.CSSProperties = {
-  position: 'fixed',
-  bottom: '60px',
-  left: '50%',
-  transform: 'translateX(-50%)',
-  background: 'rgba(26, 26, 46, 0.9)',
-  border: '1px solid rgba(255,255,255,0.15)',
-  borderRadius: '6px',
-  padding: '10px 20px',
-  fontFamily: "'JetBrains Mono', monospace",
-  fontSize: '11px',
-  color: '#E2E8F0',
-  letterSpacing: '0.1em',
-  zIndex: 950,
-};
-
-const controlsStyle: React.CSSProperties = {
-  position: 'fixed',
-  bottom: '16px',
-  left: '16px',
-  fontFamily: "'JetBrains Mono', monospace",
-  fontSize: '9px',
-  color: '#4A5568',
-  letterSpacing: '0.1em',
-  zIndex: 950,
+const navBtnStyle: React.CSSProperties = {
+  display: 'inline-flex', alignItems: 'center', gap: '6px',
+  background: 'rgba(234, 242, 215, 0.06)',
+  border: '1px solid rgba(234, 242, 215, 0.1)',
+  borderRadius: '75.641px',
+  padding: '6px 14px', cursor: 'pointer',
+  fontFamily: "'Owners Wide', sans-serif", fontSize: '10px',
+  letterSpacing: '1px', textTransform: 'uppercase',
+  color: 'rgba(234, 242, 215, 0.7)',
+  transition: 'all 150ms',
 };

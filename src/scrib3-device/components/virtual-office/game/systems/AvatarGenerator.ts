@@ -88,9 +88,9 @@ function drawAvatar(
   c.clearRect(ox, 0, S, S);
 
   // Body proportions (centered in 32x32):
-  // Head: 10x10 at (11, 2)
-  // Body: 12x10 at (10, 12)
-  // Legs: two 4x6 columns
+  // Head: 8x8 at (12, 4)
+  // Body: 10x10 at (11, 12)
+  // Legs: two 4x8 columns at (12, 22)
 
   // ── LEGS / PANTS ──
   drawLegs(c, ox, cfg.pantsStyle, cfg.pantsColor, skin, dir);
@@ -99,10 +99,13 @@ function drawAvatar(
   drawBody(c, ox, cfg.outfitStyle, cfg.outfitColor, initials, dir);
 
   // ── HEAD ──
-  const hx = ox + 11, hy = 2;
-  px(c, hx, hy, 10, 10, skin);
+  const hx = ox + 12, hy = 4;
+  px(c, hx, hy, 8, 8, skin);
   // Chin shadow
-  px(c, hx + 1, hy + 9, 8, 1, skinShade);
+  px(c, hx + 1, hy + 7, 6, 1, skinShade);
+  // Subtle ear shadows
+  px(c, hx, hy + 2, 1, 3, skinShade);
+  px(c, hx + 7, hy + 2, 1, 3, skinShade);
 
   // ── HAIR ──
   drawHairStyle(c, ox, cfg.hairStyle, cfg.hairColor, dir);
@@ -116,46 +119,46 @@ function drawAvatar(
 
 // ── LEGS ──
 function drawLegs(c: CanvasRenderingContext2D, ox: number, style: PantsStyle, color: string, skin: string, dir: number) {
-  const lx = ox + 11, ly = 22;
+  const lx = ox + 12, ly = 22;
   const dark = darken(color, 20);
 
   switch (style) {
     case 'jeans':
-      px(c, lx, ly, 4, 6, color);
-      px(c, lx + 6, ly, 4, 6, color);
-      px(c, lx, ly, 4, 1, dark); // Waistband
-      px(c, lx + 6, ly, 4, 1, dark);
+      px(c, lx, ly, 3, 8, color);
+      px(c, lx + 5, ly, 3, 8, color);
+      px(c, lx, ly, 3, 1, dark); // Waistband
+      px(c, lx + 5, ly, 3, 1, dark);
       // Shoes
-      px(c, lx, ly + 5, 4, 1, '#1A1A1A');
-      px(c, lx + 6, ly + 5, 4, 1, '#1A1A1A');
+      px(c, lx, ly + 7, 3, 1, '#1A1A1A');
+      px(c, lx + 5, ly + 7, 3, 1, '#1A1A1A');
       break;
     case 'trousers':
-      px(c, lx, ly, 4, 6, color);
-      px(c, lx + 6, ly, 4, 6, color);
-      px(c, lx, ly, 10, 1, dark); // Belt
-      px(c, lx + 4, ly, 2, 1, '#AAA'); // Buckle
-      px(c, lx, ly + 5, 4, 1, '#222');
-      px(c, lx + 6, ly + 5, 4, 1, '#222');
+      px(c, lx, ly, 3, 8, color);
+      px(c, lx + 5, ly, 3, 8, color);
+      px(c, lx, ly, 8, 1, dark); // Belt
+      px(c, lx + 3, ly, 2, 1, '#AAA'); // Buckle
+      px(c, lx, ly + 7, 3, 1, '#222');
+      px(c, lx + 5, ly + 7, 3, 1, '#222');
       break;
     case 'shorts':
-      px(c, lx, ly, 4, 3, color);
-      px(c, lx + 6, ly, 4, 3, color);
-      px(c, lx, ly, 10, 1, dark);
+      px(c, lx, ly, 3, 4, color);
+      px(c, lx + 5, ly, 3, 4, color);
+      px(c, lx, ly, 8, 1, dark);
       // Bare legs
-      px(c, lx + 1, ly + 3, 2, 3, skin);
-      px(c, lx + 7, ly + 3, 2, 3, skin);
+      px(c, lx + 1, ly + 4, 2, 4, skin);
+      px(c, lx + 6, ly + 4, 2, 4, skin);
       // Shoes
-      px(c, lx, ly + 5, 4, 1, '#FFF');
-      px(c, lx + 6, ly + 5, 4, 1, '#FFF');
+      px(c, lx, ly + 7, 3, 1, '#FFF');
+      px(c, lx + 5, ly + 7, 3, 1, '#FFF');
       break;
     case 'skirt':
-      px(c, lx - 1, ly, 12, 3, color);
-      px(c, lx - 1, ly, 12, 1, dark);
+      px(c, lx - 1, ly, 10, 4, color);
+      px(c, lx - 1, ly, 10, 1, dark);
       // Legs
-      px(c, lx + 1, ly + 3, 2, 3, skin);
-      px(c, lx + 7, ly + 3, 2, 3, skin);
-      px(c, lx, ly + 5, 4, 1, '#222');
-      px(c, lx + 6, ly + 5, 4, 1, '#222');
+      px(c, lx + 1, ly + 4, 2, 4, skin);
+      px(c, lx + 6, ly + 4, 2, 4, skin);
+      px(c, lx, ly + 7, 3, 1, '#222');
+      px(c, lx + 5, ly + 7, 3, 1, '#222');
       break;
   }
   void dir;
@@ -163,7 +166,7 @@ function drawLegs(c: CanvasRenderingContext2D, ox: number, style: PantsStyle, co
 
 // ── BODY ──
 function drawBody(c: CanvasRenderingContext2D, ox: number, style: OutfitStyle, color: string, initials: string, dir: number) {
-  const bx = ox + 10, by = 12, bw = 12, bh = 10;
+  const bx = ox + 11, by = 12, bw = 10, bh = 10;
   const dark = darken(color, 30);
   const light = lighten(color, 25);
 
@@ -228,17 +231,17 @@ function drawBody(c: CanvasRenderingContext2D, ox: number, style: OutfitStyle, c
 
   // Initials on front-facing
   if (dir === 0 && style !== 'suit') {
-    c.fillStyle = 'rgba(255,255,255,0.7)';
-    c.font = 'bold 6px monospace';
+    c.fillStyle = 'rgba(255,255,255,0.9)';
+    c.font = 'bold 7px sans-serif';
     c.textAlign = 'center';
     c.textBaseline = 'middle';
-    c.fillText(initials, ox + S / 2, by + bh / 2);
+    c.fillText(initials, ox + S / 2, by + bh / 2 + 1);
   }
 }
 
 // ── HAIR ──
 function drawHairStyle(c: CanvasRenderingContext2D, ox: number, style: HairStyle, color: string, dir: number) {
-  const hx = ox + 11, hy = 2, hw = 10;
+  const hx = ox + 12, hy = 4, hw = 8;
   const dark = darken(color, 25);
 
   c.fillStyle = color;
@@ -322,7 +325,7 @@ function drawHairStyle(c: CanvasRenderingContext2D, ox: number, style: HairStyle
 
 // ── EYES ──
 function drawEyeStyle(c: CanvasRenderingContext2D, ox: number, style: EyeStyle, _skin: string, dir: number) {
-  const hx = ox + 11, hy = 2;
+  const hx = ox + 12, hy = 4;
   if (dir === 3) return; // Back view
 
   const el = dir === 1 ? hx + 2 : dir === 2 ? hx + 6 : hx + 2; // Left eye x
@@ -398,7 +401,7 @@ function drawEyeStyle(c: CanvasRenderingContext2D, ox: number, style: EyeStyle, 
 
 // ── ACCESSORY ──
 function drawAcc(c: CanvasRenderingContext2D, ox: number, acc: Accessory, accent: string, dir: number) {
-  const hx = ox + 11, hy = 2, hw = 10;
+  const hx = ox + 12, hy = 4, hw = 8;
 
   switch (acc) {
     case 'none':
@@ -421,7 +424,7 @@ function drawAcc(c: CanvasRenderingContext2D, ox: number, acc: Accessory, accent
       break;
     case 'badge':
       if (dir === 0) {
-        px(c, ox + 11, 14, 3, 3, '#F1C40F');
+        px(c, ox + 12, 14, 3, 3, '#F1C40F');
         px(c, ox + 12, 15, 1, 1, '#FFF');
       }
       break;
