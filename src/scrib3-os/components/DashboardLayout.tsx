@@ -154,7 +154,7 @@ const DashboardLayout: React.FC = () => {
         style={{ height: '85px', padding: '0 40px', background: 'var(--bg-primary)' }}
       >
         <LogoScrib3 height={18} color="var(--text-primary)" />
-        <img src={ICON_BASE + 'favicon.svg'} alt="" style={{ height: 18, width: 18, filter: 'brightness(0)' }} />
+        <img src={ICON_BASE + 'builder-icon.svg'} alt="" style={{ height: 18, width: 18, filter: 'brightness(0)' }} />
         <div className="flex items-center gap-2">
           <button onClick={() => setShowWidgetPicker(!showWidgetPicker)}
             style={{ fontFamily: "'Owners Wide', sans-serif", fontSize: '10px', letterSpacing: '1px', textTransform: 'uppercase', color: 'var(--text-primary)', opacity: 0.4, background: 'none', border: '1px solid var(--border-default)', borderRadius: '75.641px', padding: '4px 12px', cursor: 'pointer' }}>
