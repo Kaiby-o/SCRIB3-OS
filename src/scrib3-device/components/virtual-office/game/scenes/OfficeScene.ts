@@ -69,7 +69,9 @@ export class OfficeScene extends Phaser.Scene {
     let mapHeight: number;
     let collisionLayer: Phaser.Tilemaps.TilemapLayer | null = null;
 
-    const tilemapLoaded = this.cache.tilemap.has('office-map');
+    // Tilemap disabled — tile IDs need manual mapping via editor.
+    // Using legacy pre-composed images until tile editor is built.
+    const tilemapLoaded = false;
 
     if (tilemapLoaded) {
       const map = this.make.tilemap({ key: 'office-map' });
@@ -228,7 +230,7 @@ export class OfficeScene extends Phaser.Scene {
     );
     this.minimapCamera.setBounds(0, 0, mapWidth, mapHeight);
     this.minimapCamera.setZoom(mmW / mapWidth);
-    this.minimapCamera.setBackgroundColor(0x1a1a2e);
+    this.minimapCamera.setBackgroundColor(0x000000);
     this.minimapCamera.setAlpha(0.85);
     this.minimapCamera.startFollow(this.player, true, 1, 1);
     this.minimapCamera.ignore(this.nameLabel);

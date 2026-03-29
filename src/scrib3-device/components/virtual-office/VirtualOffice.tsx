@@ -73,7 +73,7 @@ export default function VirtualOffice({ onClose, onEditAvatar }: VirtualOfficePr
   }, [sceneReady, profile]);
 
   return (
-    <div style={{ position: 'relative', width: '100%', height: '100%', background: '#0D0D1A' }}>
+    <div style={{ position: 'relative', width: '100%', height: '100%', background: '#000000' }}>
       {/* Phaser canvas */}
       <div ref={containerRef} style={{ width: '100%', height: '100%' }} />
 

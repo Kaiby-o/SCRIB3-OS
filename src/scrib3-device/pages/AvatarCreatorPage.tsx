@@ -435,12 +435,12 @@ export default function AvatarCreatorPage() {
 
       // Navigate to office (always, even if profile is null)
       console.log('[AvatarCreator] Step 5: Navigating to office');
-      window.location.href = '/device?view=office';
+      window.location.href = '/office';
     } catch (err) {
       console.error('[AvatarCreator] Failed to save avatar:', err);
       // Still navigate even if save fails
       console.log('[AvatarCreator] Navigating to office despite error');
-      window.location.href = '/device?view=office';
+      window.location.href = '/office';
     }
     setSaving(false);
   };
@@ -492,7 +492,7 @@ export default function AvatarCreatorPage() {
     <div style={pageStyle}>
       {/* Header — VirtualOffice top-bar style */}
       <div style={headerStyle}>
-        <button onClick={() => navigate('/device')} style={backBtnStyle}>&larr; BACK</button>
+        <button onClick={() => navigate('/office')} style={backBtnStyle}>&larr; BACK</button>
         <span style={titleStyle}>CHARACTER CREATOR</span>
         <span style={subtitleStyle}>{username}</span>
       </div>
@@ -883,7 +883,7 @@ function AccessoriesTab({ manifest, sel, setSel }: TabProps) {
 const pageStyle: React.CSSProperties = {
   width: '100vw',
   minHeight: '100vh',
-  background: '#0D0D1A',
+  background: '#000000',
   display: 'flex',
   flexDirection: 'column',
   alignItems: 'center',

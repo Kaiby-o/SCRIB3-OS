@@ -35,7 +35,7 @@ const OfficePage: React.FC = () => {
   }
 
   return (
-    <div style={{ position: 'fixed', inset: 0, zIndex: 900, background: '#1A1A2E' }}>
+    <div style={{ position: 'fixed', inset: 0, zIndex: 900, background: '#000000' }}>
       <VirtualOffice
         bgMode="dark"
         onClose={() => navigate('/dashboard')}

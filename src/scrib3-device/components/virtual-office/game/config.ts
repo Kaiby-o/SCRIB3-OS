@@ -9,7 +9,7 @@ export function createGameConfig(parent: HTMLElement): Phaser.Types.Core.GameCon
     width: window.innerWidth,
     height: window.innerHeight,
     pixelArt: true,
-    backgroundColor: '#1a1a2e',
+    backgroundColor: '#000000',
     physics: {
       default: 'arcade',
       arcade: {
