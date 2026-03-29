@@ -86,10 +86,13 @@ export class InteractionSystem {
 
 function formatLabel(type: string, id: string): string {
   switch (type) {
-    case 'desk': return `Desk ${id.replace('desk-', '#')}`;
-    case 'whiteboard': return 'Whiteboard';
-    case 'coffee': return 'Coffee Machine';
-    case 'meeting': return 'Meeting Room';
+    case 'desk': return `Sit at desk`;
+    case 'whiteboard': return 'View whiteboard';
+    case 'coffee': return 'Grab a coffee';
+    case 'meeting': return 'Join meeting';
+    case 'bulletin': return 'Read announcements';
+    case 'phone': return 'Make a call';
+    case 'easter_egg': return 'Hack the mainframe';
     default: return id;
   }
 }
