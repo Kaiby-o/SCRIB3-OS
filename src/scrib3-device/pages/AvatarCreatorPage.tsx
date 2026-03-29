@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect, useCallback } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuthStore } from '../store/auth.store';
 import { supabase } from '../lib/supabase';
@@ -103,26 +103,17 @@ async function compositeWalkSheet(
   manifest: Manifest,
   sel: Selections,
 ): Promise<HTMLCanvasElement> {
-  // First, composite a single 32x32 frame from all layers
-  const frame = document.createElement('canvas');
-  frame.width = FRAME_W;
-  frame.height = FRAME_H;
-  const fCtx = frame.getContext('2d')!;
-  fCtx.imageSmoothingEnabled = false;
-
   const layerFiles = getLayerFileList(manifest, sel);
-
+  const layerImages: HTMLImageElement[] = [];
   for (const file of layerFiles) {
     try {
-      const img = await getCachedImage(file);
-      // Extract the front-idle frame at (0, 0)
-      fCtx.drawImage(img, 0, 0, FRAME_W, FRAME_H, 0, 0, FRAME_W, FRAME_H);
+      layerImages.push(await getCachedImage(file));
     } catch {
       // Skip failed layers
     }
   }
 
-  // Now tile into a 96x128 sheet (3 cols × 4 rows) so Phaser can use it
+  // Build 96x128 sheet (3 cols × 4 rows) by compositing each frame from all layers
   const canvas = document.createElement('canvas');
   canvas.width = SHEET_W;
   canvas.height = SHEET_H;
@@ -131,7 +122,15 @@ async function compositeWalkSheet(
 
   for (let row = 0; row < WALK_ROWS; row++) {
     for (let col = 0; col < WALK_COLS; col++) {
-      ctx.drawImage(frame, col * FRAME_W, row * FRAME_H);
+      const dx = col * FRAME_W;
+      const dy = row * FRAME_H;
+      for (const img of layerImages) {
+        ctx.drawImage(
+          img,
+          col * FRAME_W, row * FRAME_H, FRAME_W, FRAME_H,
+          dx, dy, FRAME_W, FRAME_H,
+        );
+      }
     }
   }
 
@@ -225,30 +224,24 @@ function CompositedPreview({
   animate?: boolean;
 }) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const imagesRef = useRef<HTMLImageElement[]>([]);
-  const loadedRef = useRef(false);
+  const [images, setImages] = useState<HTMLImageElement[]>([]);
 
-  const getLayerFiles = useCallback(() => {
-    return getLayerFileList(manifest, selections);
-  }, [manifest, selections]);
+  const layerFiles = getLayerFileList(manifest, selections);
+  const filesKey = layerFiles.join('|');
 
+  // Load images whenever layer files change
   useEffect(() => {
     let cancelled = false;
-    loadedRef.current = false;
-
-    const files = getLayerFiles();
-    Promise.all(files.map(f => getCachedImage(f))).then(imgs => {
-      if (cancelled) return;
-      imagesRef.current = imgs;
-      loadedRef.current = true;
+    Promise.all(layerFiles.map(f => getCachedImage(f))).then(imgs => {
+      if (!cancelled) setImages(imgs);
     });
-
     return () => { cancelled = true; };
-  }, [getLayerFiles]);
+  }, [filesKey]);
 
+  // Animation loop — uses state-based images so it always has latest
   useEffect(() => {
     const canvas = canvasRef.current;
-    if (!canvas) return;
+    if (!canvas || images.length === 0) return;
     const ctx = canvas.getContext('2d')!;
     ctx.imageSmoothingEnabled = false;
 
@@ -262,19 +255,17 @@ function CompositedPreview({
         frame = (frame + 1) % WALK_COLS;
       }
 
-      const col = animate ? frame : 0;
+      const col = animate ? frame : 1; // idle = col 1
       const row = direction;
 
       ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-      if (loadedRef.current) {
-        for (const img of imagesRef.current) {
-          ctx.drawImage(
-            img,
-            col * FRAME_W, row * FRAME_H, FRAME_W, FRAME_H,
-            0, 0, FRAME_W * scale, FRAME_H * scale,
-          );
-        }
+      for (const img of images) {
+        ctx.drawImage(
+          img,
+          col * FRAME_W, row * FRAME_H, FRAME_W, FRAME_H,
+          0, 0, FRAME_W * scale, FRAME_H * scale,
+        );
       }
 
       animId = requestAnimationFrame(draw);
@@ -282,7 +273,7 @@ function CompositedPreview({
 
     draw();
     return () => cancelAnimationFrame(animId);
-  }, [scale, direction, animate, getLayerFiles]);
+  }, [images, scale, direction, animate]);
 
   return (
     <canvas
@@ -297,7 +288,7 @@ function CompositedPreview({
 /* ─── Multi-layer preview for single frame (used in grids) ─── */
 function MultiLayerPreview({
   files,
-  scale = 2.5,
+  scale = 3,
   col = 1,
   row = 0,
 }: {
@@ -1062,8 +1053,8 @@ const sectionLabelStyle: React.CSSProperties = {
 
 const gridStyle: React.CSSProperties = {
   display: 'grid',
-  gridTemplateColumns: 'repeat(auto-fill, minmax(80px, 1fr))',
-  gap: '6px',
+  gridTemplateColumns: 'repeat(auto-fill, minmax(100px, 1fr))',
+  gap: '8px',
 };
 
 const colorGridStyle: React.CSSProperties = {
@@ -1076,14 +1067,15 @@ const cardStyle: React.CSSProperties = {
   background: 'rgba(234, 242, 215, 0.04)',
   border: '2px solid rgba(234, 242, 215, 0.08)',
   borderRadius: '10.258px',
-  padding: '6px',
+  padding: '8px',
   display: 'flex',
   flexDirection: 'column',
   alignItems: 'center',
-  gap: '3px',
+  gap: '4px',
   cursor: 'pointer',
   transition: 'all 300ms cubic-bezier(0.22, 0.61, 0.36, 1)',
   position: 'relative',
+  overflow: 'hidden',
 };
 
 const colorCardStyle: React.CSSProperties = {
