@@ -10,6 +10,7 @@ import BurgerButton from './BurgerButton';
 import { dashboardConfigs, type UserRole } from '../config/dashboardConfig';
 import { useAuthStore } from '../hooks/useAuth';
 import { moduleContentMap } from './modules/ModuleContent';
+import { useIsMobile } from '../hooks/useIsMobile';
 
 const ICON_BASE = 'https://dzufyjiczbgsvjyinpks.supabase.co/storage/v1/object/public/Icons/';
 
@@ -77,6 +78,7 @@ const DashboardLayout: React.FC = () => {
   const [enabledWidgets, setEnabledWidgets] = useState<Set<string>>(() => getEnabledWidgets(role));
   const [width, setWidth] = useState(typeof window !== 'undefined' ? window.innerWidth - 48 : 1200);
   const [showWidgetPicker, setShowWidgetPicker] = useState(false);
+  const isMobile = useIsMobile();
 
   // Listen for widget toggle changes from Settings page
   useEffect(() => {
@@ -193,36 +195,51 @@ const DashboardLayout: React.FC = () => {
         </div>
       )}
 
-      <main style={{ paddingTop: 'calc(85px + 24px)', paddingLeft: '24px', paddingRight: '24px', paddingBottom: '140px' }}>
+      <main style={{ paddingTop: isMobile ? 'calc(60px + 16px)' : 'calc(85px + 24px)', paddingLeft: isMobile ? '12px' : '24px', paddingRight: isMobile ? '12px' : '24px', paddingBottom: '140px' }}>
         {hasWidgets ? (
           <>
-            <GridLayout
-              className="layout"
-              layout={layout}
-              cols={6}
-              rowHeight={220}
-              width={width}
-              margin={[16, 16]}
-              containerPadding={[0, 0]}
-              // eslint-disable-next-line @typescript-eslint/no-explicit-any
-              onLayoutChange={(l: any) => handleLayoutChange(l as LayoutItem[])}
-              draggableHandle=".module-drag-handle"
-              resizeHandles={['se', 'sw', 'ne', 'nw', 'e', 'w', 's', 'n']}
-              compactType="vertical"
-              useCSSTransforms
-              transformScale={1}
-            >
-              {visibleModules.map((mod) => {
-                const Content = moduleContentMap[mod.id];
-                return (
-                  <div key={mod.id}>
-                    <ModulePanel label={mod.label} onRemove={() => handleRemoveWidget(mod.id)} style={{ height: '100%' }}>
+            {isMobile ? (
+              /* Mobile: stacked single-column layout — no drag/resize */
+              <div className="flex flex-col" style={{ gap: '12px' }}>
+                {visibleModules.map((mod) => {
+                  const Content = moduleContentMap[mod.id];
+                  return (
+                    <ModulePanel key={mod.id} label={mod.label} onRemove={() => handleRemoveWidget(mod.id)} style={{ minHeight: '180px' }}>
                       {Content ? <Content /> : undefined}
                     </ModulePanel>
-                  </div>
-                );
-              })}
-            </GridLayout>
+                  );
+                })}
+              </div>
+            ) : (
+              /* Desktop: draggable grid layout */
+              <GridLayout
+                className="layout"
+                layout={layout}
+                cols={6}
+                rowHeight={220}
+                width={width}
+                margin={[16, 16]}
+                containerPadding={[0, 0]}
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                onLayoutChange={(l: any) => handleLayoutChange(l as LayoutItem[])}
+                draggableHandle=".module-drag-handle"
+                resizeHandles={['se', 'sw', 'ne', 'nw', 'e', 'w', 's', 'n']}
+                compactType="vertical"
+                useCSSTransforms
+                transformScale={1}
+              >
+                {visibleModules.map((mod) => {
+                  const Content = moduleContentMap[mod.id];
+                  return (
+                    <div key={mod.id}>
+                      <ModulePanel label={mod.label} onRemove={() => handleRemoveWidget(mod.id)} style={{ height: '100%' }}>
+                        {Content ? <Content /> : undefined}
+                      </ModulePanel>
+                    </div>
+                  );
+                })}
+              </GridLayout>
+            )}
 
             {enabledWidgets.size < config.modules.length && (
               <div className="flex items-center justify-center" style={{ marginTop: '16px', gap: '8px' }}>

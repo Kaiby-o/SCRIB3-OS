@@ -275,10 +275,11 @@ html:has(.os-root) #root {
   box-shadow: 0 8px 32px rgba(0,0,0,0.12);
 }
 
-/* ===== Mobile Responsive (< 768px) ===== */
+/* ===== Mobile Responsive ===== */
 
+/* --- Tablet & below (< 768px) --- */
 @media (max-width: 768px) {
-  /* Header adjustments */
+  /* Header */
   .os-root > header {
     height: 60px !important;
     padding: 0 16px !important;
@@ -289,30 +290,40 @@ html:has(.os-root) #root {
   }
 
   /* Page content padding */
-  .os-root > header + div,
-  .os-root > header + main {
+  .os-root > header ~ div,
+  .os-root > header ~ main,
+  .os-root > main {
     padding-left: 16px !important;
     padding-right: 16px !important;
+    padding-top: 76px !important;
   }
 
   /* Typography scaling */
-  .text-display-hero {
-    font-size: 36px;
-  }
+  .text-display-hero { font-size: 36px; }
+  .text-display-dash { font-size: 20px; }
+  .text-body { font-size: 16px; }
+  .text-body-sml { font-size: 14px; }
 
-  .text-display-dash {
-    font-size: 20px;
-  }
-
-  .text-body {
-    font-size: 16px;
-  }
-
-  /* Tables scroll horizontally */
-  table {
+  /* Tables: horizontal scroll with fixed min-width */
+  .os-root table {
     display: block;
     overflow-x: auto;
     -webkit-overflow-scrolling: touch;
+    min-width: 600px;
+  }
+
+  /* Flex-based data tables — wrap border-radius panels in scroll */
+  .os-root [style*="borderRadius: '10.258px'"][style*="overflow: 'hidden'"],
+  .os-root [style*="border-radius: 10.258px"][style*="overflow: hidden"] {
+    overflow: visible !important;
+    overflow-x: auto !important;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  /* Flex rows inside table containers — enforce minimum width */
+  .os-root [style*="borderRadius: '10.258px'"] > .flex.items-center[style*="padding"],
+  .os-root [style*="borderRadius: '10.258px'"] > div > .flex.items-center[style*="padding"] {
+    min-width: 700px;
   }
 
   /* Grid layouts go single column */
@@ -330,51 +341,114 @@ html:has(.os-root) #root {
     display: none;
   }
 
-  /* Cards and panels */
+  /* Cards and panels — fill available width */
   .os-root [style*="maxWidth"] {
     max-width: 100% !important;
   }
 
+  /* Content wrappers — no fixed max-width on mobile */
+  .os-root [style*="maxWidth: '1400px'"],
+  .os-root [style*="max-width: 1400px"],
+  .os-root [style*="maxWidth: 1400"] {
+    max-width: 100% !important;
+    width: 100% !important;
+  }
+
   /* Filter pill rows wrap */
-  .os-root .flex.gap-2 {
+  .os-root .flex.gap-2,
+  .os-root .flex.gap-3 {
     flex-wrap: wrap;
   }
 
   /* Info grids — 1 column on mobile */
-  .os-root [style*="grid-template-columns: 1fr 1fr"] {
+  .os-root [style*="grid-template-columns: 1fr 1fr"],
+  .os-root [style*="gridTemplateColumns: 'repeat(2"],
+  .os-root [style*="gridTemplateColumns: 'repeat(3"] {
     grid-template-columns: 1fr !important;
   }
 
-  /* Issue detail panel — full width on mobile */
+  /* Flex split layouts — stack vertically */
   .os-root [style*="flex: 0 0 45%"],
   .os-root [style*="flex: 0 0 55%"],
-  .os-root [style*="flex: 0 0 40%"] {
+  .os-root [style*="flex: 0 0 40%"],
+  .os-root [style*="flex: 0 0 50%"],
+  .os-root [style*="flex: 0 0 60%"] {
     flex: 1 !important;
     min-width: 100% !important;
   }
 
-  /* Touch targets minimum 44px */
-  button, a, select {
+  /* Stat/metric cards — let flex-wrap handle it */
+  .os-root .flex.gap-6 {
+    flex-wrap: wrap;
+  }
+
+  .os-root .flex.gap-6 > * {
+    flex: 1 1 calc(50% - 12px) !important;
+    min-width: 140px;
+  }
+
+  /* Touch targets minimum 44px (WCAG AA) */
+  .os-root button,
+  .os-root a,
+  .os-root select,
+  .os-root input[type="checkbox"],
+  .os-root input[type="radio"] {
     min-height: 44px;
     min-width: 44px;
   }
 
   /* Pill buttons stay readable */
-  .os-root button[style*="borderRadius: '75.641px'"] {
+  .os-root button[style*="borderRadius"] {
     white-space: nowrap;
+    padding-left: 16px !important;
+    padding-right: 16px !important;
   }
 
-  /* Systems map — scroll horizontally */
-  .os-root [style*="width: '1600px'"] {
+  /* Systems map — scroll container */
+  .os-root [style*="width: '1600px'"],
+  .os-root [style*="width: 1600"] {
     min-width: 1600px;
   }
 
-  /* Task rows — stack on mobile */
+  /* Task rows — let text truncate instead of overflow */
   .os-root [style*="flex: 1"][style*="fontSize: 13"] {
     min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  /* Modal overlays — full-width on mobile */
+  .os-root [style*="width: '500px'"],
+  .os-root [style*="width: '480px'"],
+  .os-root [style*="width: '600px'"] {
+    width: calc(100vw - 32px) !important;
+    max-width: 100% !important;
+  }
+
+  /* Hide resize handles on mobile */
+  .react-grid-item > .react-resizable-handle {
+    display: none !important;
+  }
+
+  /* react-grid-layout: disable pointer events for drag on mobile */
+  .module-drag-handle {
+    display: none !important;
+  }
+
+  /* Tasks detail panel — full width on mobile */
+  .tasks-detail-panel {
+    flex: 1 !important;
+    border-left: none !important;
+    border-top: 0.733px solid var(--border-default) !important;
+  }
+
+  /* Grid property panels in task detail — single column */
+  .tasks-detail-panel [style*="gridTemplateColumns"] {
+    grid-template-columns: 1fr !important;
   }
 }
 
+/* --- Small mobile (< 480px) --- */
 @media (max-width: 480px) {
   .os-root > header {
     height: 56px !important;
@@ -385,8 +459,60 @@ html:has(.os-root) #root {
     margin-top: 57px !important;
   }
 
-  /* Even smaller type */
-  .text-display-hero {
-    font-size: 28px;
+  .os-root > header ~ div,
+  .os-root > header ~ main,
+  .os-root > main {
+    padding-left: 12px !important;
+    padding-right: 12px !important;
+    padding-top: 72px !important;
+  }
+
+  .text-display-hero { font-size: 28px; }
+  .text-display-dash { font-size: 18px; }
+
+  /* Stat cards — single column */
+  .os-root .flex.gap-6 > * {
+    flex: 1 1 100% !important;
+  }
+
+  /* Tables: scroll hint shadow */
+  .os-root table {
+    min-width: 500px;
+  }
+}
+
+/* --- iPhone SE / 375px target (< 390px) --- */
+@media (max-width: 390px) {
+  .os-root > header {
+    height: 52px !important;
+    padding: 0 10px !important;
+  }
+
+  .os-root > header + * {
+    margin-top: 53px !important;
+  }
+
+  .os-root > header ~ div,
+  .os-root > header ~ main,
+  .os-root > main {
+    padding-left: 10px !important;
+    padding-right: 10px !important;
+    padding-top: 68px !important;
+  }
+
+  .text-display-hero { font-size: 24px; }
+  .text-display-dash { font-size: 16px; }
+  .text-body { font-size: 14px; }
+  .text-body-sml { font-size: 13px; }
+
+  /* Tighter module panel padding */
+  .os-root [style*="borderRadius: '10.258px'"],
+  .os-root [style*="border-radius: 10.258px"] {
+    padding: 10px !important;
+  }
+
+  /* Burger button enlargement for small screens */
+  .os-root > header button[aria-label] {
+    padding: 10px !important;
   }
 }

@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import LogoScrib3 from '../components/LogoScrib3';
 import BurgerButton from '../components/BurgerButton';
+import { useIsMobile } from '../hooks/useIsMobile';
 import { mockProjects, projectStatusColors, CLIENTS_WITH_PROJECTS, type Project, type ProjectStatus } from '../lib/projects';
 
 /* ------------------------------------------------------------------ */
@@ -10,6 +11,7 @@ import { mockProjects, projectStatusColors, CLIENTS_WITH_PROJECTS, type Project,
 
 const ProjectRegistryPage: React.FC = () => {
   const navigate = useNavigate();
+  const isMobile = useIsMobile();
   const [statusFilter, setStatusFilter] = useState<ProjectStatus | 'all'>('all');
   const [clientFilter, setClientFilter] = useState('all');
   const [search, setSearch] = useState('');
@@ -38,20 +40,20 @@ const ProjectRegistryPage: React.FC = () => {
       <BurgerButton />
       </header>
 
-      <div style={{ padding: '40px', maxWidth: '1400px', margin: '0 auto' }}>
-        <div className="flex items-center justify-between" style={{ marginBottom: '24px' }}>
+      <div style={{ padding: isMobile ? '16px' : '40px', maxWidth: '1400px', margin: '0 auto' }}>
+        <div className="flex items-center justify-between" style={{ marginBottom: '24px', flexWrap: isMobile ? 'wrap' : undefined, gap: isMobile ? '12px' : undefined }}>
           <div>
-            <h1 style={{ fontFamily: "'Kaio', sans-serif", fontWeight: 800, fontSize: '32px', textTransform: 'uppercase', fontFeatureSettings: "'ordn' 1, 'dlig' 1", margin: 0 }}>Projects</h1>
+            <h1 style={{ fontFamily: "'Kaio', sans-serif", fontWeight: 800, fontSize: isMobile ? '24px' : '32px', textTransform: 'uppercase', fontFeatureSettings: "'ordn' 1, 'dlig' 1", margin: 0 }}>Projects</h1>
             <p style={{ fontFamily: "'Owners Wide', sans-serif", fontSize: '13px', opacity: 0.5, marginTop: '4px' }}>
               {mockProjects.length} total · {active} active
             </p>
           </div>
-          <div className="flex gap-3">
+          <div className="flex gap-3" style={{ flexWrap: isMobile ? 'wrap' : undefined, width: isMobile ? '100%' : undefined }}>
             <button onClick={() => navigate('/pre-alignment')} style={{ fontFamily: "'Owners Wide', sans-serif", fontSize: '12px', letterSpacing: '1px', textTransform: 'uppercase', background: '#000', color: '#EAF2D7', border: 'none', borderRadius: '75.641px', padding: '10px 24px', cursor: 'pointer' }}>
               + New Project
             </button>
             <input type="text" value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Search code or title..."
-              style={{ fontFamily: "'Owners Wide', sans-serif", fontSize: '13px', background: 'var(--bg-surface)', border: '0.733px solid var(--border-default)', borderRadius: '75.641px', padding: '10px 20px', color: 'var(--text-primary)', outline: 'none', width: '220px' }} />
+              style={{ fontFamily: "'Owners Wide', sans-serif", fontSize: '13px', background: 'var(--bg-surface)', border: '0.733px solid var(--border-default)', borderRadius: '75.641px', padding: '10px 20px', color: 'var(--text-primary)', outline: 'none', width: isMobile ? '100%' : '220px' }} />
           </div>
         </div>
 
@@ -80,27 +82,31 @@ const ProjectRegistryPage: React.FC = () => {
           </div>
         )}
 
-        {/* Project table */}
+        {/* Project table — horizontal scroll on mobile */}
         <div style={{ border: '0.733px solid var(--border-default)', borderRadius: '10.258px', overflow: 'hidden' }}>
-          <div className="flex items-center" style={{ padding: '12px 24px', borderBottom: '0.733px solid var(--border-default)', opacity: 0.5 }}>
-            <TH width="9%">Code</TH>
-            <TH width="13%">Client</TH>
-            <TH width="22%">Title</TH>
-            <TH width="10%">Status</TH>
-            <TH width="8%">Type</TH>
-            <TH width="12%">Production Lead</TH>
-            <TH width="10%">Team</TH>
-            <TH width="8%">Aligned</TH>
-            <TH width="8%">Brief</TH>
-          </div>
-          {filtered.map((p) => (
-            <ProjectRow key={p.id} project={p} onClick={() => navigate(`/projects/${p.code}`)} />
-          ))}
-          {filtered.length === 0 && (
-            <div className="flex items-center justify-center" style={{ padding: '48px', opacity: 0.4 }}>
-              <span style={{ fontFamily: "'Owners Wide', sans-serif", fontSize: '13px', letterSpacing: '1px', textTransform: 'uppercase' }}>No projects match</span>
+          <div style={isMobile ? { overflowX: 'auto', WebkitOverflowScrolling: 'touch' } : undefined}>
+            <div style={isMobile ? { minWidth: '800px' } : undefined}>
+              <div className="flex items-center" style={{ padding: '12px 24px', borderBottom: '0.733px solid var(--border-default)', opacity: 0.5 }}>
+                <TH width="9%">Code</TH>
+                <TH width="13%">Client</TH>
+                <TH width="22%">Title</TH>
+                <TH width="10%">Status</TH>
+                <TH width="8%">Type</TH>
+                <TH width="12%">Production Lead</TH>
+                <TH width="10%">Team</TH>
+                <TH width="8%">Aligned</TH>
+                <TH width="8%">Brief</TH>
+              </div>
+              {filtered.map((p) => (
+                <ProjectRow key={p.id} project={p} onClick={() => navigate(`/projects/${p.code}`)} />
+              ))}
+              {filtered.length === 0 && (
+                <div className="flex items-center justify-center" style={{ padding: '48px', opacity: 0.4 }}>
+                  <span style={{ fontFamily: "'Owners Wide', sans-serif", fontSize: '13px', letterSpacing: '1px', textTransform: 'uppercase' }}>No projects match</span>
+                </div>
+              )}
             </div>
-          )}
+          </div>
         </div>
       </div>
     </div>

@@ -2,6 +2,7 @@ import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import LogoScrib3 from '../components/LogoScrib3';
 import BurgerButton from '../components/BurgerButton';
+import { useIsMobile } from '../hooks/useIsMobile';
 import { mockTeam } from '../lib/team';
 import {
   fetchIssues, fetchIssueDetail, fetchWorkflowStates, fetchLinearUsers, fetchTeamId, createIssue,
@@ -96,6 +97,7 @@ const StyledSelect: React.FC<{ value: string; onChange: (v: string) => void; opt
 
 const TasksPage: React.FC = () => {
   const navigate = useNavigate();
+  const isMobile = useIsMobile();
   const [issues, setIssues] = useState<LinearIssue[]>([]);
   const [states, setStates] = useState<LinearState[]>([]);
   const [linearUsers, setLinearUsers] = useState<LinearUser[]>([]);
@@ -158,8 +160,8 @@ const TasksPage: React.FC = () => {
 
       {/* New issue modal */}
       {showNewIssue && (
-        <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.3)', zIndex: 50, display: 'flex', alignItems: 'center', justifyContent: 'center' }} onClick={() => setShowNewIssue(false)}>
-          <div onClick={(e) => e.stopPropagation()} style={{ background: 'var(--bg-primary)', border: '0.733px solid var(--border-default)', borderRadius: '10.258px', padding: '32px', width: '480px', maxWidth: '90vw' }}>
+        <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.3)', zIndex: 50, display: 'flex', alignItems: isMobile ? 'flex-start' : 'center', justifyContent: 'center', overflowY: 'auto', padding: isMobile ? '60px 0 24px' : 0 }} onClick={() => setShowNewIssue(false)}>
+          <div onClick={(e) => e.stopPropagation()} style={{ background: 'var(--bg-primary)', border: '0.733px solid var(--border-default)', borderRadius: '10.258px', padding: isMobile ? '20px' : '32px', width: '480px', maxWidth: '90vw' }}>
             <h3 style={{ fontFamily: "'Kaio', sans-serif", fontWeight: 800, fontSize: '18px', textTransform: 'uppercase', margin: '0 0 20px 0' }}>New Issue</h3>
             <div className="flex flex-col gap-3">
               <div>
@@ -172,7 +174,7 @@ const TasksPage: React.FC = () => {
                 <textarea value={newDesc} onChange={(e) => setNewDesc(e.target.value)} placeholder="Describe the issue..." rows={3}
                   style={{ fontFamily: "'Owners Wide', sans-serif", fontSize: '14px', width: '100%', background: '#EAF2D7', border: '0.733px solid var(--border-default)', borderRadius: '10.258px', padding: '10px 16px', outline: 'none', resize: 'vertical' }} />
               </div>
-              <div className="flex gap-3">
+              <div className="flex gap-3" style={{ flexDirection: isMobile ? 'column' : 'row' }}>
                 <div style={{ flex: 1 }}>
                   <span style={{ fontFamily: "'Owners Wide', sans-serif", fontSize: '10px', letterSpacing: '1px', textTransform: 'uppercase', opacity: 0.4, display: 'block', marginBottom: '6px' }}>Priority</span>
                   <StyledSelect value={String(newPriority)} onChange={(v) => setNewPriority(Number(v))}
@@ -216,9 +218,9 @@ const TasksPage: React.FC = () => {
           <button onClick={loadData} style={{ fontFamily: "'Owners Wide', sans-serif", fontSize: 12, padding: '8px 20px', borderRadius: '75.641px', border: '1px solid var(--border-default)', background: 'transparent', cursor: 'pointer' }}>Retry</button>
         </div>
       ) : (
-        <div className="flex" style={{ overflow: 'hidden', height: 'calc(100vh - 86px)', marginTop: '86px' }}>
-          {/* Left panel — independent scroll */}
-          <div style={{ flex: selectedIssue ? '0 0 55%' : '1', overflow: 'auto', padding: '24px' }}>
+        <div className="flex" style={{ overflow: 'hidden', height: isMobile ? 'calc(100vh - 60px)' : 'calc(100vh - 86px)', marginTop: isMobile ? '60px' : '86px', flexDirection: isMobile ? 'column' : 'row' }}>
+          {/* Left panel — hidden on mobile when detail is open */}
+          <div style={{ flex: isMobile ? '1' : (selectedIssue ? '0 0 55%' : '1'), overflow: 'auto', padding: isMobile ? '16px' : '24px', display: isMobile && selectedIssue ? 'none' : undefined }}>
             {grouped.map(({ state, issues: si }) => {
               const collapsed = collapsedStates.has(state.id);
               return (
@@ -344,7 +346,7 @@ const DetailPanel: React.FC<{
   const send = async () => { if (!comment.trim()) return; setSending(true); await onComment(comment.trim()); setComment(''); setSending(false); };
 
   return (
-    <div style={{ flex: '0 0 45%', borderLeft: '0.733px solid var(--border-default)', display: 'flex', flexDirection: 'column', background: 'var(--bg-primary)', overflow: 'hidden' }}>
+    <div className="tasks-detail-panel" style={{ flex: '0 0 45%', borderLeft: '0.733px solid var(--border-default)', display: 'flex', flexDirection: 'column', background: 'var(--bg-primary)', overflow: 'hidden' }}>
       {/* Header */}
       <div className="flex items-center justify-between" style={{ padding: '16px 24px', borderBottom: '0.5px solid rgba(0,0,0,0.06)', flexShrink: 0 }}>
         <div className="flex items-center gap-2">

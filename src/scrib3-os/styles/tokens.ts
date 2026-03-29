@@ -90,5 +90,21 @@ export const radius = {
 
 export const spacing = {
   pagePadding: '40px',
+  pagePaddingMobile: '16px',
+  pagePaddingSm: '12px',
+  pagePaddingXs: '10px',
   navHeight: '85px',
+  navHeightMobile: '60px',
+  navHeightSm: '56px',
+  navHeightXs: '52px',
+} as const
+
+/** Breakpoint values for JS-side responsive logic */
+export const breakpoints = {
+  /** Tablet & below */
+  mobile: 768,
+  /** Small mobile */
+  sm: 480,
+  /** iPhone SE / 375px target */
+  xs: 390,
 } as const

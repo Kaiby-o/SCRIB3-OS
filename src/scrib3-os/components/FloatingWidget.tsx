@@ -3,16 +3,7 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuthStore } from '../hooks/useAuth';
 import { getLevel, getLevelProgress } from '../lib/xp';
 import { getCapacityColor } from '../lib/bandwidth';
-
-function useIsMobile() {
-  const [isMobile, setIsMobile] = useState(typeof window !== 'undefined' && window.innerWidth < 768);
-  useEffect(() => {
-    const handler = () => setIsMobile(window.innerWidth < 768);
-    window.addEventListener('resize', handler);
-    return () => window.removeEventListener('resize', handler);
-  }, []);
-  return isMobile;
-}
+import { useIsMobile } from '../hooks/useIsMobile';
 
 const easing = 'cubic-bezier(0.22, 0.61, 0.36, 1)';
 const ICON_BASE = 'https://dzufyjiczbgsvjyinpks.supabase.co/storage/v1/object/public/Icons/';
