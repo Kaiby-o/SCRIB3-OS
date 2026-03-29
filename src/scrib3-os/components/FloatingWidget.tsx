@@ -18,7 +18,7 @@ const STATUS_OPTIONS: { key: StatusOption; label: string; color: string }[] = [
 
 const QUICK_LINKS: { label: string; icon: string; route: string; comingSoon?: boolean }[] = [
   { label: 'Chat', icon: 'chat.svg', route: '/chat' },
-  { label: 'Calendar', icon: 'calendar.svg', route: '/dashboard', comingSoon: true },
+  { label: 'Calendar', icon: 'calendar.svg', route: '/calendar' },
   { label: 'Office', icon: 'office.svg', route: '/office' },
   { label: 'Dapps', icon: 'dapps.svg', route: '/dapps' },
   { label: 'Bandwidth', icon: 'bandwidth.svg', route: '/bandwidth' },

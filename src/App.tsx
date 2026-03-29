@@ -42,6 +42,10 @@ const OSClientDirectory = lazy(() => import('./scrib3-os/pages/ClientDirectoryPa
 const OSProfDevHub = lazy(() => import('./scrib3-os/pages/ProfDevHubPage'));
 const BattleModule = lazy(() => import('./modules/battle/index'));
 const OSOffice = lazy(() => import('./scrib3-os/pages/OfficePage'));
+const OSVoiceRecorder = lazy(() => import('./scrib3-os/pages/VoiceRecorderPage'));
+const OSMondayMessage = lazy(() => import('./scrib3-os/pages/MondayMessagePage'));
+const OSCalendar = lazy(() => import('./scrib3-os/pages/CalendarPage'));
+const OSVoxPilot = lazy(() => import('./scrib3-os/pages/VoxPilotPage'));
 
 // DEVICE layer — heaviest chunk (Phaser 3, D3.js)
 const DeviceDashboard = lazy(() => import('./scrib3-device/pages/DashboardPage'));
@@ -112,6 +116,10 @@ export default function App() {
         <Route path="/settings" element={<AuthGuard><OSSettings /></AuthGuard>} />
         <Route path="/battle/*" element={<AuthGuard><BattleModule /></AuthGuard>} />
         <Route path="/office" element={<AuthGuard><OSOffice /></AuthGuard>} />
+        <Route path="/voice-recorder" element={<AuthGuard><OSVoiceRecorder /></AuthGuard>} />
+        <Route path="/monday-message" element={<AuthGuard><OSMondayMessage /></AuthGuard>} />
+        <Route path="/calendar" element={<AuthGuard><OSCalendar /></AuthGuard>} />
+        <Route path="/voxpilot" element={<AuthGuard><OSVoxPilot /></AuthGuard>} />
 
         {/* ===== SCRIB3-DEVICE routes (admin only) ===== */}
         <Route path="/device" element={<AuthGuard><RoleGuard allowed={['admin']}><DeviceDashboard /></RoleGuard></AuthGuard>} />

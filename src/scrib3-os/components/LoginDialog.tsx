@@ -140,8 +140,8 @@ const LoginDialog: React.FC<LoginDialogProps> = ({ isOpen, onClose }) => {
       <div
         style={{
           position: 'relative',
-          width: 'min(400px, 90vw)',
-          height: '580px',
+          width: 'min(400px, 92vw)',
+          height: 'min(580px, 90vh)',
           transform: isOpen ? 'scale(1)' : 'scale(0.3)',
           opacity: isOpen ? 1 : 0,
           transition: `transform 400ms ${easing}, opacity 300ms ${easing}`,
@@ -176,10 +176,12 @@ const LoginDialog: React.FC<LoginDialogProps> = ({ isOpen, onClose }) => {
           style={{
             position: 'relative',
             zIndex: 1,
-            padding: '48px 40px 40px',
+            padding: window.innerWidth < 400 ? '32px 24px 24px' : '48px 40px 40px',
             display: 'flex',
             flexDirection: 'column',
-            gap: '16px',
+            gap: window.innerWidth < 400 ? '10px' : '16px',
+            height: '100%',
+            overflowY: 'auto',
           }}
         >
           {/* Logo */}
