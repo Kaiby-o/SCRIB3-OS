@@ -2,6 +2,7 @@ import React, { useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import LogoScrib3 from '../components/LogoScrib3';
 import BurgerButton from '../components/BurgerButton';
+import { useIsMobile } from '../hooks/useIsMobile';
 import {
   mockVendors,
   mockInvoices,
@@ -150,18 +151,22 @@ const VendorsTab: React.FC<{ onOnboard: () => void }> = ({ onOnboard }) => {
 
       {/* Vendor table */}
       <div style={{ border: '0.733px solid var(--border-default)', borderRadius: '10.258px', overflow: 'hidden' }}>
-        <div className="flex items-center" style={{ padding: '14px 24px', borderBottom: '0.733px solid var(--border-default)', opacity: 0.5 }}>
-          <TH width="18%">Vendor</TH>
-          <TH width="18%">Business</TH>
-          <TH width="14%">Work Type</TH>
-          <TH width="14%">SCRIB3 POC</TH>
-          <TH width="10%">Bank</TH>
-          <TH width="10%">Tax Form</TH>
-          <TH width="16%">Status</TH>
+        <div style={{ overflowX: 'auto', WebkitOverflowScrolling: 'touch' }}>
+          <div style={{ minWidth: '700px' }}>
+            <div className="flex items-center" style={{ padding: '14px 24px', borderBottom: '0.733px solid var(--border-default)', opacity: 0.5 }}>
+              <TH width="18%">Vendor</TH>
+              <TH width="18%">Business</TH>
+              <TH width="14%">Work Type</TH>
+              <TH width="14%">SCRIB3 POC</TH>
+              <TH width="10%">Bank</TH>
+              <TH width="10%">Tax Form</TH>
+              <TH width="16%">Status</TH>
+            </div>
+            {vendors.map((v) => (
+              <VendorRow key={v.id} vendor={v} />
+            ))}
+          </div>
         </div>
-        {vendors.map((v) => (
-          <VendorRow key={v.id} vendor={v} />
-        ))}
       </div>
 
       {/* Rule callout */}
@@ -267,25 +272,29 @@ const InvoicesTab: React.FC = () => {
 
       {/* Invoice table */}
       <div style={{ border: '0.733px solid var(--border-default)', borderRadius: '10.258px', overflow: 'hidden' }}>
-        <div className="flex items-center" style={{ padding: '14px 24px', borderBottom: '0.733px solid var(--border-default)', opacity: 0.5 }}>
-          <TH width="12%">Invoice</TH>
-          <TH width="14%">Vendor</TH>
-          <TH width="28%">Line Items</TH>
-          <TH width="10%">Amount</TH>
-          <TH width="12%">Submitted</TH>
-          <TH width="12%">Validated By</TH>
-          <TH width="12%">Status</TH>
-        </div>
-        {filtered.map((inv) => (
-          <InvoiceRow key={inv.id} invoice={inv} />
-        ))}
-        {filtered.length === 0 && (
-          <div className="flex items-center justify-center" style={{ padding: '48px', opacity: 0.4 }}>
-            <span style={{ fontFamily: "'Owners Wide', sans-serif", fontSize: '13px', letterSpacing: '1px', textTransform: 'uppercase' }}>
-              No invoices match this filter
-            </span>
+        <div style={{ overflowX: 'auto', WebkitOverflowScrolling: 'touch' }}>
+          <div style={{ minWidth: '750px' }}>
+            <div className="flex items-center" style={{ padding: '14px 24px', borderBottom: '0.733px solid var(--border-default)', opacity: 0.5 }}>
+              <TH width="12%">Invoice</TH>
+              <TH width="14%">Vendor</TH>
+              <TH width="28%">Line Items</TH>
+              <TH width="10%">Amount</TH>
+              <TH width="12%">Submitted</TH>
+              <TH width="12%">Validated By</TH>
+              <TH width="12%">Status</TH>
+            </div>
+            {filtered.map((inv) => (
+              <InvoiceRow key={inv.id} invoice={inv} />
+            ))}
+            {filtered.length === 0 && (
+              <div className="flex items-center justify-center" style={{ padding: '48px', opacity: 0.4 }}>
+                <span style={{ fontFamily: "'Owners Wide', sans-serif", fontSize: '13px', letterSpacing: '1px', textTransform: 'uppercase' }}>
+                  No invoices match this filter
+                </span>
+              </div>
+            )}
           </div>
-        )}
+        </div>
       </div>
 
       {/* Invoice flow callout */}
@@ -372,17 +381,18 @@ const Stat: React.FC<{ value: string; label: string; accent?: boolean }> = ({ va
 
 const VendorManagementPage: React.FC = () => {
   const navigate = useNavigate();
+  const isMobile = useIsMobile();
   const [tab, setTab] = useState<'vendors' | 'invoices'>('vendors');
 
   return (
     <div className="os-root" style={{ minHeight: '100vh' }}>
       <PageHeader title="Vendor & Invoice Management" navigate={navigate} />
 
-      <div style={{ padding: '40px', maxWidth: '1400px', margin: '0 auto' }}>
+      <div style={{ padding: isMobile ? '16px' : '40px', maxWidth: '1400px', margin: '0 auto' }}>
         {/* Title */}
         <h1
           style={{
-            fontFamily: "'Kaio', sans-serif", fontWeight: 800, fontSize: '32px',
+            fontFamily: "'Kaio', sans-serif", fontWeight: 800, fontSize: isMobile ? '24px' : '32px',
             textTransform: 'uppercase', fontFeatureSettings: "'ordn' 1, 'dlig' 1", margin: '0 0 24px 0',
           }}
         >

@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import LogoScrib3 from '../components/LogoScrib3';
 import BurgerButton from '../components/BurgerButton';
+import { useIsMobile } from '../hooks/useIsMobile';
 
 /* ------------------------------------------------------------------ */
 /*  Plan v4 §6 — Tools Directory                                      */
@@ -44,6 +45,7 @@ const statusConfig = {
 
 const ToolsDirectoryPage: React.FC = () => {
   const navigate = useNavigate();
+  const isMobile = useIsMobile();
   const [catFilter, setCatFilter] = useState('all');
 
   const filtered = catFilter === 'all' ? tools : tools.filter((t) => t.category === catFilter);
@@ -62,8 +64,8 @@ const ToolsDirectoryPage: React.FC = () => {
       <BurgerButton />
       </header>
 
-      <div style={{ padding: '40px', maxWidth: '1100px', margin: '0 auto' }}>
-        <h1 style={{ fontFamily: "'Kaio', sans-serif", fontWeight: 800, fontSize: '32px', textTransform: 'uppercase', fontFeatureSettings: "'ordn' 1, 'dlig' 1", margin: '0 0 8px 0' }}>Tools</h1>
+      <div style={{ padding: isMobile ? '16px' : '40px', maxWidth: '1100px', margin: '0 auto' }}>
+        <h1 style={{ fontFamily: "'Kaio', sans-serif", fontWeight: 800, fontSize: isMobile ? '24px' : '32px', textTransform: 'uppercase', fontFeatureSettings: "'ordn' 1, 'dlig' 1", margin: '0 0 8px 0' }}>Tools</h1>
         <p style={{ fontFamily: "'Owners Wide', sans-serif", fontSize: '13px', opacity: 0.5, marginBottom: '24px' }}>
           {tools.filter((t) => t.status === 'active').length} active tools across {CATEGORIES.length} categories
         </p>

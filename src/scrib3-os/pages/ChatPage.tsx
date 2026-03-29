@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import LogoScrib3 from '../components/LogoScrib3';
 import BurgerButton from '../components/BurgerButton';
+import { useIsMobile } from '../hooks/useIsMobile';
 import { useAuthStore } from '../hooks/useAuth';
 import { mockTeam, getInitials } from '../lib/team';
 import { supabase } from '../lib/supabase';
@@ -76,8 +77,10 @@ const mockMessages: Record<string, ChatMessage[]> = {
 
 const ChatPage: React.FC = () => {
   const navigate = useNavigate();
+  const isMobile = useIsMobile();
   const { profile } = useAuthStore();
   const [activeChannel, setActiveChannel] = useState('general');
+  const [showSidebar, setShowSidebar] = useState(false);
   const [newMessage, setNewMessage] = useState('');
   const [messages, setMessages] = useState(mockMessages);
   const [channels, setChannels] = useState(initialChannels);
@@ -105,6 +108,7 @@ const ChatPage: React.FC = () => {
     setChannels((prev) => prev.map((c) => c.id === channelId ? { ...c, unread: 0 } : c));
     setReplyTo(null);
     setEmojiPickerMsg(null);
+    setShowSidebar(false);
   }, []);
 
   // Load messages from Supabase
@@ -267,9 +271,15 @@ const ChatPage: React.FC = () => {
         <BurgerButton />
       </header>
 
-      <div className="flex" style={{ height: 'calc(100vh - 86px)', marginTop: '86px' }}>
+      <div className="flex" style={{ height: 'calc(100vh - 86px)', marginTop: '86px', position: 'relative' }}>
+        {/* Sidebar toggle for mobile */}
+        {isMobile && (
+          <button onClick={() => setShowSidebar(!showSidebar)} style={{ position: 'absolute', top: 8, left: 8, zIndex: 10, fontFamily: "'Owners Wide', sans-serif", fontSize: '11px', letterSpacing: '1px', textTransform: 'uppercase', padding: '6px 14px', borderRadius: '75.641px', border: '0.733px solid var(--border-default)', background: 'var(--bg-primary)', cursor: 'pointer' }}>
+            {showSidebar ? 'Close' : 'Channels'}
+          </button>
+        )}
         {/* Sidebar */}
-        <div style={{ width: '240px', borderRight: '0.733px solid var(--border-default)', overflow: 'auto', padding: '16px 0', flexShrink: 0 }}>
+        <div style={{ width: '240px', borderRight: '0.733px solid var(--border-default)', overflow: 'auto', padding: '16px 0', flexShrink: 0, ...(isMobile ? { position: 'absolute', top: 0, left: 0, bottom: 0, zIndex: 5, background: 'var(--bg-primary)', display: showSidebar ? 'block' : 'none' } : {}) }}>
           <div className="flex items-center justify-between" style={{ padding: '0 16px', marginBottom: '8px' }}>
             <span style={{ fontFamily: "'Kaio', sans-serif", fontWeight: 800, fontSize: '12px', textTransform: 'uppercase', opacity: 0.4 }}>Channels</span>
             <button onClick={() => setShowNewChannel(!showNewChannel)} style={{ fontFamily: "'Owners Wide', sans-serif", fontSize: '16px', background: 'none', border: 'none', cursor: 'pointer', opacity: 0.3, padding: '0 4px', lineHeight: 1 }} title="New channel">+</button>

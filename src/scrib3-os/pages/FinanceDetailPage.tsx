@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import LogoScrib3 from '../components/LogoScrib3';
 import BurgerButton from '../components/BurgerButton';
+import { useIsMobile } from '../hooks/useIsMobile';
 import {
   mockEngagements,
   getHealthTier,
@@ -104,6 +105,7 @@ const MonthlyTable: React.FC<{ months: MonthlyBreakdown[]; floorAmount: number }
     <table
       style={{
         width: '100%',
+        minWidth: '800px',
         borderCollapse: 'collapse',
         fontFamily: "'Owners Wide', sans-serif",
         fontSize: '12px',
@@ -265,7 +267,8 @@ const ForecastSimulator: React.FC<{ engagement: EngagementHealth }> = ({ engagem
               padding: '8px 16px',
               color: 'var(--text-primary)',
               outline: 'none',
-              width: '180px',
+              width: '100%',
+              maxWidth: '180px',
             }}
           />
         </div>
@@ -296,7 +299,8 @@ const ForecastSimulator: React.FC<{ engagement: EngagementHealth }> = ({ engagem
               outline: 'none',
               cursor: 'pointer',
               appearance: 'none',
-              width: '120px',
+              width: '100%',
+              maxWidth: '120px',
             }}
           >
             {[3, 6, 9, 12].map((n) => (
@@ -411,6 +415,7 @@ const ForecastSimulator: React.FC<{ engagement: EngagementHealth }> = ({ engagem
 const FinanceDetailPage: React.FC = () => {
   const { slug } = useParams<{ slug: string }>();
   const navigate = useNavigate();
+  const isMobile = useIsMobile();
 
   const engagement = mockEngagements.find((e) => e.clientSlug === slug);
 
@@ -492,14 +497,14 @@ const FinanceDetailPage: React.FC = () => {
       <BurgerButton />
       </header>
 
-      <div style={{ padding: '40px', maxWidth: '1200px', margin: '0 auto' }}>
+      <div style={{ padding: isMobile ? '16px' : '40px', maxWidth: '1200px', margin: '0 auto' }}>
         {/* Title + Health badge */}
-        <div className="flex items-center gap-4" style={{ marginBottom: '8px' }}>
+        <div className="flex items-center gap-4" style={{ marginBottom: '8px', flexWrap: 'wrap' }}>
           <h1
             style={{
               fontFamily: "'Kaio', sans-serif",
               fontWeight: 800,
-              fontSize: '36px',
+              fontSize: isMobile ? '24px' : '36px',
               textTransform: 'uppercase',
               fontFeatureSettings: "'ordn' 1, 'dlig' 1",
               margin: 0,

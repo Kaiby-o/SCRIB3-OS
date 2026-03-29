@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import LogoScrib3 from '../components/LogoScrib3';
 import BurgerButton from '../components/BurgerButton';
+import { useIsMobile } from '../hooks/useIsMobile';
 import { priorityClients, type ClientProfile } from '../lib/clients';
 
 /* ------------------------------------------------------------------ */
@@ -17,6 +18,7 @@ const allClients: (ClientProfile & { logoUrl?: string })[] = [
 
 const ClientDirectoryPage: React.FC = () => {
   const navigate = useNavigate();
+  const isMobile = useIsMobile();
   const [search, setSearch] = useState('');
   const [healthFilter, setHealthFilter] = useState<string>('all');
 
@@ -42,18 +44,18 @@ const ClientDirectoryPage: React.FC = () => {
         <BurgerButton />
       </header>
 
-      <div style={{ padding: '40px', maxWidth: '1400px', margin: '0 auto' }}>
+      <div style={{ padding: isMobile ? '16px' : '40px', maxWidth: '1400px', margin: '0 auto' }}>
         {/* Title + Search */}
-        <div className="flex items-center justify-between" style={{ marginBottom: '24px' }}>
+        <div className="flex items-center justify-between" style={{ marginBottom: '24px', flexWrap: isMobile ? 'wrap' as const : undefined, gap: isMobile ? '12px' : undefined }}>
           <div>
-            <h1 style={{ fontFamily: "'Kaio', sans-serif", fontWeight: 800, fontSize: '32px', textTransform: 'uppercase', fontFeatureSettings: "'ordn' 1, 'dlig' 1", margin: 0 }}>Clients</h1>
+            <h1 style={{ fontFamily: "'Kaio', sans-serif", fontWeight: 800, fontSize: isMobile ? '24px' : '32px', textTransform: 'uppercase', fontFeatureSettings: "'ordn' 1, 'dlig' 1", margin: 0 }}>Clients</h1>
             <p style={{ fontFamily: "'Owners Wide', sans-serif", fontSize: '13px', opacity: 0.5, marginTop: '4px' }}>
               {activeCount} active clients
             </p>
           </div>
           <div className="flex items-center gap-3">
             <input type="text" value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Search clients..."
-              style={{ fontFamily: "'Owners Wide', sans-serif", fontSize: '13px', background: 'var(--bg-surface)', border: '0.733px solid var(--border-default)', borderRadius: '75.641px', padding: '10px 20px', color: 'var(--text-primary)', outline: 'none', width: '240px' }} />
+              style={{ fontFamily: "'Owners Wide', sans-serif", fontSize: '13px', background: 'var(--bg-surface)', border: '0.733px solid var(--border-default)', borderRadius: '75.641px', padding: '10px 20px', color: 'var(--text-primary)', outline: 'none', width: isMobile ? '100%' : '240px' }} />
             <button onClick={() => navigate('/clients/onboard')} style={{ fontFamily: "'Owners Wide', sans-serif", fontSize: '12px', letterSpacing: '1px', textTransform: 'uppercase', background: '#000', color: '#EAF2D7', border: 'none', borderRadius: '75.641px', padding: '10px 24px', cursor: 'pointer' }}>
               + New Client
             </button>

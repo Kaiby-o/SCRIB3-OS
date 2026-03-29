@@ -2,12 +2,14 @@ import React, { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import LogoScrib3 from '../components/LogoScrib3';
 import BurgerButton from '../components/BurgerButton';
+import { useIsMobile } from '../hooks/useIsMobile';
 import { mockProjects, projectStatusColors } from '../lib/projects';
 import { workflowTemplates } from '../lib/workflows';
 
 const ProjectDetailPage: React.FC = () => {
   const { code } = useParams<{ code: string }>();
   const navigate = useNavigate();
+  const isMobile = useIsMobile();
   const project = mockProjects.find((p) => p.code === code);
   const [activeTab, setActiveTab] = useState<'overview' | 'documents' | 'workflow' | 'alignment'>('overview');
 
@@ -41,7 +43,7 @@ const ProjectDetailPage: React.FC = () => {
         <BurgerButton />
       </header>
 
-      <div style={{ padding: '40px', maxWidth: '1000px', margin: '0 auto' }}>
+      <div style={{ padding: isMobile ? '16px' : '40px', maxWidth: '1000px', margin: '0 auto' }}>
         {/* Title + status */}
         <div className="flex items-center gap-3" style={{ marginBottom: '8px' }}>
           <span style={{ fontFamily: "'Kaio', sans-serif", fontWeight: 800, fontSize: '12px', textTransform: 'uppercase', opacity: 0.4 }}>{project.code}</span>

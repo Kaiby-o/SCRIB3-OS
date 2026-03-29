@@ -2,6 +2,7 @@ import React from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import LogoScrib3 from '../components/LogoScrib3';
 import BurgerButton from '../components/BurgerButton';
+import { useIsMobile } from '../hooks/useIsMobile';
 import { mockTeam, availabilityColors, getInitials, getManager, isManagerOf, type TeamMember } from '../lib/team';
 import { useAuthStore } from '../hooks/useAuth';
 import { getCapacityColor } from '../lib/bandwidth';
@@ -17,6 +18,7 @@ const easing = 'cubic-bezier(0.22, 0.61, 0.36, 1)';
 const TeamProfilePage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
+  const isMobile = useIsMobile();
   const { user, role: authRole } = useAuthStore();
   const member = mockTeam.find((m) => m.id === id);
   const currentMember = mockTeam.find((m) => m.email === user?.email);
@@ -51,7 +53,7 @@ const TeamProfilePage: React.FC = () => {
       <BurgerButton />
       </header>
 
-      <div style={{ padding: '40px', maxWidth: '800px', margin: '0 auto' }}>
+      <div style={{ padding: isMobile ? '16px' : '40px', maxWidth: '800px', margin: '0 auto' }}>
         {/* Section 1: Header */}
         <ProfileHeader member={member} />
 
@@ -175,11 +177,13 @@ const TeamProfilePage: React.FC = () => {
 /*  Profile Header                                                     */
 /* ------------------------------------------------------------------ */
 
-const ProfileHeader: React.FC<{ member: TeamMember }> = ({ member: m }) => (
-  <div className="flex items-start gap-6" style={{ marginBottom: '32px' }}>
+const ProfileHeader: React.FC<{ member: TeamMember }> = ({ member: m }) => {
+  const isMobile = useIsMobile();
+  return (
+  <div className="flex items-start gap-6" style={{ marginBottom: '32px', ...(isMobile ? { flexDirection: 'column', alignItems: 'center', textAlign: 'center', gap: '16px' } : {}) }}>
     {/* Avatar */}
     <div style={{ position: 'relative', flexShrink: 0 }}>
-      <div style={{ width: 100, height: 100, borderRadius: '50%', background: '#000', display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden' }}>
+      <div style={{ width: isMobile ? 80 : 100, height: isMobile ? 80 : 100, borderRadius: '50%', background: '#000', display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden' }}>
         {m.avatarUrl ? (
           <img src={m.avatarUrl} alt={m.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
         ) : (
@@ -198,7 +202,7 @@ const ProfileHeader: React.FC<{ member: TeamMember }> = ({ member: m }) => (
     {/* Info */}
     <div className="flex flex-col gap-2" style={{ paddingTop: '4px', flex: 1 }}>
       <div className="flex items-center gap-3">
-        <h1 style={{ fontFamily: "'Kaio', sans-serif", fontWeight: 800, fontSize: '32px', lineHeight: 0.9, textTransform: 'uppercase', fontFeatureSettings: "'ordn' 1, 'dlig' 1", margin: 0 }}>
+        <h1 style={{ fontFamily: "'Kaio', sans-serif", fontWeight: 800, fontSize: isMobile ? '24px' : '32px', lineHeight: 0.9, textTransform: 'uppercase', fontFeatureSettings: "'ordn' 1, 'dlig' 1", margin: 0 }}>
           {m.name}
         </h1>
       </div>
@@ -229,7 +233,8 @@ const ProfileHeader: React.FC<{ member: TeamMember }> = ({ member: m }) => (
       </div>
     </div>
   </div>
-);
+  );
+};
 
 /* ------------------------------------------------------------------ */
 /*  Micro-components                                                   */

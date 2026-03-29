@@ -221,15 +221,15 @@ export const NavOverlayProvider: React.FC<NavOverlayProviderProps> = ({
         }}
       >
         {/* Top-left: SCRIB3 logo */}
-        <div className="absolute top-8 left-10">
+        <div className="absolute" style={{ top: 32, left: window.innerWidth < 768 ? 16 : 40 }}>
           <LogoScrib3 height={20} color="#EAF2D7" />
         </div>
 
         {/* Top-right: Close button */}
         <button
           onClick={closeOverlay}
-          className="absolute top-8 right-10 font-kaio"
-          style={{ color: '#EAF2D7', fontSize: '24px', lineHeight: 1, background: 'none', border: 'none', cursor: 'pointer' }}
+          className="absolute font-kaio"
+          style={{ top: 32, right: window.innerWidth < 768 ? 16 : 40, color: '#EAF2D7', fontSize: '24px', lineHeight: 1, background: 'none', border: 'none', cursor: 'pointer', minHeight: '44px', minWidth: '44px' }}
           aria-label="Close navigation"
         >
           &times;
@@ -275,14 +275,14 @@ export const NavOverlayProvider: React.FC<NavOverlayProviderProps> = ({
             if (issuesInputRef.current) issuesInputRef.current.value = '';
           }}
           className="absolute flex flex-col"
-          style={{ bottom: 32, left: 40, gap: '8px' }}
+          style={{ bottom: 32, left: window.innerWidth < 768 ? 16 : 40, right: window.innerWidth < 768 ? 16 : undefined, gap: '8px' }}
         >
           <span style={{ fontFamily: "'Owners Wide', sans-serif", color: '#EAF2D7', opacity: 0.7, fontSize: '13px', letterSpacing: '0.96px' }}>
             Having Issues?
           </span>
           <div
             className="flex items-center gap-2"
-            style={{ border: '1px solid #EAF2D7', borderRadius: '75.641px', padding: '10px 20px', minWidth: '240px' }}
+            style={{ border: '1px solid #EAF2D7', borderRadius: '75.641px', padding: '10px 20px', minWidth: window.innerWidth < 768 ? undefined : '240px' }}
           >
             <svg width="18" height="14" viewBox="0 0 24 18" fill="none" stroke="#EAF2D7" strokeWidth="1.5">
               <rect x="1" y="1" width="22" height="16" rx="2" />
@@ -322,7 +322,7 @@ export const NavOverlayProvider: React.FC<NavOverlayProviderProps> = ({
         }}
       >
         {/* Top-right: Back arrow + Close button */}
-        <div className="absolute top-8 right-10 flex items-center gap-4">
+        <div className="absolute flex items-center gap-4" style={{ top: 32, right: window.innerWidth < 768 ? 16 : 40 }}>
           <button
             onClick={() => {
               setLayer(1);
@@ -330,7 +330,7 @@ export const NavOverlayProvider: React.FC<NavOverlayProviderProps> = ({
               setSearchQuery('');
             }}
             className="font-kaio"
-            style={{ color: '#000000', fontSize: '24px', lineHeight: 1, background: 'none', border: 'none', cursor: 'pointer' }}
+            style={{ color: '#000000', fontSize: '24px', lineHeight: 1, background: 'none', border: 'none', cursor: 'pointer', minHeight: '44px', minWidth: '44px' }}
             aria-label="Back to categories"
           >
             &larr;
@@ -338,7 +338,7 @@ export const NavOverlayProvider: React.FC<NavOverlayProviderProps> = ({
           <button
             onClick={closeOverlay}
             className="font-kaio"
-            style={{ color: '#000000', fontSize: '24px', lineHeight: 1, background: 'none', border: 'none', cursor: 'pointer' }}
+            style={{ color: '#000000', fontSize: '24px', lineHeight: 1, background: 'none', border: 'none', cursor: 'pointer', minHeight: '44px', minWidth: '44px' }}
             aria-label="Close navigation"
           >
             &times;

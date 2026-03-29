@@ -2,6 +2,7 @@ import React, { useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import LogoScrib3 from '../components/LogoScrib3';
 import BurgerButton from '../components/BurgerButton';
+import { useIsMobile } from '../hooks/useIsMobile';
 import {
   mockEngagements,
   getHealthTier,
@@ -261,6 +262,7 @@ const EngagementRow: React.FC<{
 
 const FinanceOverviewPage: React.FC = () => {
   const navigate = useNavigate();
+  const isMobile = useIsMobile();
 
   // Try Supabase engagement_health — aggregate by client
   const { data: dbHealth } = useSupabaseQuery<Record<string, unknown>>(
@@ -331,7 +333,7 @@ const FinanceOverviewPage: React.FC = () => {
         className="flex items-center justify-between"
         style={{
           position: 'fixed' as const, top: 0, left: 0, right: 0, zIndex: 40, background: 'var(--bg-primary)', height: '85px',
-          padding: '0 40px',
+          padding: isMobile ? '0 16px' : '0 40px',
           borderBottom: '0.733px solid var(--border-default)',
         }}
       >
@@ -374,7 +376,7 @@ const FinanceOverviewPage: React.FC = () => {
       <BurgerButton />
       </header>
 
-      <div style={{ padding: '40px', maxWidth: '1400px', margin: '0 auto' }}>
+      <div style={{ padding: isMobile ? '16px' : '40px', maxWidth: '1400px', margin: '0 auto' }}>
         {/* Title */}
         <div className="flex items-center justify-between" style={{ marginBottom: '32px' }}>
           <div>
@@ -382,7 +384,7 @@ const FinanceOverviewPage: React.FC = () => {
               style={{
                 fontFamily: "'Kaio', sans-serif",
                 fontWeight: 800,
-                fontSize: '32px',
+                fontSize: isMobile ? '24px' : '32px',
                 textTransform: 'uppercase',
                 fontFeatureSettings: "'ordn' 1, 'dlig' 1",
                 margin: 0,
@@ -414,38 +416,42 @@ const FinanceOverviewPage: React.FC = () => {
         <SummaryStats />
 
         {/* Engagements table */}
-        <div
-          style={{
-            border: '0.733px solid var(--border-default)',
-            borderRadius: '10.258px',
-            overflow: 'hidden',
-          }}
-        >
-          {/* Table header */}
-          <div
-            className="flex items-center"
-            style={{
-              padding: '14px 24px',
-              borderBottom: '0.733px solid var(--border-default)',
-              opacity: 0.5,
-            }}
-          >
-            <TH width="18%">Client</TH>
-            <TH width="14%">Account Lead</TH>
-            <TH width="12%">Monthly Remit</TH>
-            <TH width="16%">Actual vs Budget</TH>
-            <TH width="12%">Surplus</TH>
-            <TH width="14%">Margin</TH>
-            <TH width="14%">Health</TH>
-          </div>
+        <div style={{ overflowX: 'auto', WebkitOverflowScrolling: 'touch' }}>
+          <div style={{ minWidth: '700px' }}>
+            <div
+              style={{
+                border: '0.733px solid var(--border-default)',
+                borderRadius: '10.258px',
+                overflow: 'hidden',
+              }}
+            >
+              {/* Table header */}
+              <div
+                className="flex items-center"
+                style={{
+                  padding: '14px 24px',
+                  borderBottom: '0.733px solid var(--border-default)',
+                  opacity: 0.5,
+                }}
+              >
+                <TH width="18%">Client</TH>
+                <TH width="14%">Account Lead</TH>
+                <TH width="12%">Monthly Remit</TH>
+                <TH width="16%">Actual vs Budget</TH>
+                <TH width="12%">Surplus</TH>
+                <TH width="14%">Margin</TH>
+                <TH width="14%">Health</TH>
+              </div>
 
-          {sorted.map((eng) => (
-            <EngagementRow
-              key={eng.id}
-              engagement={eng}
-              onClick={() => navigate(`/finance/${eng.clientSlug}`)}
-            />
-          ))}
+              {sorted.map((eng) => (
+                <EngagementRow
+                  key={eng.id}
+                  engagement={eng}
+                  onClick={() => navigate(`/finance/${eng.clientSlug}`)}
+                />
+              ))}
+            </div>
+          </div>
         </div>
 
         {/* Floor warning */}

@@ -4,6 +4,7 @@ import LogoScrib3 from '../components/LogoScrib3';
 import BurgerButton from '../components/BurgerButton';
 import { mockTeam, getInitials, isManagerOf } from '../lib/team';
 import { useAuthStore } from '../hooks/useAuth';
+import { useIsMobile } from '../hooks/useIsMobile';
 
 /* ------------------------------------------------------------------ */
 /*  Plan v4 §2D — Professional Development System — Layer 1            */
@@ -56,6 +57,7 @@ const mockFeedback: Feedback[] = [
 const ProfDevPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
+  const isMobile = useIsMobile();
   const { user, role: authRole } = useAuthStore();
   const member = mockTeam.find((m) => m.id === id);
   const [activeTab, setActiveTab] = useState<'goals' | 'poe' | 'principles' | 'feedback'>('goals');
@@ -97,7 +99,7 @@ const ProfDevPage: React.FC = () => {
 
   return (
     <div className="os-root" style={{ minHeight: '100vh' }}>
-      <header className="flex items-center justify-between" style={{ position: 'fixed' as const, top: 0, left: 0, right: 0, zIndex: 40, background: 'var(--bg-primary)', height: '85px', padding: '0 40px', borderBottom: '0.733px solid var(--border-default)' }}>
+      <header className="flex items-center justify-between" style={{ position: 'fixed' as const, top: 0, left: 0, right: 0, zIndex: 40, background: 'var(--bg-primary)', height: '85px', padding: isMobile ? '0 16px' : '0 40px', borderBottom: '0.733px solid var(--border-default)' }}>
         <button onClick={() => navigate(`/team/${member.id}`)} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}>
           <LogoScrib3 height={18} color="var(--text-primary)" />
         </button>
@@ -111,7 +113,7 @@ const ProfDevPage: React.FC = () => {
       <BurgerButton />
       </header>
 
-      <div style={{ padding: '40px', maxWidth: '900px', margin: '0 auto' }}>
+      <div style={{ padding: isMobile ? '16px' : '40px', maxWidth: '900px', margin: '0 auto' }}>
         {/* Header */}
         <div className="flex items-center gap-4" style={{ marginBottom: '32px' }}>
           <div style={{ width: 56, height: 56, borderRadius: '50%', background: '#000', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
@@ -151,23 +153,27 @@ const GoalsTab: React.FC = () => (
     <p style={{ fontFamily: "'Owners Wide', sans-serif", fontSize: '12px', opacity: 0.5, marginBottom: '16px' }}>
       SMART enforced: Specific / Measured / Achievable / Relevant / Time-bound
     </p>
-    <div style={{ border: '0.733px solid var(--border-default)', borderRadius: '10.258px', overflow: 'hidden' }}>
-      {mockGoals.map((g) => (
-        <div key={g.id} className="flex items-center" style={{ padding: '16px 24px', borderBottom: '0.5px solid rgba(0,0,0,0.06)' }}>
-          <div style={{ width: '45%' }}>
-            <span style={{ fontFamily: "'Owners Wide', sans-serif", fontSize: '13px' }}>{g.title}</span>
-          </div>
-          <div style={{ width: '15%' }}>
-            <TypeBadge type={g.type} />
-          </div>
-          <div style={{ width: '20%' }}>
-            <span style={{ fontFamily: "'Owners Wide', sans-serif", fontSize: '12px', opacity: 0.6 }}>{g.targetDate}</span>
-          </div>
-          <div style={{ width: '20%' }}>
-            <StatusBadge status={g.status} />
-          </div>
+    <div style={{ overflowX: 'auto', WebkitOverflowScrolling: 'touch' }}>
+      <div style={{ minWidth: '700px' }}>
+        <div style={{ border: '0.733px solid var(--border-default)', borderRadius: '10.258px', overflow: 'hidden' }}>
+          {mockGoals.map((g) => (
+            <div key={g.id} className="flex items-center" style={{ padding: '16px 24px', borderBottom: '0.5px solid rgba(0,0,0,0.06)' }}>
+              <div style={{ width: '45%' }}>
+                <span style={{ fontFamily: "'Owners Wide', sans-serif", fontSize: '13px' }}>{g.title}</span>
+              </div>
+              <div style={{ width: '15%' }}>
+                <TypeBadge type={g.type} />
+              </div>
+              <div style={{ width: '20%' }}>
+                <span style={{ fontFamily: "'Owners Wide', sans-serif", fontSize: '12px', opacity: 0.6 }}>{g.targetDate}</span>
+              </div>
+              <div style={{ width: '20%' }}>
+                <StatusBadge status={g.status} />
+              </div>
+            </div>
+          ))}
         </div>
-      ))}
+      </div>
     </div>
   </>
 );

@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import LogoScrib3 from '../components/LogoScrib3';
 import BurgerButton from '../components/BurgerButton';
+import { useIsMobile } from '../hooks/useIsMobile';
 import { useAuthStore } from '../hooks/useAuth';
 import { mockTeam } from '../lib/team';
 import { supabase } from '../lib/supabase';
@@ -87,6 +88,7 @@ const mockActions: ActionItem[] = [
 
 const FeedbackPage: React.FC = () => {
   const navigate = useNavigate();
+  const isMobile = useIsMobile();
   const { profile } = useAuthStore();
   const [tab, setTab] = useState<'feedback' | 'peer-review' | 'self-assessment' | 'call-notes' | 'actions'>('feedback');
 
@@ -100,7 +102,7 @@ const FeedbackPage: React.FC = () => {
         <BurgerButton />
       </header>
 
-      <div style={{ padding: '40px', maxWidth: '1000px', margin: '0 auto' }}>
+      <div style={{ padding: isMobile ? '16px' : '40px', maxWidth: '1000px', margin: '0 auto' }}>
         <p style={{ fontFamily: "'Owners Wide', sans-serif", fontSize: '13px', opacity: 0.5, marginBottom: '24px' }}>
           Your professional development hub. Give and receive feedback, track 1:1 sessions, and turn insights into action.
         </p>

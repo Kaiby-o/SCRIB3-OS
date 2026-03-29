@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import LogoScrib3 from '../components/LogoScrib3';
 import BurgerButton from '../components/BurgerButton';
+import { useIsMobile } from '../hooks/useIsMobile';
 import { mockTeam } from '../lib/team';
 import { mockProjects } from '../lib/projects';
 import { mockEngagements, getHealthTier } from '../lib/engagementHealth';
@@ -25,6 +26,7 @@ const UNITS: { key: UnitKey; label: string }[] = [
 
 const UnitDashboardsPage: React.FC = () => {
   const navigate = useNavigate();
+  const isMobile = useIsMobile();
   const [unit, setUnit] = useState<UnitKey>('accounts');
 
   return (
@@ -41,8 +43,8 @@ const UnitDashboardsPage: React.FC = () => {
       <BurgerButton />
       </header>
 
-      <div style={{ padding: '40px', maxWidth: '1200px', margin: '0 auto' }}>
-        <h1 style={{ fontFamily: "'Kaio', sans-serif", fontWeight: 800, fontSize: '32px', textTransform: 'uppercase', fontFeatureSettings: "'ordn' 1, 'dlig' 1", margin: '0 0 24px 0' }}>Units</h1>
+      <div style={{ padding: isMobile ? '16px' : '40px', maxWidth: '1200px', margin: '0 auto' }}>
+        <h1 style={{ fontFamily: "'Kaio', sans-serif", fontWeight: 800, fontSize: isMobile ? '24px' : '32px', textTransform: 'uppercase', fontFeatureSettings: "'ordn' 1, 'dlig' 1", margin: '0 0 24px 0' }}>Units</h1>
 
         {/* Unit tabs */}
         <div className="flex gap-2" style={{ marginBottom: '32px' }}>
@@ -77,6 +79,7 @@ const AccountsUnit: React.FC = () => {
         <Stat value={members.length.toString()} label="team members" />
       </div>
       <Section title="Client Health">
+        <div style={{ overflowX: 'auto', WebkitOverflowScrolling: 'touch' }}><div style={{ minWidth: '700px' }}>
         {clients.map((e) => {
           const tier = getHealthTier(e.currentMarginPct);
           return (
@@ -89,6 +92,7 @@ const AccountsUnit: React.FC = () => {
             </Row>
           );
         })}
+        </div></div>
       </Section>
       <MemberList members={members} />
     </div>
@@ -113,6 +117,7 @@ const CSuiteUnit: React.FC = () => {
         <Stat value={members.length.toString()} label="c-suite" />
       </div>
       <Section title="Engagement Pipeline">
+        <div style={{ overflowX: 'auto', WebkitOverflowScrolling: 'touch' }}><div style={{ minWidth: '700px' }}>
         {mockEngagements.map((e) => {
           const tier = getHealthTier(e.currentMarginPct);
           return (
@@ -125,6 +130,7 @@ const CSuiteUnit: React.FC = () => {
             </Row>
           );
         })}
+        </div></div>
       </Section>
       <MemberList members={members} />
     </div>
@@ -147,6 +153,7 @@ const BrandUnit: React.FC = () => {
         <Stat value={`${avgBandwidth}%`} label="avg bandwidth" accent={avgBandwidth > 80} />
       </div>
       <Section title="Active Briefs">
+        <div style={{ overflowX: 'auto', WebkitOverflowScrolling: 'touch' }}><div style={{ minWidth: '700px' }}>
         {projects.map((p) => (
           <Row key={p.id}>
             <Cell width="12%" bold>{p.code}</Cell>
@@ -157,6 +164,7 @@ const BrandUnit: React.FC = () => {
             <Cell width="15%" muted>{p.startDate} → {p.completionDate || '—'}</Cell>
           </Row>
         ))}
+        </div></div>
       </Section>
       <MemberList members={members} />
     </div>
@@ -178,9 +186,11 @@ const PRUnit: React.FC = () => {
         <Stat value="4" label="podcast bookings" />
       </div>
       <Section title="Coverage Tracker">
+        <div style={{ overflowX: 'auto', WebkitOverflowScrolling: 'touch' }}><div style={{ minWidth: '700px' }}>
         <Row><Cell width="25%" bold>Cardano Consensus Coverage</Cell><Cell width="20%">Matt Brannon</Cell><Cell width="20%">3 tier-1 interviews</Cell><Cell width="35%" muted>CoinDesk, The Block, Decrypt</Cell></Row>
         <Row><Cell width="25%" bold>Franklin Templeton BENJI</Cell><Cell width="20%">Kevin Arteaga</Cell><Cell width="20%">2 features</Cell><Cell width="35%" muted>Bloomberg Crypto, Fortune</Cell></Row>
         <Row><Cell width="25%" bold>Midnight Testnet</Cell><Cell width="20%">Destini</Cell><Cell width="20%">5 pickups</Cell><Cell width="35%" muted>Pending — launch dependent</Cell></Row>
+        </div></div>
       </Section>
       <MemberList members={members} />
     </div>
@@ -203,6 +213,7 @@ const OpsUnit: React.FC = () => {
         <Stat value={members.length.toString()} label="ops team" />
       </div>
       <Section title="Invoice Pipeline">
+        <div style={{ overflowX: 'auto', WebkitOverflowScrolling: 'touch' }}><div style={{ minWidth: '700px' }}>
         {mockInvoices.filter((i) => i.status !== 'paid').map((inv) => (
           <Row key={inv.id}>
             <Cell width="15%" bold>{inv.id.toUpperCase()}</Cell>
@@ -212,6 +223,7 @@ const OpsUnit: React.FC = () => {
             <Cell width="35%" muted>{inv.lineItems.map((l) => l.projectCode).join(', ')}</Cell>
           </Row>
         ))}
+        </div></div>
       </Section>
       <MemberList members={members} />
     </div>

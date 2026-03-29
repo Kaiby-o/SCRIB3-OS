@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import LogoScrib3 from '../components/LogoScrib3';
 import BurgerButton from '../components/BurgerButton';
 import { supabase } from '../lib/supabase';
+import { useIsMobile } from '../hooks/useIsMobile';
 
 const easing = 'cubic-bezier(0.22, 0.61, 0.36, 1)';
 
@@ -93,6 +94,7 @@ const BRIEF_FIELDS: { key: keyof FiveBulletBrief; label: string; number: number;
 
 const PreAlignmentPage: React.FC = () => {
   const navigate = useNavigate();
+  const isMobile = useIsMobile();
   const [projectName, setProjectName] = useState('');
   const [projectCode, setProjectCode] = useState('');
   const [clientName, setClientName] = useState('');
@@ -131,7 +133,7 @@ const PreAlignmentPage: React.FC = () => {
   if (submitted) {
     return (
       <div className="os-root flex flex-col items-center justify-center" style={{ minHeight: '100vh' }}>
-        <h1 style={{ fontFamily: "'Kaio', sans-serif", fontWeight: 800, fontSize: '36px', textTransform: 'uppercase', fontFeatureSettings: "'ordn' 1, 'dlig' 1", marginBottom: '16px' }}>
+        <h1 style={{ fontFamily: "'Kaio', sans-serif", fontWeight: 800, fontSize: isMobile ? '24px' : '36px', textTransform: 'uppercase', fontFeatureSettings: "'ordn' 1, 'dlig' 1", marginBottom: '16px' }}>
           Alignment Complete
         </h1>
         <p style={{ fontFamily: "'Owners Wide', sans-serif", fontSize: '14px', opacity: 0.6, marginBottom: '8px' }}>
@@ -150,7 +152,7 @@ const PreAlignmentPage: React.FC = () => {
 
   return (
     <div className="os-root" style={{ minHeight: '100vh' }}>
-      <header className="flex items-center justify-between" style={{ position: 'fixed' as const, top: 0, left: 0, right: 0, zIndex: 40, background: 'var(--bg-primary)', height: '85px', padding: '0 40px', borderBottom: '0.733px solid var(--border-default)' }}>
+      <header className="flex items-center justify-between" style={{ position: 'fixed' as const, top: 0, left: 0, right: 0, zIndex: 40, background: 'var(--bg-primary)', height: '85px', padding: isMobile ? '0 16px' : '0 40px', borderBottom: '0.733px solid var(--border-default)' }}>
         <button onClick={() => navigate('/dashboard')} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}>
           <LogoScrib3 height={18} color="var(--text-primary)" />
         </button>
@@ -164,7 +166,7 @@ const PreAlignmentPage: React.FC = () => {
       <BurgerButton />
       </header>
 
-      <div style={{ padding: '40px', maxWidth: '760px', margin: '0 auto' }}>
+      <div style={{ padding: isMobile ? '16px' : '40px', maxWidth: '760px', margin: '0 auto' }}>
         {/* Title + progress */}
         <div className="flex items-center justify-between" style={{ marginBottom: '8px' }}>
           <h1 style={{ fontFamily: "'Kaio', sans-serif", fontWeight: 800, fontSize: '28px', textTransform: 'uppercase', fontFeatureSettings: "'ordn' 1, 'dlig' 1", margin: 0 }}>

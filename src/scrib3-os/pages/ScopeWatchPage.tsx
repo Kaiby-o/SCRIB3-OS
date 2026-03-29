@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import LogoScrib3 from '../components/LogoScrib3';
 import BurgerButton from '../components/BurgerButton';
 import { mockScopeWatch, frequencyColors, type ScopeWatchEntry } from '../lib/scopeWatch';
+import { useIsMobile } from '../hooks/useIsMobile';
 
 const easing = 'cubic-bezier(0.22, 0.61, 0.36, 1)';
 
@@ -14,6 +15,7 @@ const clients = [...new Set(mockScopeWatch.map((e) => e.clientName))];
 
 const ScopeWatchPage: React.FC = () => {
   const navigate = useNavigate();
+  const isMobile = useIsMobile();
   const [clientFilter, setClientFilter] = useState<string>('all');
   const [expandedId, setExpandedId] = useState<string | null>(null);
 
@@ -26,7 +28,7 @@ const ScopeWatchPage: React.FC = () => {
 
   return (
     <div className="os-root" style={{ minHeight: '100vh' }}>
-      <header className="flex items-center justify-between" style={{ position: 'fixed' as const, top: 0, left: 0, right: 0, zIndex: 40, background: 'var(--bg-primary)', height: '85px', padding: '0 40px', borderBottom: '0.733px solid var(--border-default)' }}>
+      <header className="flex items-center justify-between" style={{ position: 'fixed' as const, top: 0, left: 0, right: 0, zIndex: 40, background: 'var(--bg-primary)', height: '85px', padding: isMobile ? '0 16px' : '0 40px', borderBottom: '0.733px solid var(--border-default)' }}>
         <button onClick={() => navigate('/dashboard')} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}>
           <LogoScrib3 height={18} color="var(--text-primary)" />
         </button>
@@ -38,7 +40,7 @@ const ScopeWatchPage: React.FC = () => {
       <BurgerButton />
       </header>
 
-      <div style={{ padding: '40px', maxWidth: '1200px', margin: '0 auto' }}>
+      <div style={{ padding: isMobile ? '16px' : '40px', maxWidth: '1200px', margin: '0 auto' }}>
         {/* Persistent banner — Plan v4 requirement */}
         <div style={{ background: '#000', color: '#EAF2D7', borderRadius: '10.258px', padding: '16px 24px', marginBottom: '32px' }}>
           <span style={{ fontFamily: "'Owners Wide', sans-serif", fontSize: '13px', letterSpacing: '0.8px' }}>
@@ -46,7 +48,7 @@ const ScopeWatchPage: React.FC = () => {
           </span>
         </div>
 
-        <h1 style={{ fontFamily: "'Kaio', sans-serif", fontWeight: 800, fontSize: '32px', textTransform: 'uppercase', fontFeatureSettings: "'ordn' 1, 'dlig' 1", margin: '0 0 8px 0' }}>
+        <h1 style={{ fontFamily: "'Kaio', sans-serif", fontWeight: 800, fontSize: isMobile ? '24px' : '32px', textTransform: 'uppercase', fontFeatureSettings: "'ordn' 1, 'dlig' 1", margin: '0 0 8px 0' }}>
           Scope Watch
         </h1>
         <p style={{ fontFamily: "'Owners Wide', sans-serif", fontSize: '13px', opacity: 0.5, marginBottom: '24px' }}>

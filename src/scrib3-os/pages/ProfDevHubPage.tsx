@@ -2,6 +2,7 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import LogoScrib3 from '../components/LogoScrib3';
 import BurgerButton from '../components/BurgerButton';
+import { useIsMobile } from '../hooks/useIsMobile';
 import { useAuthStore } from '../hooks/useAuth';
 import { mockTeam } from '../lib/team';
 
@@ -12,6 +13,7 @@ import { mockTeam } from '../lib/team';
 
 const ProfDevHubPage: React.FC = () => {
   const navigate = useNavigate();
+  const isMobile = useIsMobile();
   const { user, role } = useAuthStore();
   const currentMember = mockTeam.find((m) => m.email === user?.email);
   const directReports = mockTeam.filter((m) => m.managerId === currentMember?.id);
@@ -27,7 +29,7 @@ const ProfDevHubPage: React.FC = () => {
         <BurgerButton />
       </header>
 
-      <div style={{ padding: '40px', maxWidth: '800px', margin: '0 auto' }}>
+      <div style={{ padding: isMobile ? '16px' : '40px', maxWidth: '800px', margin: '0 auto' }}>
         <h1 style={{ fontFamily: "'Kaio', sans-serif", fontWeight: 800, fontSize: '28px', textTransform: 'uppercase', margin: '0 0 24px 0' }}>Your Development</h1>
 
         {/* Quick links */}

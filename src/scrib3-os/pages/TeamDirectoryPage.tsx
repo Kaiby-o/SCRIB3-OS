@@ -2,6 +2,7 @@ import React, { useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import LogoScrib3 from '../components/LogoScrib3';
 import BurgerButton from '../components/BurgerButton';
+import { useIsMobile } from '../hooks/useIsMobile';
 import { mockTeam, availabilityColors, getInitials, getManager, type TeamMember } from '../lib/team';
 import { getCapacityColor } from '../lib/bandwidth';
 import { useSupabaseQuery } from '../hooks/useSupabase';
@@ -16,6 +17,7 @@ const easing = 'cubic-bezier(0.22, 0.61, 0.36, 1)';
 
 const TeamDirectoryPage: React.FC = () => {
   const navigate = useNavigate();
+  const isMobile = useIsMobile();
   const [unitFilter, setUnitFilter] = useState('all');
   const [locationFilter, setLocationFilter] = useState('all');
   const [availFilter, setAvailFilter] = useState('all');
@@ -85,10 +87,10 @@ const TeamDirectoryPage: React.FC = () => {
       <BurgerButton />
       </header>
 
-      <div style={{ padding: '40px', maxWidth: '1400px', margin: '0 auto' }}>
-        <div className="flex items-center justify-between" style={{ marginBottom: '24px' }}>
+      <div style={{ padding: isMobile ? '16px' : '40px', maxWidth: '1400px', margin: '0 auto' }}>
+        <div className="flex items-center justify-between" style={{ marginBottom: '24px', ...(isMobile ? { flexDirection: 'column', alignItems: 'stretch', gap: '12px' } : {}) }}>
           <div>
-            <h1 style={{ fontFamily: "'Kaio', sans-serif", fontWeight: 800, fontSize: '32px', textTransform: 'uppercase', fontFeatureSettings: "'ordn' 1, 'dlig' 1", margin: 0 }}>
+            <h1 style={{ fontFamily: "'Kaio', sans-serif", fontWeight: 800, fontSize: isMobile ? '24px' : '32px', textTransform: 'uppercase', fontFeatureSettings: "'ordn' 1, 'dlig' 1", margin: 0 }}>
               Team
             </h1>
             <p style={{ fontFamily: "'Owners Wide', sans-serif", fontSize: '13px', opacity: 0.5, marginTop: '4px' }}>
@@ -100,7 +102,7 @@ const TeamDirectoryPage: React.FC = () => {
           <input
             type="text" value={search} onChange={(e) => setSearch(e.target.value)}
             placeholder="Search by name or title..."
-            style={{ fontFamily: "'Owners Wide', sans-serif", fontSize: '13px', background: 'var(--bg-surface)', border: '0.733px solid var(--border-default)', borderRadius: '75.641px', padding: '10px 20px', color: 'var(--text-primary)', outline: 'none', width: '280px' }}
+            style={{ fontFamily: "'Owners Wide', sans-serif", fontSize: '13px', background: 'var(--bg-surface)', border: '0.733px solid var(--border-default)', borderRadius: '75.641px', padding: '10px 20px', color: 'var(--text-primary)', outline: 'none', width: isMobile ? '100%' : '280px' }}
           />
         </div>
 

@@ -70,7 +70,7 @@ export const TeamAvailabilityContent: React.FC = () => {
   return (
     <div>
       <div className="flex items-center gap-3 mb-2"><V>{online.length}</V><L>online</L></div>
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(90px, 1fr))', gap: '4px' }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(70px, 1fr))', gap: '4px' }}>
         {mockTeam.slice(0, 12).map((m) => (
           <div key={m.id} className="flex items-center gap-1" style={{ padding: '3px 0' }}>
             <Dot color={availabilityColors[m.availability]} />
@@ -197,9 +197,9 @@ export const InvoicePipelineContent: React.FC = () => {
   return (
     <div className="flex flex-col gap-1">
       <L>invoice pipeline</L>
-      <div className="flex gap-4 mt-2 mb-2">
+      <div className="flex gap-4 mt-2 mb-2" style={{ flexWrap: 'wrap' }}>
         {Object.entries(byStatus).map(([k, v]) => (
-          <div key={k} className="flex flex-col gap-1"><V>{v}</V><L>{k}</L></div>
+          <div key={k} className="flex flex-col gap-1" style={{ minWidth: '60px' }}><V>{v}</V><L>{k}</L></div>
         ))}
       </div>
     </div>

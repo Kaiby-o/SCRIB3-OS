@@ -2,6 +2,7 @@ import React, { useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import LogoScrib3 from '../components/LogoScrib3';
 import BurgerButton from '../components/BurgerButton';
+import { useIsMobile } from '../hooks/useIsMobile';
 import { useSupabaseQuery } from '../hooks/useSupabase';
 
 /* ------------------------------------------------------------------ */
@@ -95,6 +96,7 @@ const statusColors: Record<string, string> = {
 
 const ClientListPage: React.FC = () => {
   const navigate = useNavigate();
+  const isMobile = useIsMobile();
   const [filter, setFilter] = useState<string>('all');
 
   // Supabase query
@@ -180,7 +182,7 @@ const ClientListPage: React.FC = () => {
       <BurgerButton />
       </header>
 
-      <div style={{ padding: '40px', maxWidth: '1200px', margin: '0 auto' }}>
+      <div style={{ padding: isMobile ? '16px' : '40px', maxWidth: '1200px', margin: '0 auto' }}>
         {/* Title + Onboard button */}
         <div
           className="flex items-center justify-between"
@@ -190,7 +192,7 @@ const ClientListPage: React.FC = () => {
             style={{
               fontFamily: "'Kaio', sans-serif",
               fontWeight: 800,
-              fontSize: '32px',
+              fontSize: isMobile ? '24px' : '32px',
               textTransform: 'uppercase',
               fontFeatureSettings: "'ordn' 1, 'dlig' 1",
               margin: 0,
@@ -264,6 +266,7 @@ const ClientListPage: React.FC = () => {
         </div>
 
         {/* Client table */}
+        <div style={{ overflowX: 'auto', WebkitOverflowScrolling: 'touch' }}><div style={{ minWidth: '700px' }}>
         <div
           style={{
             border: '0.733px solid var(--border-default)',
@@ -400,6 +403,7 @@ const ClientListPage: React.FC = () => {
             </div>
           )}
         </div>
+        </div></div>
       </div>
     </div>
   );

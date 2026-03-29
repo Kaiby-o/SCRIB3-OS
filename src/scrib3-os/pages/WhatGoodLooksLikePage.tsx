@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import LogoScrib3 from '../components/LogoScrib3';
 import BurgerButton from '../components/BurgerButton';
+import { useIsMobile } from '../hooks/useIsMobile';
 
 /* ------------------------------------------------------------------ */
 /*  Plan v4 §4D — "What Good Looks Like" Library (Nick)                */
@@ -84,6 +85,7 @@ const sections: WGLLSection[] = [
 
 const WhatGoodLooksLikePage: React.FC = () => {
   const navigate = useNavigate();
+  const isMobile = useIsMobile();
   const [expandedId, setExpandedId] = useState<string | null>(null);
 
   return (
@@ -100,8 +102,8 @@ const WhatGoodLooksLikePage: React.FC = () => {
       <BurgerButton />
       </header>
 
-      <div style={{ padding: '40px', maxWidth: '900px', margin: '0 auto' }}>
-        <h1 style={{ fontFamily: "'Kaio', sans-serif", fontWeight: 800, fontSize: '32px', textTransform: 'uppercase', fontFeatureSettings: "'ordn' 1, 'dlig' 1", margin: '0 0 8px 0' }}>
+      <div style={{ padding: isMobile ? '16px' : '40px', maxWidth: '900px', margin: '0 auto' }}>
+        <h1 style={{ fontFamily: "'Kaio', sans-serif", fontWeight: 800, fontSize: isMobile ? '24px' : '32px', textTransform: 'uppercase', fontFeatureSettings: "'ordn' 1, 'dlig' 1", margin: '0 0 8px 0' }}>
           What Good Looks Like
         </h1>
         <p style={{ fontFamily: "'Owners Wide', sans-serif", fontSize: '13px', opacity: 0.5, marginBottom: '32px' }}>

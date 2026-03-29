@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import LogoScrib3 from '../components/LogoScrib3';
 import BurgerButton from '../components/BurgerButton';
+import { useIsMobile } from '../hooks/useIsMobile';
 import { supabase } from '../lib/supabase';
 import {
   mockEstimates,
@@ -74,6 +75,7 @@ const DigestTab: React.FC = () => {
       <h3 style={{ fontFamily: "'Kaio', sans-serif", fontWeight: 800, fontSize: '16px', textTransform: 'uppercase', margin: '0 0 12px 0' }}>
         Team Breakdown
       </h3>
+      <div style={{ overflowX: 'auto', WebkitOverflowScrolling: 'touch' }}><div style={{ minWidth: '700px' }}>
       <div style={{ border: '0.733px solid var(--border-default)', borderRadius: '10.258px', overflow: 'hidden', marginBottom: '32px' }}>
         <div className="flex items-center" style={{ padding: '12px 24px', borderBottom: '0.733px solid var(--border-default)', opacity: 0.5 }}>
           <TH width="22%">Team Member</TH>
@@ -103,6 +105,7 @@ const DigestTab: React.FC = () => {
           </div>
         ))}
       </div>
+      </div></div>
 
     </>
   );
@@ -248,6 +251,7 @@ const ForecastTab: React.FC = () => {
         </span>
       </div>
 
+      <div style={{ overflowX: 'auto', WebkitOverflowScrolling: 'touch' }}><div style={{ minWidth: '700px' }}>
       <div style={{ border: '0.733px solid var(--border-default)', borderRadius: '10.258px', overflow: 'hidden' }}>
         <div className="flex items-center" style={{ padding: '12px 24px', borderBottom: '0.733px solid var(--border-default)', opacity: 0.5 }}>
           <TH width="25%">Team Member</TH>
@@ -277,6 +281,7 @@ const ForecastTab: React.FC = () => {
           );
         })}
       </div>
+      </div></div>
 
       {/* Conflict alerts */}
       {digest.highCapacity.length > 0 && (
@@ -310,6 +315,7 @@ const Stat: React.FC<{ value: string; label: string; accent?: boolean }> = ({ va
 
 const BandwidthPage: React.FC = () => {
   const navigate = useNavigate();
+  const isMobile = useIsMobile();
   const [tab, setTab] = useState<'digest' | 'submit' | 'forecast'>('digest');
 
   return (
@@ -326,8 +332,8 @@ const BandwidthPage: React.FC = () => {
       <BurgerButton />
       </header>
 
-      <div style={{ padding: '40px', maxWidth: '1400px', margin: '0 auto' }}>
-        <h1 style={{ fontFamily: "'Kaio', sans-serif", fontWeight: 800, fontSize: '32px', textTransform: 'uppercase', fontFeatureSettings: "'ordn' 1, 'dlig' 1", margin: '0 0 24px 0' }}>
+      <div style={{ padding: isMobile ? '16px' : '40px', maxWidth: '1400px', margin: '0 auto' }}>
+        <h1 style={{ fontFamily: "'Kaio', sans-serif", fontWeight: 800, fontSize: isMobile ? '24px' : '32px', textTransform: 'uppercase', fontFeatureSettings: "'ordn' 1, 'dlig' 1", margin: '0 0 24px 0' }}>
           Bandwidth
         </h1>
 

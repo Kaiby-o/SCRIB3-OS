@@ -6,6 +6,7 @@ import { supabase } from '../lib/supabase';
 import { useAuthStore } from '../hooks/useAuth';
 import { mockTeam } from '../lib/team';
 import { getLevel, getLevelProgress } from '../lib/xp';
+import { useIsMobile } from '../hooks/useIsMobile';
 
 const ICON_BASE = 'https://dzufyjiczbgsvjyinpks.supabase.co/storage/v1/object/public/Icons/';
 
@@ -29,6 +30,7 @@ interface ProfileData {
 const ProfilePage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
+  const isMobile = useIsMobile();
   const { user } = useAuthStore();
   const [profile, setProfile] = useState<ProfileData | null>(null);
   const [loading, setLoading] = useState(true);
@@ -103,7 +105,7 @@ const ProfilePage: React.FC = () => {
 
   return (
     <div className="os-root" style={{ minHeight: '100vh' }}>
-      <header className="flex items-center justify-between" style={{ position: 'fixed' as const, top: 0, left: 0, right: 0, zIndex: 40, background: 'var(--bg-primary)', height: '85px', padding: '0 40px', borderBottom: '1px solid #000' }}>
+      <header className="flex items-center justify-between" style={{ position: 'fixed' as const, top: 0, left: 0, right: 0, zIndex: 40, background: 'var(--bg-primary)', height: '85px', padding: isMobile ? '0 16px' : '0 40px', borderBottom: '1px solid #000' }}>
         <button onClick={() => navigate('/dashboard')} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}>
           <LogoScrib3 height={18} color="var(--text-primary)" />
         </button>
@@ -111,7 +113,7 @@ const ProfilePage: React.FC = () => {
         <BurgerButton />
       </header>
 
-      <div style={{ padding: '40px', maxWidth: '640px', margin: '0 auto' }}>
+      <div style={{ padding: isMobile ? '16px' : '40px', maxWidth: '640px', margin: '0 auto' }}>
         {loading ? (
           <div className="flex items-center justify-center" style={{ marginTop: '120px' }}>
             <span style={{ fontFamily: "'Owners Wide', sans-serif", fontSize: '14px', opacity: 0.4, textTransform: 'uppercase' }}>Loading...</span>
@@ -129,7 +131,7 @@ const ProfilePage: React.FC = () => {
                   <span style={{ color: '#EAF2D7', fontFamily: "'Kaio', sans-serif", fontWeight: 900, fontSize: '40px' }}>{profile.display_name?.charAt(0) ?? '?'}</span>}
               </div>
               <div className="flex flex-col gap-2" style={{ paddingTop: '8px', flex: 1 }}>
-                <h1 style={{ fontFamily: "'Kaio', sans-serif", fontWeight: 800, fontSize: '32px', lineHeight: 0.9, textTransform: 'uppercase', margin: 0 }}>{profile.display_name}</h1>
+                <h1 style={{ fontFamily: "'Kaio', sans-serif", fontWeight: 800, fontSize: isMobile ? '24px' : '32px', lineHeight: 0.9, textTransform: 'uppercase', margin: 0 }}>{profile.display_name}</h1>
                 {editing ? (
                   <input value={editTitle} onChange={(e) => setEditTitle(e.target.value)} placeholder="Title"
                     style={{ fontFamily: "'Owners Wide', sans-serif", fontSize: '14px', background: '#EAF2D7', border: '0.733px solid var(--border-default)', borderRadius: '75.641px', padding: '6px 14px', outline: 'none' }} />

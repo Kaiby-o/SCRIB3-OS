@@ -1,6 +1,7 @@
 import React from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import LogoScrib3 from '../components/LogoScrib3';
+import { useIsMobile } from '../hooks/useIsMobile';
 import { priorityClients } from '../lib/clients';
 
 /* ------------------------------------------------------------------ */
@@ -13,6 +14,7 @@ import { priorityClients } from '../lib/clients';
 const ClientPortalPage: React.FC = () => {
   const { slug } = useParams<{ slug: string }>();
   const navigate = useNavigate();
+  const isMobile = useIsMobile();
   const client = priorityClients.find((c) => c.slug === slug);
 
   if (!client) {
@@ -29,12 +31,12 @@ const ClientPortalPage: React.FC = () => {
   return (
     <div style={{ minHeight: '100vh', background: '#FAFAFA', color: '#1A1A1A', fontFamily: "'Owners Wide', sans-serif" }}>
       {/* Branded header */}
-      <header style={{ background: client.primaryColour, padding: '24px 40px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+      <header style={{ background: client.primaryColour, padding: isMobile ? '16px' : '24px 40px', display: 'flex', alignItems: isMobile ? 'flex-start' : 'center', justifyContent: 'space-between', flexDirection: isMobile ? 'column' : 'row', gap: isMobile ? '8px' : undefined }}>
         <div className="flex items-center gap-3">
-          <div style={{ width: 36, height: 36, borderRadius: '50%', background: 'rgba(255,255,255,0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          <div style={{ width: 36, height: 36, borderRadius: '50%', background: 'rgba(255,255,255,0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
             <span style={{ color: '#fff', fontFamily: "'Kaio', sans-serif", fontWeight: 900, fontSize: '14px' }}>{client.companyName.charAt(0)}</span>
           </div>
-          <span style={{ color: '#fff', fontFamily: "'Kaio', sans-serif", fontWeight: 800, fontSize: '20px', textTransform: 'uppercase' }}>
+          <span style={{ color: '#fff', fontFamily: "'Kaio', sans-serif", fontWeight: 800, fontSize: isMobile ? '16px' : '20px', textTransform: 'uppercase' }}>
             {client.companyName}
           </span>
           <span style={{ color: 'rgba(255,255,255,0.6)', fontSize: '12px', letterSpacing: '1px', textTransform: 'uppercase' }}>Client Portal</span>
@@ -45,9 +47,9 @@ const ClientPortalPage: React.FC = () => {
         </div>
       </header>
 
-      <div style={{ padding: '40px', maxWidth: '1100px', margin: '0 auto' }}>
+      <div style={{ padding: isMobile ? '16px' : '40px', maxWidth: '1100px', margin: '0 auto' }}>
         {/* Module grid */}
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gridTemplateRows: 'auto', gap: '16px', gridTemplateAreas: '"status status deliverables" "team contract contract" "announce assets calendar"' }}>
+        <div style={isMobile ? { display: 'flex', flexDirection: 'column', gap: '16px' } : { display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gridTemplateRows: 'auto', gap: '16px', gridTemplateAreas: '"status status deliverables" "team contract contract" "announce assets calendar"' }}>
           {/* Project Status */}
           <PortalModule title="Project Status" gridArea="status">
             {client.activeProjects.map((p) => (
@@ -77,7 +79,7 @@ const ClientPortalPage: React.FC = () => {
 
           {/* Contract & Invoicing */}
           <PortalModule title="Contract & Invoicing" gridArea="contract">
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: typeof window !== 'undefined' && window.innerWidth < 768 ? '1fr' : '1fr 1fr', gap: '12px' }}>
               <MiniCard label="Contract Type" value={client.contractType} />
               <MiniCard label="Started" value={client.contractStart} />
               <MiniCard label="Slack Channel" value={client.slackChannel} />
@@ -121,7 +123,7 @@ const ClientPortalPage: React.FC = () => {
 /* ------------------------------------------------------------------ */
 
 const PortalModule: React.FC<{ title: string; gridArea: string; children: React.ReactNode }> = ({ title, gridArea, children }) => (
-  <div style={{ gridArea, background: '#fff', border: '1px solid #E8E8E8', borderRadius: '12px', padding: '24px' }}>
+  <div style={{ gridArea: typeof window !== 'undefined' && window.innerWidth < 768 ? undefined : gridArea, background: '#fff', border: '1px solid #E8E8E8', borderRadius: '12px', padding: typeof window !== 'undefined' && window.innerWidth < 768 ? '16px' : '24px' }}>
     <h3 style={{ fontFamily: "'Kaio', sans-serif", fontWeight: 800, fontSize: '13px', textTransform: 'uppercase', margin: '0 0 16px 0', opacity: 0.6 }}>{title}</h3>
     {children}
   </div>

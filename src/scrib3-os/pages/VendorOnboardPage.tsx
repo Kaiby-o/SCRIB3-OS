@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import LogoScrib3 from '../components/LogoScrib3';
 import BurgerButton from '../components/BurgerButton';
+import { useIsMobile } from '../hooks/useIsMobile';
 import { supabaseInsert } from '../hooks/useSupabase';
 
 const easing = 'cubic-bezier(0.22, 0.61, 0.36, 1)';
@@ -34,6 +35,7 @@ const defaultForm: VendorForm = {
 
 const VendorOnboardPage: React.FC = () => {
   const navigate = useNavigate();
+  const isMobile = useIsMobile();
   const [form, setForm] = useState<VendorForm>(defaultForm);
   const [submitted, setSubmitted] = useState(false);
 
@@ -59,7 +61,7 @@ const VendorOnboardPage: React.FC = () => {
   if (submitted) {
     return (
       <div className="os-root flex flex-col items-center justify-center" style={{ minHeight: '100vh' }}>
-        <h1 style={{ fontFamily: "'Kaio', sans-serif", fontWeight: 800, fontSize: '36px', textTransform: 'uppercase', fontFeatureSettings: "'ordn' 1, 'dlig' 1", marginBottom: '16px' }}>
+        <h1 style={{ fontFamily: "'Kaio', sans-serif", fontWeight: 800, fontSize: isMobile ? '24px' : '36px', textTransform: 'uppercase', fontFeatureSettings: "'ordn' 1, 'dlig' 1", marginBottom: '16px' }}>
           Vendor Registered
         </h1>
         <p style={{ fontFamily: "'Owners Wide', sans-serif", fontSize: '14px', opacity: 0.6, marginBottom: '32px' }}>
@@ -89,7 +91,7 @@ const VendorOnboardPage: React.FC = () => {
       <BurgerButton />
       </header>
 
-      <div style={{ padding: '40px', maxWidth: '640px', margin: '0 auto' }}>
+      <div style={{ padding: isMobile ? '16px' : '40px', maxWidth: '640px', margin: '0 auto' }}>
         <h1 style={{ fontFamily: "'Kaio', sans-serif", fontWeight: 800, fontSize: '28px', textTransform: 'uppercase', fontFeatureSettings: "'ordn' 1, 'dlig' 1", margin: '0 0 8px 0' }}>
           Vendor Onboarding
         </h1>

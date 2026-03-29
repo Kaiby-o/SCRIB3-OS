@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import LogoScrib3 from '../components/LogoScrib3';
 import BurgerButton from '../components/BurgerButton';
 import { useAuthStore } from '../hooks/useAuth';
+import { useIsMobile } from '../hooks/useIsMobile';
 
 /* ------------------------------------------------------------------ */
 /*  Settings Page                                                      */
@@ -30,6 +31,7 @@ const easing = 'cubic-bezier(0.22, 0.61, 0.36, 1)';
 
 const SettingsPage: React.FC = () => {
   const navigate = useNavigate();
+  const isMobile = useIsMobile();
   const { profile, signOut } = useAuthStore();
   const storageKey = `scrib3-dash-widgets-${profile?.role ?? 'team'}`;
   const [enabledWidgets, setEnabledWidgets] = useState<Set<string>>(() => {
@@ -83,7 +85,7 @@ const SettingsPage: React.FC = () => {
 
   return (
     <div className="os-root" style={{ minHeight: '100vh' }}>
-      <header className="flex items-center justify-between" style={{ position: 'fixed' as const, top: 0, left: 0, right: 0, zIndex: 40, background: 'var(--bg-primary)', height: '85px', padding: '0 40px', borderBottom: '0.733px solid var(--border-default)' }}>
+      <header className="flex items-center justify-between" style={{ position: 'fixed' as const, top: 0, left: 0, right: 0, zIndex: 40, background: 'var(--bg-primary)', height: '85px', padding: isMobile ? '0 16px' : '0 40px', borderBottom: '0.733px solid var(--border-default)' }}>
         <button onClick={() => navigate('/dashboard')} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}>
           <LogoScrib3 height={18} color="var(--text-primary)" />
         </button>
@@ -95,8 +97,8 @@ const SettingsPage: React.FC = () => {
       <BurgerButton />
       </header>
 
-      <div style={{ padding: '40px', maxWidth: '800px', margin: '0 auto' }}>
-        <h1 style={{ fontFamily: "'Kaio', sans-serif", fontWeight: 800, fontSize: '32px', textTransform: 'uppercase', fontFeatureSettings: "'ordn' 1, 'dlig' 1", margin: '0 0 32px 0' }}>
+      <div style={{ padding: isMobile ? '16px' : '40px', maxWidth: '800px', margin: '0 auto' }}>
+        <h1 style={{ fontFamily: "'Kaio', sans-serif", fontWeight: 800, fontSize: isMobile ? '24px' : '32px', textTransform: 'uppercase', fontFeatureSettings: "'ordn' 1, 'dlig' 1", margin: '0 0 32px 0' }}>
           Settings
         </h1>
 

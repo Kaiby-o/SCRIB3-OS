@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import LogoScrib3 from '../components/LogoScrib3';
 import BurgerButton from '../components/BurgerButton';
+import { useIsMobile } from '../hooks/useIsMobile';
 import { useAuthStore } from '../hooks/useAuth';
 import { mockTeam } from '../lib/team';
 
@@ -30,6 +31,7 @@ const mockDapps: Shoutout[] = [
 
 const DappsPage: React.FC = () => {
   const navigate = useNavigate();
+  const isMobile = useIsMobile();
   const { profile } = useAuthStore();
   const [recipient, setRecipient] = useState('');
   const [message, setMessage] = useState('');
@@ -55,7 +57,7 @@ const DappsPage: React.FC = () => {
         <BurgerButton />
       </header>
 
-      <div style={{ padding: '40px', maxWidth: '800px', margin: '0 auto' }}>
+      <div style={{ padding: isMobile ? '16px' : '40px', maxWidth: '800px', margin: '0 auto' }}>
         {/* Give a shoutout form */}
         <div style={{ background: 'var(--bg-surface)', border: '0.733px solid var(--border-default)', borderRadius: '10.258px', padding: '28px', marginBottom: '32px' }}>
           <h2 style={{ fontFamily: "'Kaio', sans-serif", fontWeight: 800, fontSize: '18px', textTransform: 'uppercase', margin: '0 0 16px 0' }}>Give a Shoutout</h2>

@@ -2,6 +2,7 @@ import React, { useState, useMemo, useCallback, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import LogoScrib3 from '../components/LogoScrib3';
 import BurgerButton from '../components/BurgerButton';
+import { useIsMobile } from '../hooks/useIsMobile';
 import { NODES } from '../../scrib3-device/components/systems-map/data/nodes';
 import { FLOWS } from '../../scrib3-device/components/systems-map/data/flows';
 import { LAYERS } from '../../scrib3-device/components/systems-map/data/layers';
@@ -23,11 +24,12 @@ const OS_LAYER_COLORS: Record<Layer, string> = {
 
 const SystemsMapPage: React.FC = () => {
   const navigate = useNavigate();
+  const isMobile = useIsMobile();
   const [selectedNode, setSelectedNode] = useState<SystemNode | null>(null);
   const [hoveredNode, setHoveredNode] = useState<string | null>(null);
   const [activeLayer, setActiveLayer] = useState<Layer | 'all'>('all');
   const [activeJourney, setActiveJourney] = useState<JourneyKey | null>(null);
-  const [zoom, setZoom] = useState(0.75);
+  const [zoom, setZoom] = useState(isMobile ? 0.45 : 0.75);
   const [pan, setPan] = useState({ x: 0, y: 0 });
   const [isPanning, setIsPanning] = useState(false);
   const [columnMode, setColumnMode] = useState(false);
@@ -94,7 +96,7 @@ const SystemsMapPage: React.FC = () => {
     return ids;
   }, [hoveredNode]);
 
-  // Pan handlers
+  // Pan handlers (mouse)
   const handlePanStart = useCallback((e: React.MouseEvent) => {
     if (e.target !== e.currentTarget) return;
     setIsPanning(true);
@@ -111,6 +113,25 @@ const SystemsMapPage: React.FC = () => {
   }, [isPanning]);
 
   const handlePanEnd = useCallback(() => setIsPanning(false), []);
+
+  // Touch pan handlers (mobile)
+  const handleTouchStart = useCallback((e: React.TouchEvent) => {
+    if (e.touches.length !== 1) return;
+    setIsPanning(true);
+    panStart.current = { x: e.touches[0].clientX, y: e.touches[0].clientY };
+    panOrigin.current = { ...pan };
+  }, [pan]);
+
+  const handleTouchMove = useCallback((e: React.TouchEvent) => {
+    if (!isPanning || e.touches.length !== 1) return;
+    e.preventDefault();
+    setPan({
+      x: panOrigin.current.x + (e.touches[0].clientX - panStart.current.x),
+      y: panOrigin.current.y + (e.touches[0].clientY - panStart.current.y),
+    });
+  }, [isPanning]);
+
+  const handleTouchEnd = useCallback(() => setIsPanning(false), []);
 
   // Draw right-angle connector with offset to avoid overlap
   const drawConnector = (fromNode: SystemNode, toNode: SystemNode, color: string, dashed?: boolean, flowIdx?: number) => {
@@ -134,46 +155,49 @@ const SystemsMapPage: React.FC = () => {
 
   return (
     <div className="os-root" style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
-      <header className="flex items-center justify-between" style={{ position: 'fixed' as const, top: 0, left: 0, right: 0, zIndex: 40, background: 'var(--bg-primary)', height: '85px', padding: '0 40px', borderBottom: '1px solid #000' }}>
+      <header className="flex items-center justify-between" style={{ position: 'fixed' as const, top: 0, left: 0, right: 0, zIndex: 40, background: 'var(--bg-primary)', height: isMobile ? '60px' : '85px', padding: isMobile ? '0 16px' : '0 40px', borderBottom: '1px solid #000' }}>
         <button onClick={() => navigate('/tools')} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}>
-          <LogoScrib3 height={18} color="var(--text-primary)" />
+          <LogoScrib3 height={isMobile ? 14 : 18} color="var(--text-primary)" />
         </button>
-        <span style={{ fontFamily: "'Kaio', sans-serif", fontWeight: 800, fontSize: '16px', textTransform: 'uppercase' }}>Systems Map</span>
+        <span style={{ fontFamily: "'Kaio', sans-serif", fontWeight: 800, fontSize: isMobile ? '13px' : '16px', textTransform: 'uppercase' }}>Systems Map</span>
         <BurgerButton />
       </header>
 
       {/* Controls bar */}
-      <div style={{ position: 'fixed', top: 86, left: 0, right: 0, zIndex: 35, background: 'var(--bg-primary)', padding: '8px 24px', borderBottom: '0.5px solid rgba(0,0,0,0.1)', display: 'flex', gap: '12px', alignItems: 'center', flexWrap: 'wrap' }}>
+      <div style={{ position: 'fixed', top: isMobile ? 61 : 86, left: 0, right: 0, zIndex: 35, background: 'var(--bg-primary)', padding: isMobile ? '8px 12px' : '8px 24px', borderBottom: '0.5px solid rgba(0,0,0,0.1)', display: 'flex', gap: isMobile ? '6px' : '12px', alignItems: 'center', flexWrap: 'wrap' }}>
         {/* Layer filters */}
-        <span style={{ fontFamily: "'Owners Wide', sans-serif", fontSize: '9px', letterSpacing: '1px', textTransform: 'uppercase', opacity: 0.4 }}>Layers:</span>
+        {!isMobile && <span style={{ fontFamily: "'Owners Wide', sans-serif", fontSize: '9px', letterSpacing: '1px', textTransform: 'uppercase', opacity: 0.4 }}>Layers:</span>}
         <FilterPill label="All" active={activeLayer === 'all'} onClick={() => setActiveLayer('all')} color="#000" />
         {(Object.entries(LAYERS) as [Layer, { label: string; color: string }][]).map(([key, info]) => (
-          <FilterPill key={key} label={info.label} active={activeLayer === key} onClick={() => setActiveLayer(key === activeLayer ? 'all' : key)} color={OS_LAYER_COLORS[key]} />
+          <FilterPill key={key} label={isMobile ? info.label.slice(0, 3) : info.label} active={activeLayer === key} onClick={() => setActiveLayer(key === activeLayer ? 'all' : key)} color={OS_LAYER_COLORS[key]} />
         ))}
 
-        <div style={{ width: 1, height: 20, background: 'rgba(0,0,0,0.1)', margin: '0 4px' }} />
+        {!isMobile && <div style={{ width: 1, height: 20, background: 'rgba(0,0,0,0.1)', margin: '0 4px' }} />}
 
-        {/* Journey overlays */}
-        <span style={{ fontFamily: "'Owners Wide', sans-serif", fontSize: '9px', letterSpacing: '1px', textTransform: 'uppercase', opacity: 0.4 }}>Journeys:</span>
-        {(Object.entries(JOURNEYS) as [JourneyKey, { label: string; color: string }][]).slice(0, 5).map(([key, journey]) => (
-          <FilterPill key={key} label={journey.label} active={activeJourney === key} onClick={() => setActiveJourney(activeJourney === key ? null : key)} color={journey.color} />
-        ))}
+        {/* Journey overlays — hidden on mobile to save space */}
+        {!isMobile && (
+          <>
+            <span style={{ fontFamily: "'Owners Wide', sans-serif", fontSize: '9px', letterSpacing: '1px', textTransform: 'uppercase', opacity: 0.4 }}>Journeys:</span>
+            {(Object.entries(JOURNEYS) as [JourneyKey, { label: string; color: string }][]).slice(0, 5).map(([key, journey]) => (
+              <FilterPill key={key} label={journey.label} active={activeJourney === key} onClick={() => setActiveJourney(activeJourney === key ? null : key)} color={journey.color} />
+            ))}
+            <div style={{ width: 1, height: 20, background: 'rgba(0,0,0,0.1)', margin: '0 4px' }} />
+          </>
+        )}
 
-        <div style={{ width: 1, height: 20, background: 'rgba(0,0,0,0.1)', margin: '0 4px' }} />
-
-        <FilterPill label={columnMode ? 'Free Layout' : 'Columns'} active={columnMode} onClick={() => setColumnMode(!columnMode)} color="#000" />
-        <FilterPill label="Notes" active={showNoteBox} onClick={() => setShowNoteBox(!showNoteBox)} color="#6E93C3" />
+        <FilterPill label={columnMode ? 'Free' : 'Cols'} active={columnMode} onClick={() => setColumnMode(!columnMode)} color="#000" />
+        {!isMobile && <FilterPill label="Notes" active={showNoteBox} onClick={() => setShowNoteBox(!showNoteBox)} color="#6E93C3" />}
 
         <div style={{ marginLeft: 'auto', display: 'flex', gap: '8px', alignItems: 'center' }}>
-          <button onClick={() => setZoom((z) => Math.max(0.3, z - 0.1))} style={{ background: 'none', border: '1px solid var(--border-default)', borderRadius: '4px', width: 28, height: 28, cursor: 'pointer', fontFamily: "'Owners Wide', sans-serif", fontSize: '14px' }}>-</button>
+          <button onClick={() => setZoom((z) => Math.max(0.2, z - 0.1))} style={{ background: 'none', border: '1px solid var(--border-default)', borderRadius: '4px', width: isMobile ? 36 : 28, height: isMobile ? 36 : 28, cursor: 'pointer', fontFamily: "'Owners Wide', sans-serif", fontSize: '14px' }}>-</button>
           <span style={{ fontFamily: "'Owners Wide', sans-serif", fontSize: '10px', opacity: 0.4, minWidth: '30px', textAlign: 'center' }}>{Math.round(zoom * 100)}%</span>
-          <button onClick={() => setZoom((z) => Math.min(2, z + 0.1))} style={{ background: 'none', border: '1px solid var(--border-default)', borderRadius: '4px', width: 28, height: 28, cursor: 'pointer', fontFamily: "'Owners Wide', sans-serif", fontSize: '14px' }}>+</button>
-          <button onClick={() => { setZoom(0.75); setPan({ x: 0, y: 0 }); setColumnMode(false); }} style={{ fontFamily: "'Owners Wide', sans-serif", fontSize: '9px', letterSpacing: '1px', textTransform: 'uppercase', opacity: 0.3, background: 'none', border: 'none', cursor: 'pointer' }}>Reset</button>
+          <button onClick={() => setZoom((z) => Math.min(2, z + 0.1))} style={{ background: 'none', border: '1px solid var(--border-default)', borderRadius: '4px', width: isMobile ? 36 : 28, height: isMobile ? 36 : 28, cursor: 'pointer', fontFamily: "'Owners Wide', sans-serif", fontSize: '14px' }}>+</button>
+          <button onClick={() => { setZoom(isMobile ? 0.45 : 0.75); setPan({ x: 0, y: 0 }); setColumnMode(false); }} style={{ fontFamily: "'Owners Wide', sans-serif", fontSize: '9px', letterSpacing: '1px', textTransform: 'uppercase', opacity: 0.3, background: 'none', border: 'none', cursor: 'pointer', minHeight: '44px', minWidth: '44px' }}>Reset</button>
         </div>
       </div>
 
       {/* Note box */}
-      {showNoteBox && (
+      {showNoteBox && !isMobile && (
         <div style={{ position: 'fixed', bottom: selectedNode ? 220 : 24, right: 24, width: '300px', zIndex: 30, background: 'var(--bg-primary)', border: '0.733px solid var(--border-default)', borderRadius: '10.258px', padding: '16px', boxShadow: '0 4px 16px rgba(0,0,0,0.08)' }}>
           <div className="flex items-center justify-between" style={{ marginBottom: '8px' }}>
             <span style={{ fontFamily: "'Kaio', sans-serif", fontWeight: 800, fontSize: '11px', textTransform: 'uppercase' }}>Notes</span>
@@ -192,11 +216,14 @@ const SystemsMapPage: React.FC = () => {
       {/* Map canvas */}
       <div
         ref={mapRef}
-        style={{ flex: 1, overflow: 'hidden', marginTop: '130px', cursor: isPanning ? 'grabbing' : 'grab', userSelect: 'none' }}
+        style={{ flex: 1, overflow: 'hidden', marginTop: isMobile ? '105px' : '130px', cursor: isPanning ? 'grabbing' : 'grab', userSelect: 'none', touchAction: 'none' }}
         onMouseDown={handlePanStart}
         onMouseMove={handlePanMove}
         onMouseUp={handlePanEnd}
         onMouseLeave={handlePanEnd}
+        onTouchStart={handleTouchStart}
+        onTouchMove={handleTouchMove}
+        onTouchEnd={handleTouchEnd}
         onWheel={handleWheel}
       >
         <div style={{ transform: `translate(${pan.x}px, ${pan.y}px) scale(${zoom})`, transformOrigin: '0 0', position: 'relative', width: '1600px', height: '1000px' }}>
@@ -252,7 +279,7 @@ const SystemsMapPage: React.FC = () => {
 
       {/* Selected node detail */}
       {selectedNode && (
-        <div style={{ position: 'fixed', bottom: 100, left: '50%', transform: 'translateX(-50%)', background: '#000', color: '#EAF2D7', borderRadius: '10.258px', padding: '20px 24px', maxWidth: '600px', width: 'calc(100% - 48px)', zIndex: 30 }}>
+        <div style={{ position: 'fixed', bottom: isMobile ? 80 : 100, left: '50%', transform: 'translateX(-50%)', background: '#000', color: '#EAF2D7', borderRadius: '10.258px', padding: isMobile ? '16px' : '20px 24px', maxWidth: '600px', width: 'calc(100% - 32px)', zIndex: 30 }}>
           <div className="flex items-center justify-between" style={{ marginBottom: '8px' }}>
             <div className="flex items-center gap-2">
               <div style={{ width: 8, height: 8, borderRadius: '50%', background: OS_LAYER_COLORS[selectedNode.layer] }} />
@@ -291,11 +318,12 @@ const SystemsMapPage: React.FC = () => {
 const FilterPill: React.FC<{ label: string; active: boolean; onClick: () => void; color: string }> = ({ label, active, onClick, color }) => (
   <button onClick={onClick} style={{
     fontFamily: "'Owners Wide', sans-serif", fontSize: '9px', letterSpacing: '0.5px', textTransform: 'uppercase',
-    padding: '3px 10px', borderRadius: '75.641px', cursor: 'pointer',
+    padding: '6px 10px', borderRadius: '75.641px', cursor: 'pointer',
     border: active ? `1.5px solid ${color}` : '1px solid rgba(0,0,0,0.1)',
     background: active ? `${color}20` : 'transparent',
     color: active ? color : 'var(--text-primary)',
     opacity: active ? 1 : 0.5,
+    minHeight: '36px',
   }}>{label}</button>
 );
 

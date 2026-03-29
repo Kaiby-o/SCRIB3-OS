@@ -2,6 +2,7 @@ import React, { useState, useMemo } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import LogoScrib3 from '../components/LogoScrib3';
 import BurgerButton from '../components/BurgerButton';
+import { useIsMobile } from '../hooks/useIsMobile';
 import { priorityClients, type ClientProfile } from '../lib/clients';
 import { useSupabaseRow, useSupabaseQuery } from '../hooks/useSupabase';
 
@@ -13,6 +14,7 @@ import { useSupabaseRow, useSupabaseQuery } from '../hooks/useSupabase';
 const ClientHubPage: React.FC = () => {
   const { slug } = useParams<{ slug: string }>();
   const navigate = useNavigate();
+  const isMobile = useIsMobile();
   const [tab, setTab] = useState<'overview' | 'brand' | 'projects' | 'contacts' | 'strategy'>('overview');
 
   // Try Supabase first, fall back to mock
@@ -85,14 +87,14 @@ const ClientHubPage: React.FC = () => {
       <BurgerButton />
       </header>
 
-      <div style={{ padding: '40px', maxWidth: '1100px', margin: '0 auto' }}>
+      <div style={{ padding: isMobile ? '16px' : '40px', maxWidth: '1100px', margin: '0 auto' }}>
         {/* Client header */}
         <div className="flex items-center gap-4" style={{ marginBottom: '8px' }}>
           <div style={{ width: 48, height: 48, borderRadius: '50%', background: client.primaryColour, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
             <span style={{ color: '#fff', fontFamily: "'Kaio', sans-serif", fontWeight: 900, fontSize: '18px' }}>{client.companyName.charAt(0)}</span>
           </div>
           <div>
-            <h1 style={{ fontFamily: "'Kaio', sans-serif", fontWeight: 800, fontSize: '32px', textTransform: 'uppercase', fontFeatureSettings: "'ordn' 1, 'dlig' 1", margin: 0 }}>{client.companyName}</h1>
+            <h1 style={{ fontFamily: "'Kaio', sans-serif", fontWeight: 800, fontSize: isMobile ? '24px' : '32px', textTransform: 'uppercase', fontFeatureSettings: "'ordn' 1, 'dlig' 1", margin: 0 }}>{client.companyName}</h1>
             <span style={{ fontFamily: "'Owners Wide', sans-serif", fontSize: '12px', opacity: 0.5 }}>{client.industry}</span>
           </div>
           <span style={{ marginLeft: 'auto', fontSize: '20px' }}>{client.accountHealth}</span>
@@ -142,6 +144,7 @@ const OverviewTab: React.FC<{ client: ClientProfile }> = ({ client: c }) => (
       <InfoCard label="Contract Type" value={c.contractType} />
     </div>
     <Section title="Services Active">
+      <div style={{ overflowX: 'auto', WebkitOverflowScrolling: 'touch' }}><div style={{ minWidth: '700px' }}>
       {c.servicesActive.map((s) => (
         <div key={s.service} className="flex items-center" style={{ padding: '10px 0', borderBottom: '0.5px solid rgba(0,0,0,0.06)' }}>
           <span style={{ width: '25%', fontFamily: "'Kaio', sans-serif", fontWeight: 800, fontSize: '12px', textTransform: 'uppercase' }}>{s.service}</span>
@@ -149,8 +152,10 @@ const OverviewTab: React.FC<{ client: ClientProfile }> = ({ client: c }) => (
           <span style={{ width: '35%', fontFamily: "'Owners Wide', sans-serif", fontSize: '11px', opacity: 0.5 }}>{s.scopeNotes}</span>
         </div>
       ))}
+      </div></div>
     </Section>
     <Section title="Upcoming Dates">
+      <div style={{ overflowX: 'auto', WebkitOverflowScrolling: 'touch' }}><div style={{ minWidth: '700px' }}>
       {c.upcomingDates.map((d) => (
         <div key={d.date} className="flex items-center" style={{ padding: '8px 0', borderBottom: '0.5px solid rgba(0,0,0,0.06)' }}>
           <span style={{ width: '20%', fontFamily: "'Kaio', sans-serif", fontWeight: 800, fontSize: '12px' }}>{d.date}</span>
@@ -158,6 +163,7 @@ const OverviewTab: React.FC<{ client: ClientProfile }> = ({ client: c }) => (
           <span style={{ width: '30%', fontFamily: "'Owners Wide', sans-serif", fontSize: '11px', opacity: 0.5 }}>{d.who}</span>
         </div>
       ))}
+      </div></div>
     </Section>
   </div>
 );
@@ -201,6 +207,7 @@ const BrandTab: React.FC<{ client: ClientProfile }> = ({ client: c }) => (
 
 const ProjectsTab: React.FC<{ client: ClientProfile }> = ({ client: c }) => (
   <Section title="Active Projects">
+    <div style={{ overflowX: 'auto', WebkitOverflowScrolling: 'touch' }}><div style={{ minWidth: '700px' }}>
     <div style={{ border: '0.733px solid var(--border-default)', borderRadius: '10.258px', overflow: 'hidden' }}>
       <div className="flex items-center" style={{ padding: '12px 20px', borderBottom: '0.733px solid var(--border-default)', opacity: 0.5 }}>
         <TH width="15%">Code</TH><TH width="30%">Title</TH><TH width="15%">Status</TH><TH width="20%">Lead</TH><TH width="20%">Blocker</TH>
@@ -215,6 +222,7 @@ const ProjectsTab: React.FC<{ client: ClientProfile }> = ({ client: c }) => (
         </div>
       ))}
     </div>
+    </div></div>
   </Section>
 );
 

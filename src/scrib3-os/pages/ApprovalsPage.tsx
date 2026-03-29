@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import LogoScrib3 from '../components/LogoScrib3';
 import BurgerButton from '../components/BurgerButton';
+import { useIsMobile } from '../hooks/useIsMobile';
 import {
   mockApprovals, approvalStatusColors, approvalTypeLabels,
   type Approval, type ApprovalStatus,
@@ -11,6 +12,7 @@ const easing = 'cubic-bezier(0.22, 0.61, 0.36, 1)';
 
 const ApprovalsPage: React.FC = () => {
   const navigate = useNavigate();
+  const isMobile = useIsMobile();
   const [filter, setFilter] = useState<ApprovalStatus | 'all'>('all');
   const [selectedApproval, setSelectedApproval] = useState<Approval | null>(null);
 
@@ -34,7 +36,7 @@ const ApprovalsPage: React.FC = () => {
         <BurgerButton />
       </header>
 
-      <div style={{ padding: '40px', maxWidth: '1200px', margin: '0 auto' }}>
+      <div style={{ padding: isMobile ? '16px' : '40px', maxWidth: '1200px', margin: '0 auto' }}>
         {/* Stats */}
         <div className="flex gap-6" style={{ marginBottom: '24px' }}>
           <Stat value={mockApprovals.length.toString()} label="total" />

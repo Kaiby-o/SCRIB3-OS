@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import LogoScrib3 from '../components/LogoScrib3';
 import BurgerButton from '../components/BurgerButton';
+import { useIsMobile } from '../hooks/useIsMobile';
 import { supabaseInsert } from '../hooks/useSupabase';
 
 /* ------------------------------------------------------------------ */
@@ -76,6 +77,7 @@ const easing = 'cubic-bezier(0.22, 0.61, 0.36, 1)';
 
 const ClientOnboardPage: React.FC = () => {
   const navigate = useNavigate();
+  const isMobile = useIsMobile();
   const [currentPhase, setCurrentPhase] = useState<Phase>('discovery');
   const [form, setForm] = useState<OnboardForm>(defaultForm);
   const [submitted, setSubmitted] = useState(false);
@@ -119,7 +121,7 @@ const ClientOnboardPage: React.FC = () => {
           style={{
             fontFamily: "'Kaio', sans-serif",
             fontWeight: 800,
-            fontSize: '36px',
+            fontSize: isMobile ? '24px' : '36px',
             textTransform: 'uppercase',
             fontFeatureSettings: "'ordn' 1, 'dlig' 1",
             marginBottom: '16px',
@@ -198,7 +200,7 @@ const ClientOnboardPage: React.FC = () => {
       <BurgerButton />
       </header>
 
-      <div style={{ padding: '40px', maxWidth: '720px', margin: '0 auto' }}>
+      <div style={{ padding: isMobile ? '16px' : '40px', maxWidth: '720px', margin: '0 auto' }}>
         {/* Phase stepper */}
         <div className="flex items-center" style={{ marginBottom: '48px', gap: '0' }}>
           {PHASES.map((phase, i) => (

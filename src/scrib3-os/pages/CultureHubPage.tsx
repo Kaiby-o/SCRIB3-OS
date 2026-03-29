@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import LogoScrib3 from '../components/LogoScrib3';
 import BurgerButton from '../components/BurgerButton';
+import { useIsMobile } from '../hooks/useIsMobile';
 import { XP_LEVELS, XP_EVENTS } from '../lib/xp';
 import { mockTeam, getInitials } from '../lib/team';
 
@@ -12,6 +13,7 @@ import { mockTeam, getInitials } from '../lib/team';
 
 const CultureHubPage: React.FC = () => {
   const navigate = useNavigate();
+  const isMobile = useIsMobile();
   const [tab, setTab] = useState<'principles' | 'leaderboard' | 'xp-guide' | 'culture-book' | 'poe'>('principles');
 
   return (
@@ -28,8 +30,8 @@ const CultureHubPage: React.FC = () => {
       <BurgerButton />
       </header>
 
-      <div style={{ padding: '40px', maxWidth: '1000px', margin: '0 auto' }}>
-        <h1 style={{ fontFamily: "'Kaio', sans-serif", fontWeight: 800, fontSize: '32px', textTransform: 'uppercase', fontFeatureSettings: "'ordn' 1, 'dlig' 1", margin: '0 0 24px 0' }}>Culture</h1>
+      <div style={{ padding: isMobile ? '16px' : '40px', maxWidth: '1000px', margin: '0 auto' }}>
+        <h1 style={{ fontFamily: "'Kaio', sans-serif", fontWeight: 800, fontSize: isMobile ? '24px' : '32px', textTransform: 'uppercase', fontFeatureSettings: "'ordn' 1, 'dlig' 1", margin: '0 0 24px 0' }}>Culture</h1>
 
         <div className="flex gap-2 flex-wrap" style={{ marginBottom: '32px' }}>
           {([['principles', 'Operating Principles'], ['leaderboard', 'XP Leaderboard'], ['xp-guide', 'XP Guide'], ['culture-book', 'Culture Book'], ['poe', 'Proof of Excellence']] as const).map(([key, label]) => (
@@ -113,6 +115,7 @@ const LeaderboardTab: React.FC<{ navigate: ReturnType<typeof useNavigate> }> = (
       </div>
 
       {/* Rest */}
+      <div style={{ overflowX: 'auto', WebkitOverflowScrolling: 'touch' }}><div style={{ minWidth: '700px' }}>
       <div style={{ border: '0.733px solid var(--border-default)', borderRadius: '10.258px', overflow: 'hidden' }}>
         {rest.map((m, i) => (
           <div key={m.id} onClick={() => navigate(`/team/${m.id}`)} className="flex items-center" style={{ padding: '10px 24px', borderBottom: '0.5px solid rgba(0,0,0,0.06)', cursor: 'pointer', transition: 'background 0.15s' }}
@@ -125,6 +128,7 @@ const LeaderboardTab: React.FC<{ navigate: ReturnType<typeof useNavigate> }> = (
           </div>
         ))}
       </div>
+      </div></div>
     </div>
   );
 };
