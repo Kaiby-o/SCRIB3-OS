@@ -135,10 +135,10 @@ function Thumb({ files }: { files: string[] }) {
   const ref = useRef<HTMLCanvasElement>(null);
   const key = files.join('|');
   useEffect(() => {
-    if (ref.current) compositeFrame(ref.current, files, 0, 0, 2.5);
+    if (ref.current) compositeFrame(ref.current, files, 0, 0, 2);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [key]);
-  return <canvas ref={ref} width={80} height={80} style={{ imageRendering: 'pixelated' }} />;
+  return <canvas ref={ref} width={64} height={64} style={{ imageRendering: 'pixelated' }} />;
 }
 
 // ─── Parse saved config ────────────────────────────────────────────
@@ -230,7 +230,7 @@ export default function AvatarCreatorPage() {
         {/* Preview */}
         <div style={S.previewCol}>
           <div style={S.previewBox}>
-            <Preview files={files} scale={7} />
+            <Preview files={files} scale={4} />
           </div>
           <span style={S.name}>{profile?.username ?? 'Player'}</span>
           <div style={S.btnRow}>
